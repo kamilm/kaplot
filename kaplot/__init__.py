@@ -12,7 +12,6 @@ from numpy import linspace
 __author__		= 'Kamil'
 __version__		= '0.7'
 __name__		= 'kaplot'
-__file__		= 'kaplot.py'
 
 """
 CHANGELOG
