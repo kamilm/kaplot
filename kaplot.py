@@ -1,6 +1,6 @@
 from copy import deepcopy
 # required to make pydocs work
-from functools import wraps
+from decorator import decorator
 import matplotlib
 # backends @ http://matplotlib.org/faq/usage_faq.html
 matplotlib.use('macosx')
@@ -8,13 +8,22 @@ import matplotlib.pyplot as plt
 import pickle
 
 __author__		= 'Kamil'
-__version__		= '0.4a'
+__version__		= '0.5'
 __name__		= 'kaplot'
 __file__		= 'kaplot.py'
 
 """
 CHANGELOG
 =========
+** 03/24/2104 , 0.5 **
+	-	changed makePlot so that add_plotdata and add_rectangle are near the ends
+	- 	added add_rectangle()
+	- 	changed add_plotdata() to avoid overwriting user specified
+	- 	updated color_marker_fill_index() to take lists to compare compare against
+	- 	removed functools import
+	-	changed check_name() args to work with new @decorator (ugh)
+		notes : no plans to add text to add_rectangle , see options for matplotlib.pyplot.axhspan()
+
 ** 03/05/2014 , v0.4a **
 	*	Morning Session *
 	-	added color_marker_fill_index() to makePlot() in order to fix the 
@@ -42,28 +51,27 @@ CHANGELOG
 
 TODO 
 ====
+	-	change $$ to `` in docstrings
 	- 	add spline
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
- 	- 	add_rectangle
  	- 	update set_unique_colors to use cmap
  			+ 	user specified unique_colors
  	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
+ 	- 	add_arrow
 """
 
-def check_name(fn):
-	"""
-	decorator function for kaplot class. checks if the $name$ kwarg is 
-	valid and inserts $ind$ into the kwarg list. additionally, changes all
-	kwargs to be lower case.
-
-	** args **
-	fn 		- function
-	"""
-	@wraps(fn)
-	def wrapper(self,*args,**kwargs):
+@decorator
+def check_name(fn,self,*args,**kwargs):
+		"""
+		decorator function for kaplot class. checks if the `name` kwarg is
+		valid and inserts `ind` into the kwarg list. additionally, changes all
+		kwargs to be lower case.
+		** args **
+		fn 	- function
+		"""
 		if 'name' not in kwargs:
-			kwargs['name'] = 'main'
+				kwargs['name'] = 'main'
 		if kwargs['name'].lower() in self._LAYER_NAMES:
 			oind = self._LAYER_NAMES.index(kwargs['name'].lower())
 			kwargs['ind'] = oind
@@ -73,7 +81,6 @@ def check_name(fn):
 				new_kwargs[key.lower()] = val
 			return fn(self,*args,**new_kwargs)
 		raise AttributeError('No layer/axes named %s' % kwargs['name'])
-	return wrapper
 
 class kaplot(object):
 	"""
@@ -252,13 +259,30 @@ class kaplot(object):
 								'title'			:	None			, \
 								'fontsize'		:	'medium'		, \
 								'borderpad'		:	0.1 			, \
-								'labelspacing'	: 0.1 				, \
-								'handletextpad'	: 0.25				, \
-								'columnspacing'	: 0.1}
+								'labelspacing'	: 	0.1 			, \
+								'handletextpad'	: 	0.25			, \
+								'columnspacing'	: 	0.1}
+
+	_RECTANGLE_DEFAULTS = {		'ymin'			: 	'Auto'			, \
+								'ymax'			:	'Auto'			, \
+								'xmin'			:	'Auto'			, \
+								'xmax'			:	'Auto'			, \
+								'increment'		:	True			, \
+								'color'			:	'Auto'			, \
+								'ec'			:	'Auto'			, \
+								'fc'			:	'Auto'			, \
+								'fill'			:	'Auto'			, \
+								'hatch'			:	'Auto'			, \
+								'ls'			:	'Auto'			, \
+								'lw'			:	'Auto'			, \
+								'alpha'			:	'Auto'}
 
 	_COLOR_LIST			= ['black' , 'red' , 'blue' , 'fuchsia' , 'orange' , 'lime' , 'aqua' , 'maroon' , '0.40' , '0.85']
 	_MARKER_LIST 		= [None , 's' , 'o' , '^' , 'D']
 	_MARKER_FILL_LIST	= [None , 'white']
+
+	_HATCH_LIST			= [None,'/','\\','|','-','+','x','o','O','.','*']
+	_HATCH_FILL_LIST	= [False, True]
 
 	def __init__(self):
 		# list of layers and associated properties
@@ -870,12 +894,44 @@ class kaplot(object):
 		k.add_plotdata(**pdict)
 		return
 
+	@check_name
+	def add_rectangle(self,top,bottom,**kwargs):
+		"""
+		adds a rectangle to the plot with coordinates defined by top/bottom
+
+		** args **
+		top 		-	(x,y) tuple for the top left corner
+		bottom 		-	(x,y) tuple for the bottom right corner
+
+		** kwargs **
+		name 		- 
+		increment 	- 
+		color 		-  
+		ec 			- 
+		fc 			- 
+		fill		- 
+		hatch		- 
+		ls 			- 
+		lw 			- 
+		alpha 		- 
+		"""
+		k 		= self._LAYER_OBJECTS[kwargs['ind']]
+		x_tup 	= [top[0],bottom[0]]
+		y_tup	= [top[1],bottom[1]]
+		xmin , xmax = sorted(x_tup)
+		ymin , ymax = sorted(y_tup)
+		kwargs 	= update_default_kwargs(self._RECTANGLE_DEFAULTS,kwargs)
+		kwargs['xmin'] , kwargs['xmax'] = xmin , xmax
+		kwargs['ymin'] , kwargs['ymax'] = ymin , ymax
+		k.add_rectangle(**kwargs)
+		return
+
 	def makePlot(self):
 		"""
 		generates the matplotlib object from all inputs
 		"""
 		## helper
-		def color_marker_fill_index(cnt):
+		def color_marker_fill_index(cnt,clist,mlist,flist):
 			"""
 			helper function which uses the cnt number to determine which
 			color , marker , fill will be used
@@ -885,9 +941,9 @@ class kaplot(object):
 
 			returns tuple (color_index , marker_index , fill_index)
 			"""
-			cind = cnt%len(self._COLOR_LIST)
-			mind = (cnt // len(self._COLOR_LIST)) % len(self._MARKER_LIST)
-			find = (cnt // (len(self._COLOR_LIST)*len(self._MARKER_LIST))) % len(self._MARKER_FILL_LIST)
+			cind = cnt%len(clist)
+			mind = (cnt // len(clist)) % len(mlist)
+			find = (cnt // (len(clist)*len(mlist))) % len(flist)
 			return (cind,mind,find)
 		## PLOTTING PORTION
 		if self.PLOT_SETTINGS['xkcd']:
@@ -915,32 +971,6 @@ class kaplot(object):
 				else:
 					loc_cor = self._LOCATION[loc_txt]
 				mpobj = plt.axes(loc_cor)
-			# ADD PLOTDATA
-			if len(k.DATA_LIST) is not 0:
-				# generate color,marker,fill list for the plot
-				color_marker_fill 	= []
-				inc_cnt = 0
-				for pd in k.DATA_LIST:
-					if pd['increment']:
-						inc_cnt += 1
-				# # plotting portion
-				cnt = 0
-				for pd in k.DATA_LIST:
-					# unique colors
-					if k.SETTINGS['uniq_cols']:
-						cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
-						col , mar , fill = cols[cnt] , None , None
-					else:
-						cind , mind , find = color_marker_fill_index(cnt)
-						col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
-					if pd['increment']:
-						cnt += 1
-					pd['color'] = col
-					pd['marker']= mar
-					pd['mfc']	= fill
-					pd.pop('increment')
-					mpobj.errorbar(**pd)
-			# do stuff to mpobj
 			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
@@ -1034,6 +1064,62 @@ class kaplot(object):
 				if k.SETTINGS['leg_props']['bool']:
 					k.SETTINGS['leg_props'].pop('bool')
 					mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
+			# ADD PLOTDATA
+			if len(k.DATA_LIST) is not 0:
+				# generate color,marker,fill list for the plot
+				inc_cnt = 0
+				for pd in k.DATA_LIST:
+					if pd['increment']:
+						inc_cnt += 1
+				# # plotting portion
+				cnt = 0
+				for pd in k.DATA_LIST:
+					# unique colors
+					if k.SETTINGS['uniq_cols']:
+						cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+						col , mar , fill = cols[cnt] , None , None
+					else:
+						cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
+						col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
+					if pd['increment']:
+						cnt += 1
+					if 'color' not in pd:
+						pd['color'] = col
+					if 'marker' not in pd:
+						pd['marker']= mar
+					if 'mfc' not in pd:
+						pd['mfc']	= fill
+					pd.pop('increment')
+					mpobj.errorbar(**pd)
+			# ADD RECTANGLE
+			if len(k.RECT_LIST) is not 0:
+				inc_cnt = 0
+				for rd in k.RECT_LIST:
+					if rd['increment']:
+						inc_cnt += 1
+				# plotting portion
+				cnt = 0
+				for rd in k.RECT_LIST:
+					if k.SETTINGS['uniq_cols']:
+						cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+						color , h , fill = cols[cnt] , None , None
+					else:
+						cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
+						color , h , fill 	= self._COLOR_LIST[cind] , self._HATCH_LIST[hind] , self._HATCH_FILL_LIST[find]
+					if rd['increment']:
+						cnt += 1
+					# do not overwrite user specified values
+					if 'color' not in rd:
+						rd['color'] = color
+					if 'hatch' not in rd:
+						rd['hatch']	= h 
+					if 'fill' not in rd:
+						rd['fill']	= fill
+					# y-coords are in data , x-coords are in axes units
+					rd['xmin']=convert_xy(mpobj,rd['xmin'],0)[0]
+					rd['xmax']=convert_xy(mpobj,rd['xmax'],0)[0]
+					rd.pop('increment')
+					mpobj.axhspan(**rd)
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
 		if self.PLOT_SETTINGS['tight_layout']:
@@ -1133,6 +1219,7 @@ class kaxes(object):
 		self.AXVLINE_LIST	= 	[]
 		self.TEXT_LIST 		= 	[]
 		self.DATA_LIST		= 	[]
+		self.RECT_LIST		=	[]
 		return
 
 	def set_location(self,location):
@@ -1247,6 +1334,9 @@ class kaxes(object):
 		self.SETTINGS['leg_fprop'] = fdict
 		self.SETTINGS['leg_props'] = kwargs
 		return
+
+	def add_rectangle(self,**pdict):
+		self.RECT_LIST.append(pdict)
 
 ## HELPER FUNCTIONS
 def update_default_kwargs(default_dict,current_dict):
