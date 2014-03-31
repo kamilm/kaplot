@@ -1,89 +1,65 @@
 from copy import deepcopy
+# required to make pydocs work
+from functools import wraps
+import matplotlib
+# backends @ http://matplotlib.org/faq/usage_faq.html
+matplotlib.use('macosx')
 import matplotlib.pyplot as plt 
+import pickle
+
+__author__		= 'Kamil'
+__version__		= '0.2'
+__name__		= 'kaplot'
+__file__		= 'kaplot.py'
 
 """
 CHANGELOG
 =========
+** 03/03/2014 , v0.2 **
+	- documentation added to functions
+	- check_name now returns all lowercase kwargs
+	- added saveObj() ; which uses pickle. to be tested.
+	- ls/lw now standard in all dictionaries
+	- adjusted tight layout values for subplots
+
 ** 03/02/2014 , v0.1 **
 	- initial release
 
 TODO 
 ====
- - adjust locations based on tight and not tight layout
- - add_rectangle
- - add_plotdata 
- - showMe
- - saveMe
- - choosing a backend
- - update set_unique_colors to use cmap
- 	+ user specified uniqueColors
- - add saveObj
- - fix the color/marker/fill selector
- - fix random +1 in the ADD PLOTDATA portion of kaplot
+	- fix latex output to use the same font
+ 	- add_rectangle
+ 	- add_plotdata
+ 	- update set_unique_colors to use cmap
+ 		+ user specified unique_colors
+ 	- fix the color/marker/fill selector
+ 	- fix random +1 in the ADD PLOTDATA portion of kaplot
+ 	- adjust dictionaries so that all font families are removed on xkcd=True
+ 	- plot_type - only line is supported now, should expand to : line , bar , rectangle
 """
 
-## HELPER FUNCTIONS
 def check_name(fn):
+	"""
+	decorator function for kaplot class. checks if the $name$ kwarg is 
+	valid and inserts $ind$ into the kwarg list. additionally, changes all
+	kwargs to be lower case.
+	** args **
+	fn 		- function
+	"""
+	@wraps(fn)
 	def wrapper(self,*args,**kwargs):
 		if 'name' not in kwargs:
 			kwargs['name'] = 'main'
 		if kwargs['name'].lower() in self._LAYER_NAMES:
 			oind = self._LAYER_NAMES.index(kwargs['name'].lower())
 			kwargs['ind'] = oind
-			return fn(self,*args,**kwargs)
+			# rebuild kwargs
+			new_kwargs = {}
+			for key,val in kwargs.iteritems():
+				new_kwargs[key.lower()] = val
+			return fn(self,*args,**new_kwargs)
 		raise AttributeError('No layer/axes named %s' % kwargs['name'])
 	return wrapper
-
-def update_default_kwargs(default_dict,current_dict):
-	"""
-	helper function for dictionaries to fill in values that didn't exist in a
-	dictionary
-	"""
-	return_dict = {}
-	for key,kval in default_dict.iteritems():
-		try:
-			return_dict[key] = current_dict[key]
-		except:
-			return_dict[key] = kval
-	return return_dict
-
-def srange(start,end,incr,log=False):
-	"""
-	returns a list from $start to $end incrementing by $incr ,
-	can be incremented multiplicativly if the $log boolean is set to true
-	"""
-	if incr == 0:
-		return []
-	if start == end:
-		return []
-	if log == False:
-		cval = float(start)
-		retList =[]
-		while cval <= end:
-			retList.append(cval)
-			cval = float(cval)+float(incr)
-	else:
-		cval = start
-		retList = []
-		while cval <= end:
-			retList.append(cval)
-			cval = float(cval)*float(incr)
-	return retList
-
-def convertXY(ax,x,y):
-	"""
-	converts x,y pair of values into the normalized matplotlib coordinates ** i think **
-	"""
-	rx , ry = ax.transAxes.inverted().transform(ax.transData.transform((x,y)))
-	return [rx,ry]
-
-def uniqueColors(ncols,color_map='gist_rainbow'):
-	retList = []
-	cm = plt.get_cmap(color_map)
-	for i in range(ncols):
-		color = cm(1.0*i/ncols)
-		retList.append(color)
-	return retList
 
 class kaplot():
 	"""
@@ -95,27 +71,39 @@ class kaplot():
 	the NAME is how a LAYER can be identified,
 	each LAYER can have any number of features added to it.
 	"""
-	DEFAULT_LAYER_SETTINGS	=	{ 	'twin'			:	None , \
-									'twin_ref'		:	None}
+
+	# used to make latex output same font
+	matplotlib.rcParams['font.family'] 		= 'sans-serif'
+	matplotlib.rcParams['font.sans-serif']	= 'Arial, Helvetica, sans-serif'
+	matplotlib.rcParams['mathtext.default']	= 'regular'
+
+	LAYER_SETTINGS		=	{ 	'twin'			:	None 	, \
+								'twin_ref'		:	None}
 	# settings for the entire plot
-	PLOT_SETTINGS 			= 	{	'tight_layout'	:	True 	, \
-									'xkcd'			:	False	, \
-									'x_label_sep_l'	:	' , '	, \
-									'x_label_sep_r'	:	''		, \
-									'y_label_sep_l'	:	' , '	, \
-									'y_label_sep_r'	:	''}
+
+	PLOT_SETTINGS 		= 	{	'tight_layout'	:	True 	, \
+								'xkcd'			:	False	, \
+								'x_label_sep_l'	:	' , '	, \
+								'x_label_sep_r'	:	''		, \
+								'y_label_sep_l'	:	' , '	, \
+								'y_label_sep_r'	:	''}
+
+	SAVEFIG_SETTINGS 	= 	{	'dpi'			:	100		, \
+							  	'transparent'	:	False	, \
+							  	'width'			:	8	, \
+							  	'height'		:	6}
 	# predefined settings
-	_LOCATION_TIGHT			= {	'upper left'	:	[0.22,0.595,0.25,0.25] , \
+	_LOCATION_TIGHT		= {		'upper left'	:	[0.18,0.595,0.25,0.25] , \
+								'upper right'	:	[0.70,0.595,0.25,0.25] , \
+								'lower right'	:	[0.70,0.195,0.25,0.25] , \
+								'lower left'	:	[0.18,0.195,0.25,0.25]}
+
+	_LOCATION			= {		'upper left'	:	[0.22,0.595,0.25,0.25] , \
 								'upper right'	:	[0.63,0.595,0.25,0.25] , \
 								'lower right'	:	[0.63,0.180,0.25,0.25] , \
 								'lower left'	:	[0.22,0.180,0.25,0.25]}
 
-	_LOCATION 				= {	'upper left'	:	[0.22,0.595,0.25,0.25] , \
-								'upper right'	:	[0.63,0.595,0.25,0.25] , \
-								'lower right'	:	[0.63,0.180,0.25,0.25] , \
-								'lower left'	:	[0.22,0.180,0.25,0.25]}
-
-	_FONT_TITLE				= {	'family'	: 	'sans-serif' 	, \
+	_FONT_TITLE			= {		'family'	: 	'sans-serif' 	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'bold'			, \
 								'size'		:	'x-large'		, \
@@ -125,7 +113,7 @@ class kaplot():
 								'ha'		:	'center'		, \
 								'rotation'	:	None}
 
-	_FONT_XLABEL			= {	'family'	: 	'sans-serif' 	, \
+	_FONT_XLABEL		= {		'family'	: 	'sans-serif' 	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'bold'			, \
 								'size'		:	'large'			, \
@@ -135,7 +123,7 @@ class kaplot():
 								'ha'		:	'center'		, \
 								'rotation'	:	None}
 
-	_FONT_YLABEL			= {	'family'	: 	'sans-serif' 	, \
+	_FONT_YLABEL		= {		'family'	: 	'sans-serif' 	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'bold'			, \
 								'size'		:	'large'			, \
@@ -145,12 +133,12 @@ class kaplot():
 								'ha'		:	'center'		, \
 								'rotation'	:	'vertical'}
 
-	_GRID_SETTINGS			= { 'alpha'		:	None			, \
+	_GRID_SETTINGS		= { 	'alpha'		:	None			, \
 								'color'		:	'black'			, \
 								'ls'		:	'-'				, \
 								'lw'		:	2.0}
 
-	_FONT_XTICK 			= { 'family'	: 	'sans-serif' 	, \
+	_FONT_XTICK 		= { 	'family'	: 	'sans-serif' 	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'bold'			, \
 								'size'		:	'large'			, \
@@ -160,7 +148,7 @@ class kaplot():
 								'ha'		:	'center'		, \
 								'rotation'	:	None}
 
-	_FONT_YTICK 			= { 'family'	: 	'sans-serif' 	, \
+	_FONT_YTICK 		= { 	'family'	: 	'sans-serif' 	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'bold'			, \
 								'size'		:	'large'			, \
@@ -170,24 +158,24 @@ class kaplot():
 								'ha'		:	'right'			, \
 								'rotation'	:	'horizontal'}
 
-	_FRAME_LIST				= {	'top'		:	True 			, \
+	_FRAME_LIST			= {		'top'		:	True 			, \
 								'bottom'	:	True			, \
 								'right'		:	True			, \
 								'left'		:	True}
 
-	_XTICK_PARAMS			= {	'direction'		:	'Auto'			, \
-								'length'		:	'Auto'			, \
-								'width'			:	'Auto'			, \
-								'color'			:	'Auto'			, \
-								'pad'			:	'Auto'			, \
-								'labelsize'		:	'Auto'			, \
-								'labelcolor'	:	'black'			, \
-								'labeltop'		:	True 			, \
-								'labelbottom'	:	True 			, \
-								'top'			:	True 			, \
+	_XTICK_PARAMS		= {		'direction'		:	'Auto'		, \
+								'length'		:	'Auto'		, \
+								'width'			:	'Auto'		, \
+								'color'			:	'Auto'		, \
+								'pad'			:	'Auto'		, \
+								'labelsize'		:	'Auto'		, \
+								'labelcolor'	:	'black'		, \
+								'labeltop'		:	True 		, \
+								'labelbottom'	:	True 		, \
+								'top'			:	True 		, \
 								'bottom' 		:	True}
 
-	_YTICK_PARAMS			= {	'direction'	:	'Auto'			, \
+	_YTICK_PARAMS		= {		'direction'	:	'Auto'			, \
 								'length'	:	'Auto'			, \
 								'width'		:	'Auto'			, \
 								'color'		:	'Auto'			, \
@@ -199,22 +187,22 @@ class kaplot():
 								'left'		:	True 			, \
 								'right'		:	True}
 
-	_XTICK_FORMAT			= {	'style'		:	'plain'			, \
+	_XTICK_FORMAT		= {		'style'		:	'plain'			, \
 								'sci_min'	:	0				, \
 								'sci_max'	:	0}
-	_YTICK_FORMAT			= {	'style'		:	'plain'			, \
+	_YTICK_FORMAT		= {		'style'		:	'plain'			, \
 								'sci_min'	:	0				, \
 								'sci_max'	:	0}
 
-	_AX_LINE 				= {	'location'	:	'Auto'			, \
+	_AX_LINE 			= {		'location'	:	'Auto'			, \
 								'min'		:	'Auto'			, \
 								'max'		:	'Auto'			, \
 								'alpha'		:	'Auto'			, \
-								'linestyle' : 	'-'				, \
-								'linewidth'	:	1.0				, \
+								'ls' 		: 	'-'				, \
+								'lw'		:	1.0				, \
 								'color'		:	'black'}
 
-	_TEXT_FONT 				= { 'family'	: 	'sans-serif' 	, \
+	_TEXT_FONT 			= { 	'family'	: 	'sans-serif' 	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'		, \
@@ -222,9 +210,9 @@ class kaplot():
 								'alpha'		:	None			, \
 								'va'		:	'center'		, \
 								'ha'		:	'center'		, \
-								'rotation'	:	'horizontal'}
+								'rotation'	:	'horizonta	l'}
 
-	_LINE_DEFAULTS			= {	'x'			:	None			, \
+	_LINE_DEFAULTS		= {		'x'			:	None			, \
 								'y'			:	None			, \
 								'xerr'		:	None			, \
 								'yerr'		:	None			, \
@@ -242,44 +230,48 @@ class kaplot():
 								'elinewidth':	'Auto'			, \
 								'capsize'	:	'Auto'}
 
-	_LEGEND_DEFAULTS		= {	'bool'		:	False			, \
-								'loc'		:	'upper right'	, \
-								'numpoints'	:	1 				, \
-								'markerscale'	:	1 		, \
-								'frameon'	:	True 			, \
-								'fancybox'	:	False 			, \
-								'shadow'	:	False 			, \
-								'framealpha':	1.0 			, \
-								'ncol'		:	1 				, \
-								'title'		:	None			, \
-								'fontsize'	:	'medium'		, \
-								'borderpad'	:	0.1 			, \
-								'labelspacing'	: 0.1 			, \
-								'handletextpad'	: 0.25			, \
-								'columnspacing'	: 0.1}
-	_LEGEND_FONTPROPS		= {	'family'	:	'sans-serif'	, \
+	_LEGEND_FONTPROPS	= {		'family'	:	'sans-serif'	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'}
 
-	_COLOR_LIST				= ['black' , 'red' , 'blue' , 'fuchsia' , 'orange' , 'lime' , 'aqua' , 'maroon' , '0.40' , '0.85']
-	_MARKER_LIST 			= [None , 's' , 'o' , '^' , 'D']
-	_MARKER_FILL_LIST		= [None , 'white']
+	_LEGEND_DEFAULTS	= {		'bool'			:	False			, \
+								'loc'			:	'upper right'	, \
+								'numpoints'		:	1 				, \
+								'markerscale'	:	1 		 		, \
+								'frameon'		:	True 			, \
+								'fancybox'		:	False 			, \
+								'shadow'		:	False 			, \
+								'framealpha'	:	1.0 			, \
+								'ncol'			:	1 				, \
+								'title'			:	None			, \
+								'fontsize'		:	'medium'		, \
+								'borderpad'		:	0.1 			, \
+								'labelspacing'	: 0.1 				, \
+								'handletextpad'	: 0.25				, \
+								'columnspacing'	: 0.1}
+
+	_COLOR_LIST			= ['black' , 'red' , 'blue' , 'fuchsia' , 'orange' , 'lime' , 'aqua' , 'maroon' , '0.40' , '0.85']
+	_MARKER_LIST 		= [None , 's' , 'o' , '^' , 'D']
+	_MARKER_FILL_LIST	= [None , 'white']
 
 	# list of layers and associated properties
-	_LAYER_NAMES			= 	[]	# lower case layer names
-	_LAYER_OBJECTS			= 	[]	# kaxes objects
-	_LAYER_SETTINGS			= 	[]	# copy of DEFAULT_LAYER_SETTINGS
-	_LAYER_PLT_OBJECT		= 	[]	# copy of the matplotlib.pyplot axes object
+	_LAYER_NAMES		= 	[]	# lower case layer names
+	_LAYER_OBJECTS		= 	[]	# kaxes objects
+	_LAYER_SETTINGS		= 	[]	# copy of LAYER_SETTINGS
+	_LAYER_PLT_OBJECT	= 	[]	# copy of the matplotlib.pyplot axes object
 	def __init__(self):
 		self._LAYER_NAMES.append('main')
 		self._LAYER_OBJECTS.append(deepcopy(kaxes()))
-		self._LAYER_SETTINGS.append(deepcopy(self.DEFAULT_LAYER_SETTINGS))
+		self._LAYER_SETTINGS.append(deepcopy(self.LAYER_SETTINGS))
 		return
 
 	def set_tight(self,tl_bool):
 		"""
 		updates the tight_layout boolean
+
+		** args **
+		tl_bool 	- True/False for tight layout
 		"""
 		if type(tl_bool) is type(True):
 			self.PLOT_SETTINGS['tight_layout'] = tl_bool
@@ -288,6 +280,9 @@ class kaplot():
 	def set_xkcd(self,xk_bool):
 		"""
 		updates the xkcd mode boolean
+
+		** args **
+		xk_bool 	- True/False for xkcd mode
 		"""
 		if type(xk_bool) is type(True):
 			self.PLOT_SETTINGS['xkcd'] = xk_bool
@@ -295,9 +290,11 @@ class kaplot():
 
 	def add_layer(self,name,location=None,twin=None,twin_ref='main'):
 		"""
-		adds a new layer to the plot with name NAME
+		adds a new layer to the plot with name $name$
 
-		location 	- either None, 'top-left/right' , 'bot-left/right' or a 4 coordinate list
+		** args **
+		name 		- layer name
+		location 	- either None, 'upper left/right' , 'lower left/right' or a 4 coordinate list
 		twin 		- either 'x' or 'y' , this will make the new layer share axes 'x' or 'y' with twin_ref
 		twin_ref 	- layer name with which this layer will share an axes with
 		"""
@@ -309,7 +306,7 @@ class kaplot():
 			k.set_location(location)
 			self._LAYER_OBJECTS.append(k)
 			# add layer settings
-			tmp = deepcopy(self.DEFAULT_LAYER_SETTINGS)
+			tmp = deepcopy(self.LAYER_SETTINGS)
 			if twin is not None and twin.lower() in ['x', 'y']:
 				tmp['twin']		= twin.lower()
 				tmp['twin_ref']	= twin_ref.lower()
@@ -320,6 +317,15 @@ class kaplot():
 
 	@check_name
 	def set_plot_type(self,ptype,**kwargs):
+		"""
+		sets the plot type of the layer
+
+		** args **
+		ptype 	- plot type , either line , bar , rect 
+
+		** kwargs **
+		name 	- layer name if not main
+		"""
 		k = self._LAYER_OBJECTS[kwargs['ind']]
 		if ptype.lower() in ['line', 'bar']:
 			k.set_plot_type(ptype)
@@ -329,6 +335,36 @@ class kaplot():
 
 	@check_name
 	def set_legend(self,lbool,**kwargs):
+		"""
+		sets a legend for the layer
+
+		** args **
+		lbool 			- True/False for displaying a legend
+
+		** kwargs **
+		name 			- layer name, if not main 
+
+		loc 			- location 'upper', 'lower', 'left' , 'right', 'center'
+		numpoints		- number of markers to show
+		markerscale		- marker scaling
+		frameon			- True/False , show frame
+		fancybox		- True/False , use a curved frame
+		shadow			- True/False , draw a shadow behind the frame
+		framealpha		- alpha level for the frame
+		ncol 			- number of legend columns
+		title 			- legend title 
+		fontsize 		- font size 
+		borderpad		- padding inside the legend 
+		labelspacing	- spacing between labels
+		handletextpad	- spacing between legend handle and text 
+		columnspacing	- spacing between columns
+
+		** font prop kwargs **
+		family			- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 			- 'normal' or 'oblique'
+		weight			- 'normal' 'regular' 'semibold' 'bold' 'black'
+		size 			- font size , #points 'xx-small' 'medium' 'xx-large'
+		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		ldict 	= update_default_kwargs(self._LEGEND_DEFAULTS,kwargs)
 		fdict 	= update_default_kwargs(self._LEGEND_FONTPROPS,kwargs)
@@ -340,17 +376,21 @@ class kaplot():
 	def set_title(self,title,**kwargs):
 		"""
 		adds a title to the layer
-		** kwargs **
-		name 	- layer name
 
-		family	- type of font
-		style	- bold, italics
-		size	- font size
-		color 	- font color
-		alpha 	- alpha level
-		va 		- vertical alignment
-		ha 		- horizontal alignment
-		rotation- rotate text by some degree
+		** args **
+		title 		- layer title
+
+		** kwargs **
+		name 		- layer name
+
+		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 		- 'normal' or 'oblique'
+		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		color 		- font color
+		alpha 		- alpha level
+		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
+		ha 			- horizontal alignment , 'center' , 'right' , 'left'
+		rotation	- rotate text by some degree
 		"""
 		fdict 	= update_default_kwargs(self._FONT_TITLE,kwargs)
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
@@ -362,7 +402,11 @@ class kaplot():
 		"""
 		adds grid lines to the layer
 
+		** args **
+		gbool 	- True/False for turning grid bool
+
 		** kwargs ** 
+		name 	- layer name
 		alpha	- alpha level 
 		color 	- line color
 		ls 		- line style
@@ -374,16 +418,35 @@ class kaplot():
 		return
 
 	@check_name
-	def set_axesType(self,ptype='linear',**kwargs):
+	def set_axes_type(self,ptype='linear',**kwargs):
+		"""
+		sets the axes type for the layer
+
+		** args **
+		ptype 	- axes type , 'linear' 'log-log' 'semilog-x' 'semilog-y'
+
+		** kwargs **
+		name 	- layer name
+		"""
 		if ptype.lower() in ['linear','log-log','semilog-x','semilog-y']:
 			k 	= self._LAYER_OBJECTS[kwargs['ind']]
-			k.set_axesType(ptype.lower())
+			k.set_axes_type(ptype.lower())
 		else:
-			print 'KAPLOT: set_axesType error. ptype must be either linear,log-log,semilog-x,semilog-y.'
+			print 'KAPLOT: set_axes_type error. ptype must be either linear,log-log,semilog-x,semilog-y.'
 		return
 
 	@check_name
 	def set_base(self,basex=1.0,basey=1.0,**kwargs):
+		"""
+		sets the base for the axis, useful for semilog and log-log axis
+
+		** args **
+		basex 	- x base
+		basey 	- y base 
+
+		** kwargs **
+		name 	- layer name
+		"""
 		try:
 			basex = float(basex)
 			basey = float(basey)
@@ -397,17 +460,21 @@ class kaplot():
 		"""
 		adds a xlabel to the layer
 
-		** kwargs **
-		name 	- layer name
+		** args **
+		lab 		- long label 
+		unit 		- label unit
 
-		family 	- type of font
-		style 	- bold , italics
-		size 	- fong size
-		color 	- font color
-		alpha 	- alpha level
-		va 		- vertical alignment
-		ha 		- horizontal alignment 
-		rotation- rotate text be some degrees
+		** kwargs **
+		name 		- layer name
+
+		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 		- 'normal' or 'oblique'
+		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		color 		- font color
+		alpha 		- alpha level
+		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
+		ha 			- horizontal alignment , 'center' , 'right' , 'left'
+		rotation	- rotate text by some degree
 		"""
 		fdict 	= update_default_kwargs(self._FONT_XLABEL,kwargs)
 		if unit is not None:
@@ -423,17 +490,21 @@ class kaplot():
 		"""
 		adds a ylabel to the layer
 
-		** kwargs **
-		name 	- layer name
+		** args **
+		lab 		- long label 
+		unit 		- label unit
 
-		family 	- type of font
-		style 	- bold , italics
-		size 	- fong size
-		color 	- font color
-		alpha 	- alpha level
-		va 		- vertical alignment
-		ha 		- horizontal alignment 
-		rotation- rotate text be some degrees
+		** kwargs **
+		name 		- layer name
+
+		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 		- 'normal' or 'oblique'
+		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		color 		- font color
+		alpha 		- alpha level
+		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
+		ha 			- horizontal alignment , 'center' , 'right' , 'left'
+		rotation	- rotate text by some degree
 		"""
 		fdict 	= update_default_kwargs(self._FONT_YLABEL,kwargs)
 		if unit is not None:
@@ -448,22 +519,26 @@ class kaplot():
 	def set_xticks(self,start,stop,incr,log=False,**kwargs):
 		"""
 		sets the values of the ticks , can be logarithmic or custom
+		if $myList$ is specified it will overwrite all other values
+
+		** args **
+		start 		- start value
+		end 		- finish value
+		icnr		- increment
+		log 		- multiply instead of add boolean
 
 		** kwargs **
-		start	- starting value
-		stop 	- finish value
-		incr 	- increment
-		log  	- logarithmic boolean
-		myList	- custom list
+		name 		- layer name
+		myList		- custom list
 
-		family 	- font family
-		style 	- bold , italics
-		size 	- font size
-		color	- font color
-		alpha	- alpha level
-		va 		- vertical alignment
-		ha 		- horizontal alignment
-		rotation- text rotation
+		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 		- 'normal' or 'oblique'
+		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		color 		- font color
+		alpha 		- alpha level
+		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
+		ha 			- horizontal alignment , 'center' , 'right' , 'left'
+		rotation	- rotate text by some degree
 		"""
 		fdict 	= update_default_kwargs(self._FONT_XTICK,kwargs)
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
@@ -478,22 +553,26 @@ class kaplot():
 	def set_yticks(self,start,stop,incr,log=False,**kwargs):
 		"""
 		sets the values of the ticks , can be logarithmic or custom
+		if $myList$ is specified it will overwrite all other values
+
+		** args **
+		start 		- start value
+		end 		- finish value
+		icnr		- increment
+		log 		- multiply instead of add boolean
 
 		** kwargs **
-		start	- starting value
-		stop 	- finish value
-		incr 	- increment
-		log  	- logarithmic boolean
-		myList	- custom list
+		name 		- layer name
+		myList		- custom list
 
-		family 	- font family
-		style 	- bold , italics
-		size 	- font size
-		color	- font color
-		alpha	- alpha level
-		va 		- vertical alignment
-		ha 		- horizontal alignment
-		rotation- text rotation
+		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 		- 'normal' or 'oblique'
+		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		color 		- font color
+		alpha 		- alpha level
+		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
+		ha 			- horizontal alignment , 'center' , 'right' , 'left'
+		rotation	- rotate text by some degree
 		"""
 		fdict 	= update_default_kwargs(self._FONT_YTICK,kwargs)
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
@@ -507,7 +586,10 @@ class kaplot():
 	@check_name
 	def set_xlim(self,**kwargs):
 		"""
+		set the upper and lower values of the plot
+
 		** kwargs **
+		name 	- layer names
 		min 	- lower value
 		max 	- upper value
 		"""
@@ -523,6 +605,14 @@ class kaplot():
 
 	@check_name
 	def set_ylim(self,**kwargs):
+		"""
+		set the upper and lower values of the plot
+
+		** kwargs **
+		name 	- layer names
+		min 	- lower value
+		max 	- upper value
+		"""
 		ymin = None
 		ymax = None
 		if 'min' in kwargs:
@@ -536,8 +626,13 @@ class kaplot():
 	@check_name
 	def set_tick_params(self,axis='both',**kwargs):
 		"""
+		sets the properties of ticks, tick labels and axes labels 
+
+		** args **
+		axis 		- which axis to modify, 'both' 'x' 'y'
+
 		** kwargs **
-		axis		- both , x , y
+		name 		- layer name
 
 		direction 	- in / out
 		length		- length of tick in points
@@ -547,17 +642,17 @@ class kaplot():
 		labelsize	- tick label font size
 		labelcolor 	- tick label font color
 
-		** valid in both / x-axis
+		* valid in both / x-axis *
 		labeltop	- True/False 
 		labelbottom	- True/False
-		top 		- draw ticks ; True/False
-		bottom		- draw ticks ; True/False
+		top 		- True/false , draw ticks
+		bottom		- True/False , draw ticks
 
-		** valid in both / y-axis
+		* valid in both / y-axis *
 		labelleft	- True/False
 		labelright	- True/False
-		left 		- draw ticks ; True/False
-		right 		- draw ticks ; True/False
+		left 		- True/false , draw ticks
+		right		- True/False , draw ticks
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		# gets both lists, regardless
@@ -586,8 +681,13 @@ class kaplot():
 	@check_name
 	def set_tick_format(self,axis='both',**kwargs):
 		"""
+		sets the tick label formatting, i.e. allows for scientific notation
+
+		** args **
+		axis 		- which axis to modify , 'both' 'x' 'y'
+
 		** kwargs **
-		axis 		- both , x , y
+		name 		- layer name
 		style 		- 'plain' or 'sci'
 		sci_min		- min for sci notation
 		sci_max		- max for sci notation
@@ -607,7 +707,12 @@ class kaplot():
 	@check_name
 	def set_frames(self,**kwargs):
 		"""
+		removes frames from plots , this function should
+		be used in combination with set_tick_params() to 
+		remove ticks
+
 		** kwargs **
+		name 	- layer name
 		top 	- True/False
 		bottom 	- True/False
 		left 	- True/False
@@ -620,7 +725,10 @@ class kaplot():
 	@check_name
 	def set_unique_colors(self,ubool,**kwargs):
 		"""
-		changes the program to use unique colors for all plots
+		changes the program to use unique colors for the layer
+
+		** kwargs **
+		name 	- layer name
 		"""
 		k = self._LAYER_OBJECTS[kwargs['ind']]
 		k.set_unique_colors(ubool)
@@ -629,13 +737,19 @@ class kaplot():
 	@check_name
 	def add_axhline(self,location,**kwargs):
 		"""
+		adds a horizontal line to the layer at location y = $location$
+
+		** args **
+		location 	- the y-intercept of the horizontal line
+
 		** kwargs **
-		alpha 
-		linestyle
-		linewidth
-		color 
-		min
-		max 
+		name 		- layer name
+		min 		- minimum x value
+		max 		- maximum x value 
+		alpha 		- alpha level 
+		ls			- line style
+		lw			- line width 
+		color 		- line color
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		tmp = update_default_kwargs(self._AX_LINE,kwargs)
@@ -654,13 +768,19 @@ class kaplot():
 	@check_name
 	def add_axvline(self,location,**kwargs):
 		"""
+		adds a vertical line to the layer at location x = $location$
+
+		** args **
+		location 	- the x-intercept of the vertical line
+
 		** kwargs **
-		alpha 
-		linestyle
-		linewidth
-		color 
-		min
-		max 
+		name 		- layer name
+		min 		- minimum y value
+		max 		- maximum y value 
+		alpha 		- alpha level 
+		ls			- line style
+		lw			- line width 
+		color 		- line color
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		tmp = update_default_kwargs(self._AX_LINE,kwargs)
@@ -679,15 +799,23 @@ class kaplot():
 	@check_name
 	def add_text(self,txt,x,y,**kwargs):
 		"""
+		adds text to the layer at the point $x$,$y$
+		
+		** args **
+		txt 		- text to be added
+		x 			- x-coordinate in data coordinates
+		y 			- y-coordinate in data coordinates
+
 		** kwargs **
-		family 
-		style
-		size 
-		color 
-		alpha
-		va 
-		ha 
-		rotation 
+		name 		- layer name
+		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
+		style 		- 'normal' or 'oblique'
+		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		color 		- font color
+		alpha 		- alpha level
+		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
+		ha 			- horizontal alignment , 'center' , 'right' , 'left'
+		rotation	- rotate text by some degree
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		tdict 	= update_default_kwargs(self._TEXT_FONT,kwargs)
@@ -700,24 +828,31 @@ class kaplot():
 	@check_name
 	def add_plotdata(self,x,y,**kwargs):
 		"""
+		adds plot data to the layer
+
+		** args **
+		x 			- x data array/list
+		y 			- y data array/list
+	
 		** kwargs **
-		xerr
-		yerr
-		label
-		increment 
+		name 		- layer name
+		xerr		- x-error data array/list
+		yerr		- y-error data array/list
+		label 		- data label to be used in legend
+		increment 	- True/False , increment the auto color/marker/fill
 
 		** line plot kwargs **
-		color
-		ls
-		lw
-		m 
-		mec
-		ms
-		markevery
-		mfc
-		ecolor
-		elinewidth
-		capsize
+		color 		- line color
+		ls 			- line style 
+		lw 			- line width
+		m 			- marker 
+		mec 		- marker edge color
+		ms 			- marker size 
+		markevery 	- marker every data points 
+		mfc 		- marker face color
+		ecolor 		- error line color
+		elinewidth	- error line width 
+		capsize		- error cap size
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		tmp 	= update_default_kwargs(self._LINE_DEFAULTS,kwargs)
@@ -732,6 +867,9 @@ class kaplot():
 		return
 
 	def makePlot(self):
+		"""
+		generates the matplotlib object from all inputs
+		"""
 		if self.PLOT_SETTINGS['xkcd']:
 			plt.xkcd()
 		for i,name in enumerate(self._LAYER_NAMES):
@@ -767,7 +905,7 @@ class kaplot():
 						inc_cnt += 1
 				# unique colors
 				if k.SETTINGS['uniq_cols']:
-					cols = uniqueColors(inc_cnt+1)
+					cols = unique_colors(inc_cnt+1)
 					for col in cols:
 						color_marker_fill.append((col,None,None))
 				else:
@@ -852,10 +990,10 @@ class kaplot():
 				for ax in k.AXHLINE_LIST:
 					# convert xmin and xmax values to x,y values
 					if 'xmin' in ax.keys():
-						xmin , err = convertXY(mpobj,ax['xmin'],0)
+						xmin , err = convert_xy(mpobj,ax['xmin'],0)
 						ax['xmin'] = xmin
 					if 'xmax' in ax.keys():
-						xmax , err = convertXY(mpobj,ax['xmax'],0)
+						xmax , err = convert_xy(mpobj,ax['xmax'],0)
 						ax['xmax'] = xmax
 					mpobj.axhline(**ax)
 			# ADD AXVLINE
@@ -863,17 +1001,17 @@ class kaplot():
 				for ax in k.AXVLINE_LIST:
 					# convert ymin and xmax values to x,y values
 					if 'ymin' in ax.keys():
-						err , ymin = convertXY(mpobj,0,ax['ymin'])
+						err , ymin = convert_xy(mpobj,0,ax['ymin'])
 						ax['ymin'] = ymin
 					if 'ymax' in ax.keys():
-						err, ymax  = convertXY(mpobj,0,ax['ymax'])
+						err, ymax  = convert_xy(mpobj,0,ax['ymax'])
 						ax['ymax'] = ymax
 					mpobj.axvline(**ax)
 			# ADD TEXT
 			if len(k.TEXT_LIST) is not 0:
 				for txt in k.TEXT_LIST:
 					# convert x , y into norm coordinates
-					x , y = convertXY(mpobj,txt['x'],txt['y'])
+					x , y = convert_xy(mpobj,txt['x'],txt['y'])
 					txt['x'] = x
 					txt['y'] = y 
 					txt['s'] = txt.pop('txt')
@@ -889,11 +1027,51 @@ class kaplot():
 			plt.tight_layout(pad=1.0)
 		return
 
+	def saveMe(self,fname,**kwargs):
+		"""
+		saves the figure to file $fname$ 
+
+		** args **
+		fname 	- path/filename to save to
+
+		** kwargs ** 
+		height 	- dimension of figure, in inches
+		width 	- dimension of figure, in inches
+		dpi 	- the dots per inch of the figure
+		"""
+		sf = update_default_kwargs(self.SAVEFIG_SETTINGS,kwargs)
+		fig = plt.gcf()
+		fig.set_size_inches(sf['width'],sf['height'])
+		sf.pop('width')
+		sf.pop('height')
+		plt.savefig(fname,**sf)
+		return
+
+	def saveObj(self,fname):
+		"""
+		saves the plot objects tio a file $fname$ to edit later
+
+		** args **
+		fname 	- path/filename to save to
+		"""
+		f = open(fname,'wb')
+		pickle.dump(self,f)
+		f.close()
+		return
+
 	def showMe(self):
+		"""
+		shows the figure which has been generated
+		note : this depends on the backend selected
+		"""
 		plt.show()
 		return
 
 class kaxes():
+	"""
+	helper class for kaplot, all functions here are internal. 
+	used to build layer objects for the final figure.
+	"""
 	# location options
 	_LOCATION = ['upper left', 'upper right', 'lower left', 'lower right']
 
@@ -964,7 +1142,7 @@ class kaxes():
 			self.SETTINGS['grid_prop']	= gdict
 		return
 
-	def set_axesType(self,ptype):
+	def set_axes_type(self,ptype):
 		self.SETTINGS['axes_type'] = ptype.lower()
 		return
 
@@ -1046,3 +1224,89 @@ class kaxes():
 		self.SETTINGS['leg_fprop'] = fdict
 		self.SETTINGS['leg_props'] = kwargs
 		return
+
+## HELPER FUNCTIONS
+def update_default_kwargs(default_dict,current_dict):
+	"""
+	dictionary helper function. takes a $default_dict$ and combines it
+	with $current_dict$ while filling in missing values. 
+
+	** args **
+	default_dict - complete dictionary
+	current_dict - user supplied dictionary
+
+	returns a dictionary with all values.
+	"""
+	return_dict = {}
+	for key,kval in default_dict.iteritems():
+		try:
+			return_dict[key] = current_dict[key]
+		except:
+			return_dict[key] = kval
+	return return_dict
+
+def srange(start,end,incr,log=False):
+	"""
+	returns a number range, from $start$ to $end$ with an 
+	increment value of $incr$ , it can also be incremented
+	multiplicativly by specifying the $log$ boolean.
+
+	** args **
+	start 	- start value
+	end 	- finish value
+	icnr	- increment
+	log 	- multiply instead of add boolean
+
+	returns a list
+	"""
+	if incr == 0:
+		return []
+	if start == end:
+		return []
+	if log == False:
+		cval = float(start)
+		retList =[]
+		while cval <= end:
+			retList.append(cval)
+			cval = float(cval)+float(incr)
+	else:
+		cval = start
+		retList = []
+		while cval <= end:
+			retList.append(cval)
+			cval = float(cval)*float(incr)
+	return retList
+
+def convert_xy(ax,x,y):
+	"""
+	converts $x$ and $y$ coordinates on an axes object, $ax$ to the 
+	matplotlib normalized values.
+
+	** args **
+	ax 		- matplotlib axes object
+	x 		- x value 
+	y 		- y value 
+
+	returns normalized coordinate tuple
+	"""
+	rx , ry = ax.transAxes.inverted().transform(ax.transData.transform((x,y)))
+	return (rx,ry)
+
+def unique_colors(ncols,color_map='gist_rainbow'):
+	"""
+	color generating function. $ncols$ specifies how many unique colors 
+	to generate from $color_map$. for more color_map options consult :
+	http://matplotlib.org/examples/color/colormaps_reference.html
+
+	** args **
+	ncols 		- number of colors
+	color_map	- matplotlib colormap name
+
+	returns a list of color tuples
+	"""
+	retList = []
+	cm = plt.get_cmap(color_map)
+	for i in range(ncols):
+		color = cm(1.0*i/ncols)
+		retList.append(color)
+	return retList
