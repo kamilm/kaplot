@@ -8,34 +8,43 @@ import matplotlib.pyplot as plt
 import pickle
 
 __author__		= 'Kamil'
-__version__		= '0.2'
+__version__		= '0.3'
 __name__		= 'kaplot'
 __file__		= 'kaplot.py'
 
 """
 CHANGELOG
 =========
+** 03/04/2014 , v0.3 **
+	- 	made changes to update_default_kwargs so that when value='Auto' those values are not included
+		and the plot resorts to default MPL behavior
+	-	fixed various bugs, including tick formatting bugs
+	-	changed dictionaries to use 'Auto' so that rcParams are used by default
+	- 	updated saveObj()
+
+
 ** 03/03/2014 , v0.2 **
-	- documentation added to functions
-	- check_name now returns all lowercase kwargs
-	- added saveObj() ; which uses pickle. to be tested.
-	- ls/lw now standard in all dictionaries
-	- adjusted tight layout values for subplots
+	- 	documentation added to functions
+	- 	check_name now returns all lowercase kwargs
+	- 	added saveObj() ; which uses pickle. to be tested.
+	- 	ls/lw now standard in all dictionaries
+	- 	adjusted tight layout values for subplots
 
 ** 03/02/2014 , v0.1 **
-	- initial release
+	- 	initial release
 
 TODO 
 ====
-	- fix latex output to use the same font
- 	- add_rectangle
- 	- add_plotdata
- 	- update set_unique_colors to use cmap
- 		+ user specified unique_colors
- 	- fix the color/marker/fill selector
- 	- fix random +1 in the ADD PLOTDATA portion of kaplot
- 	- adjust dictionaries so that all font families are removed on xkcd=True
- 	- plot_type - only line is supported now, should expand to : line , bar , rectangle
+	- 	add spline
+	- 	need to add loadObj()
+	- 	fix latex output to use the same font
+ 	- 	add_rectangle
+ 	- 	add_plotdata
+ 	- 	update set_unique_colors to use cmap
+ 			+ 	user specified unique_colors
+ 	- 	fix the color/marker/fill selector
+ 	-	 fix random +1 in the ADD PLOTDATA portion of kaplot
+ 	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
 """
 
 def check_name(fn):
@@ -61,7 +70,7 @@ def check_name(fn):
 		raise AttributeError('No layer/axes named %s' % kwargs['name'])
 	return wrapper
 
-class kaplot():
+class kaplot(object):
 	"""
 	multi layer plotting class
 
@@ -80,139 +89,130 @@ class kaplot():
 	LAYER_SETTINGS		=	{ 	'twin'			:	None 	, \
 								'twin_ref'		:	None}
 	# settings for the entire plot
-
-	PLOT_SETTINGS 		= 	{	'tight_layout'	:	True 	, \
-								'xkcd'			:	False	, \
-								'x_label_sep_l'	:	' , '	, \
-								'x_label_sep_r'	:	''		, \
-								'y_label_sep_l'	:	' , '	, \
-								'y_label_sep_r'	:	''}
-
 	SAVEFIG_SETTINGS 	= 	{	'dpi'			:	100		, \
 							  	'transparent'	:	False	, \
 							  	'width'			:	8	, \
 							  	'height'		:	6}
 	# predefined settings
-	_LOCATION_TIGHT		= {		'upper left'	:	[0.18,0.595,0.25,0.25] , \
+	_LOCATION_TIGHT		= 	{	'upper left'	:	[0.18,0.595,0.25,0.25] , \
 								'upper right'	:	[0.70,0.595,0.25,0.25] , \
 								'lower right'	:	[0.70,0.195,0.25,0.25] , \
 								'lower left'	:	[0.18,0.195,0.25,0.25]}
 
-	_LOCATION			= {		'upper left'	:	[0.22,0.595,0.25,0.25] , \
+	_LOCATION			= 	{	'upper left'	:	[0.22,0.595,0.25,0.25] , \
 								'upper right'	:	[0.63,0.595,0.25,0.25] , \
 								'lower right'	:	[0.63,0.180,0.25,0.25] , \
 								'lower left'	:	[0.22,0.180,0.25,0.25]}
 
-	_FONT_TITLE			= {		'family'	: 	'sans-serif' 	, \
-								'style'		:	'normal'		, \
-								'weight'	:	'bold'			, \
-								'size'		:	'x-large'		, \
-								'color'		:	'black'			, \
-								'alpha'		:	None			, \
-								'va'		:	'bottom'		, \
-								'ha'		:	'center'		, \
-								'rotation'	:	None}
+	_FONT_TITLE			= 	{	'family'	: 	'Auto' 		, \
+								'style'		:	'Auto'		, \
+								'weight'	:	'Auto'		, \
+								'size'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'va'		:	'Auto'		, \
+								'ha'		:	'Auto'		, \
+								'rotation'	:	'Auto'}
 
-	_FONT_XLABEL		= {		'family'	: 	'sans-serif' 	, \
-								'style'		:	'normal'		, \
-								'weight'	:	'bold'			, \
-								'size'		:	'large'			, \
-								'color'		:	'black'			, \
-								'alpha'		:	None			, \
-								'va'		:	'top'			, \
-								'ha'		:	'center'		, \
-								'rotation'	:	None}
+	_FONT_XLABEL		= 	{	'family'	: 	'Auto' 		, \
+								'style'		:	'Auto'		, \
+								'weight'	:	'Auto'		, \
+								'size'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'va'		:	'Auto'		, \
+								'ha'		:	'Auto'		, \
+								'rotation'	:	'Auto'}
 
-	_FONT_YLABEL		= {		'family'	: 	'sans-serif' 	, \
-								'style'		:	'normal'		, \
-								'weight'	:	'bold'			, \
-								'size'		:	'large'			, \
-								'color'		:	'black'			, \
-								'alpha'		:	None			, \
-								'va'		:	'center'		, \
-								'ha'		:	'center'		, \
-								'rotation'	:	'vertical'}
+	_FONT_YLABEL		= 	{	'family'	: 	'Auto' 		, \
+								'style'		:	'Auto'		, \
+								'weight'	:	'Auto'		, \
+								'size'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'va'		:	'Auto'		, \
+								'ha'		:	'Auto'		, \
+								'rotation'	:	'Auto'}
 
-	_GRID_SETTINGS		= { 	'alpha'		:	None			, \
-								'color'		:	'black'			, \
-								'ls'		:	'-'				, \
-								'lw'		:	2.0}
+	_GRID_SETTINGS		= 	{	'alpha'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'ls'		:	'Auto'		, \
+								'lw'		:	'Auto'}
 
-	_FONT_XTICK 		= { 	'family'	: 	'sans-serif' 	, \
-								'style'		:	'normal'		, \
-								'weight'	:	'bold'			, \
-								'size'		:	'large'			, \
-								'color'		:	'black'			, \
-								'alpha'		:	None			, \
-								'va'		:	'top'			, \
-								'ha'		:	'center'		, \
-								'rotation'	:	None}
+	_FONT_XTICK 		= 	{	'family'	: 	'Auto' 		, \
+								'style'		:	'Auto'		, \
+								'weight'	:	'Auto'		, \
+								'size'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'va'		:	'Auto'		, \
+								'ha'		:	'Auto'		, \
+								'rotation'	:	'Auto'}
 
-	_FONT_YTICK 		= { 	'family'	: 	'sans-serif' 	, \
-								'style'		:	'normal'		, \
-								'weight'	:	'bold'			, \
-								'size'		:	'large'			, \
-								'color'		:	'black'			, \
-								'alpha'		:	None			, \
-								'va'		:	'center'		, \
-								'ha'		:	'right'			, \
-								'rotation'	:	'horizontal'}
+	_FONT_YTICK 		= 	{	'family'	: 	'Auto' 		, \
+								'style'		:	'Auto'		, \
+								'weight'	:	'Auto'		, \
+								'size'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'va'		:	'Auto'		, \
+								'ha'		:	'Auto'		, \
+								'rotation'	:	'Auto'}
 
-	_FRAME_LIST			= {		'top'		:	True 			, \
-								'bottom'	:	True			, \
-								'right'		:	True			, \
-								'left'		:	True}
+	_FRAME_LIST			= 	{	'top'		:	'Auto' 		, \
+								'bottom'	:	'Auto'		, \
+								'right'		:	'Auto'		, \
+								'left'		:	'Auto'}
 
-	_XTICK_PARAMS		= {		'direction'		:	'Auto'		, \
-								'length'		:	'Auto'		, \
-								'width'			:	'Auto'		, \
-								'color'			:	'Auto'		, \
-								'pad'			:	'Auto'		, \
-								'labelsize'		:	'Auto'		, \
-								'labelcolor'	:	'black'		, \
-								'labeltop'		:	True 		, \
-								'labelbottom'	:	True 		, \
-								'top'			:	True 		, \
-								'bottom' 		:	True}
+	_XTICK_PARAMS		= 	{	'direction'		:	'Auto'	, \
+								'length'		:	'Auto'	, \
+								'width'			:	'Auto'	, \
+								'color'			:	'Auto'	, \
+								'pad'			:	'Auto'	, \
+								'labelsize'		:	'Auto'	, \
+								'labelcolor'	:	'Auto'	, \
+								'labeltop'		:	'Auto' 	, \
+								'labelbottom'	:	'Auto' 	, \
+								'top'			:	'Auto'	, \
+								'bottom' 		:	'Auto'}
 
-	_YTICK_PARAMS		= {		'direction'	:	'Auto'			, \
-								'length'	:	'Auto'			, \
-								'width'		:	'Auto'			, \
-								'color'		:	'Auto'			, \
-								'pad'		:	'Auto'			, \
-								'labelsize'	:	'Auto'			, \
-								'labelcolor':	'black'			, \
-								'labelleft'	:	True 			, \
-								'labelright':	True 			, \
-								'left'		:	True 			, \
-								'right'		:	True}
+	_YTICK_PARAMS		= 	{	'direction'		:	'Auto'	, \
+								'length'		:	'Auto'	, \
+								'width'			:	'Auto'	, \
+								'color'			:	'Auto'	, \
+								'pad'			:	'Auto'	, \
+								'labelsize'		:	'Auto'	, \
+								'labelcolor'	:	'Auto'	, \
+								'labelleft'		:	'Auto' 	, \
+								'labelright'	:	'Auto' 	, \
+								'left'			:	'Auto' 	, \
+								'right'			:	'Auto'}
 
-	_XTICK_FORMAT		= {		'style'		:	'plain'			, \
-								'sci_min'	:	0				, \
+	_XTICK_FORMAT		= 	{	'style'		:	'plain'		, \
+								'sci_min'	:	0			, \
 								'sci_max'	:	0}
-	_YTICK_FORMAT		= {		'style'		:	'plain'			, \
-								'sci_min'	:	0				, \
+	_YTICK_FORMAT		= 	{	'style'		:	'plain'		, \
+								'sci_min'	:	0			, \
 								'sci_max'	:	0}
 
-	_AX_LINE 			= {		'location'	:	'Auto'			, \
-								'min'		:	'Auto'			, \
-								'max'		:	'Auto'			, \
-								'alpha'		:	'Auto'			, \
-								'ls' 		: 	'-'				, \
-								'lw'		:	1.0				, \
-								'color'		:	'black'}
+	_AX_LINE 			= 	{	'min'		:	'Auto'		, \
+								'max'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'ls' 		: 	'Auto'		, \
+								'lw'		:	'Auto'		, \
+								'color'		:	'Auto'}
 
-	_TEXT_FONT 			= { 	'family'	: 	'sans-serif' 	, \
-								'style'		:	'normal'		, \
-								'weight'	:	'normal'		, \
-								'size'		:	'medium'		, \
-								'color'		:	'black'			, \
-								'alpha'		:	None			, \
-								'va'		:	'center'		, \
-								'ha'		:	'center'		, \
-								'rotation'	:	'horizonta	l'}
+	_TEXT_FONT 			= 	{ 	'family'	: 	'Auto' 		, \
+								'style'		:	'Auto'		, \
+								'weight'	:	'Auto'		, \
+								'size'		:	'Auto'		, \
+								'color'		:	'Auto'		, \
+								'alpha'		:	'Auto'		, \
+								'va'		:	'Auto'		, \
+								'ha'		:	'Auto'		, \
+								'rotation'	:	'Auto'}
 
-	_LINE_DEFAULTS		= {		'x'			:	None			, \
+	_LINE_DEFAULTS		= 	{	'x'			:	None			, \
 								'y'			:	None			, \
 								'xerr'		:	None			, \
 								'yerr'		:	None			, \
@@ -255,12 +255,20 @@ class kaplot():
 	_MARKER_LIST 		= [None , 's' , 'o' , '^' , 'D']
 	_MARKER_FILL_LIST	= [None , 'white']
 
-	# list of layers and associated properties
-	_LAYER_NAMES		= 	[]	# lower case layer names
-	_LAYER_OBJECTS		= 	[]	# kaxes objects
-	_LAYER_SETTINGS		= 	[]	# copy of LAYER_SETTINGS
-	_LAYER_PLT_OBJECT	= 	[]	# copy of the matplotlib.pyplot axes object
 	def __init__(self):
+		# list of layers and associated properties
+		self._SAVED				= None
+		self._LAYER_NAMES		= []
+		self._LAYER_OBJECTS		= []
+		self._LAYER_SETTINGS	= []
+		self._LAYER_PLT_OBJECT	= []
+		self.PLOT_SETTINGS 		= {	'tight_layout'	:	False 	, \
+									'xkcd'			:	False	, \
+									'x_label_sep_l'	:	' , '	, \
+									'x_label_sep_r'	:	''		, \
+									'y_label_sep_l'	:	' , '	, \
+									'y_label_sep_r'	:	''}
+
 		self._LAYER_NAMES.append('main')
 		self._LAYER_OBJECTS.append(deepcopy(kaxes()))
 		self._LAYER_SETTINGS.append(deepcopy(self.LAYER_SETTINGS))
@@ -469,6 +477,7 @@ class kaplot():
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
 		alpha 		- alpha level
@@ -499,6 +508,7 @@ class kaplot():
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
 		alpha 		- alpha level
@@ -529,11 +539,12 @@ class kaplot():
 
 		** kwargs **
 		name 		- layer name
-		myList		- custom list
+		mylist		- custom list
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		color 		- font color
 		alpha 		- alpha level
 		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
@@ -542,8 +553,8 @@ class kaplot():
 		"""
 		fdict 	= update_default_kwargs(self._FONT_XTICK,kwargs)
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
-		if 'myList' in kwargs:
-			tick_list = kwargs['myList']
+		if 'mylist' in kwargs:
+			tick_list = kwargs['mylist']
 		else:
 			tick_list = srange(start,stop,incr,log)
 		k.set_xticks(tick_list,**fdict)
@@ -563,11 +574,12 @@ class kaplot():
 
 		** kwargs **
 		name 		- layer name
-		myList		- custom list
+		mylist		- custom list
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		color 		- font color
 		alpha 		- alpha level
 		va 			- vertical alignment , 'center' 'top' 'bottom' 'baseline'
@@ -576,8 +588,8 @@ class kaplot():
 		"""
 		fdict 	= update_default_kwargs(self._FONT_YTICK,kwargs)
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
-		if 'myList' in kwargs:
-			tick_list = kwargs['myList']
+		if 'mylist' in kwargs:
+			tick_list = kwargs['mylist']
 		else:
 			tick_list = srange(start,stop,incr,log)
 		k.set_yticks(tick_list,**fdict)
@@ -645,30 +657,19 @@ class kaplot():
 		* valid in both / x-axis *
 		labeltop	- True/False 
 		labelbottom	- True/False
-		top 		- True/false , draw ticks
+		top 		- True/False , draw ticks
 		bottom		- True/False , draw ticks
 
 		* valid in both / y-axis *
 		labelleft	- True/False
 		labelright	- True/False
-		left 		- True/false , draw ticks
+		left 		- True/False , draw ticks
 		right		- True/False , draw ticks
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		# gets both lists, regardless
-		tmp_x_params= update_default_kwargs(self._XTICK_PARAMS,kwargs)
-		tmp_y_params= update_default_kwargs(self._YTICK_PARAMS,kwargs)
-		x_params 	= {}
-		y_params 	= {}
-		# remove the 'Auto' key
-		for key,val in tmp_x_params.iteritems():
-			if type(val) is not type(True):
-				if val is not 'Auto':
-					x_params[key] = val
-		for key,val in tmp_y_params.iteritems():
-			if type(val) is not type(True):
-				if val is not 'Auto':
-					y_params[key] = val
+		x_params= update_default_kwargs(self._XTICK_PARAMS,kwargs)
+		y_params= update_default_kwargs(self._YTICK_PARAMS,kwargs)
 		if axis is 'both':
 			k.set_x_tick_params(**y_params)
 			k.set_y_tick_params(**y_params)
@@ -752,16 +753,13 @@ class kaplot():
 		color 		- line color
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
-		tmp = update_default_kwargs(self._AX_LINE,kwargs)
-		tmp['y'] 		= tmp.pop('location')
-		tmp['y']		= location
-		tmp['xmin']		= tmp.pop('min')
-		tmp['xmax']		= tmp.pop('max')	
+		ax = update_default_kwargs(self._AX_LINE,kwargs)
+		ax['y']			= location
+		if 'min' in kwargs:
+			ax['xmin']		= ax.pop('min')
+		if 'max' in kwargs:
+			ax['xmax']		= ax.pop('max')	
 		# remove all 'auto' values
-		ax = {}
-		for key,val in tmp.iteritems():
-			if val is not 'Auto':
-				ax[key] = val
 		k.add_axhline(**ax)
 		return
 
@@ -783,16 +781,13 @@ class kaplot():
 		color 		- line color
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
-		tmp = update_default_kwargs(self._AX_LINE,kwargs)
-		tmp['x'] 		= tmp.pop('location')
-		tmp['x']		= location
-		tmp['ymin']		= tmp.pop('min')
-		tmp['ymax']		= tmp.pop('max')	
+		ax = update_default_kwargs(self._AX_LINE,kwargs)
+		ax['x']			= location
+		if 'min' in kwargs:
+			ax['ymin']		= ax.pop('min')
+		if 'max' in kwargs:
+			ax['ymax']		= ax.pop('max')	
 		# remove all 'auto' values
-		ax = {}
-		for key,val in tmp.iteritems():
-			if val is not 'Auto':
-				ax[key] = val
 		k.add_axvline(**ax)
 		return
 
@@ -929,10 +924,13 @@ class kaplot():
 					pd.pop('increment')
 					mpobj.errorbar(**pd)
 			# do stuff to mpobj
+			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
+			# GRID
 			if k.SETTINGS['grid_bool']:
-				mpobj.grid(k.SETTINGS['grid_prop'])
+				mpobj.grid(**k.SETTINGS['grid_prop'])
+			# AXES TYPE AND BASE SETTING
 			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
 				if k.SETTINGS['axes_type'] is 'log-log':
 					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
@@ -944,6 +942,7 @@ class kaplot():
 			else:
 				mpobj.set_xscale('linear')
 				mpobj.set_yscale('linear')
+			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
 			if k.SETTINGS['ylabel'] is not None:
@@ -954,6 +953,17 @@ class kaplot():
 			if k.SETTINGS['yticks'] is not None:
 				mpobj.set_yticks(k.SETTINGS['yticks'])
 				mpobj.set_yticklabels(k.SETTINGS['yticks'],**k.SETTINGS['ytick_prop'])
+			if k.XTICK_FORMAT is not None:
+				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
+			if k.YTICK_FORMAT is not None:
+				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)				
+			if k.XTICK_PARAM is not None:
+				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
+			if k.YTICK_PARAM is not None:
+				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
+			# AXES LIMITS
 			if k.SETTINGS['x_limit'] is not None:
 				xmin , xmax = k.SETTINGS['x_limit']
 				if xmin is not None:
@@ -966,7 +976,7 @@ class kaplot():
 					mpobj.set_ylim(ymin=ymin)
 				if ymax is not None:
 					mpobj.set_ylim(ymax=ymax)
-			# remove frame elements
+			# FRAME ELEMENTS
 			if not k.FRAMES['top']:
 				mpobj.spines['top'].set_color('None')
 			if not k.FRAMES['bottom']:
@@ -975,16 +985,6 @@ class kaplot():
 				mpobj.spines['right'].set_color('None')
 			if not k.FRAMES['left']:
 				mpobj.spines['left'].set_color('None')
-			# TICK FORMAT
-			if k.XTICK_FORMAT is not None:
-				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
-			if k.YTICK_FORMAT is not None:
-				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)				
-			# TICK PARAMETERS
-			if k.XTICK_PARAM is not None:
-				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
-			if k.YTICK_PARAM is not None:
-				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
 			# ADD AXHLINE
 			if len(k.AXHLINE_LIST) is not 0:
 				for ax in k.AXHLINE_LIST:
@@ -1010,10 +1010,6 @@ class kaplot():
 			# ADD TEXT
 			if len(k.TEXT_LIST) is not 0:
 				for txt in k.TEXT_LIST:
-					# convert x , y into norm coordinates
-					x , y = convert_xy(mpobj,txt['x'],txt['y'])
-					txt['x'] = x
-					txt['y'] = y 
 					txt['s'] = txt.pop('txt')
 					mpobj.text(**txt)
 			# ADD LEGEND
@@ -1039,23 +1035,31 @@ class kaplot():
 		width 	- dimension of figure, in inches
 		dpi 	- the dots per inch of the figure
 		"""
+		if self._SAVED is None:
+			self._SAVED = pickle.dumps(self,pickle.HIGHEST_PROTOCOL)
 		sf = update_default_kwargs(self.SAVEFIG_SETTINGS,kwargs)
 		fig = plt.gcf()
-		fig.set_size_inches(sf['width'],sf['height'])
-		sf.pop('width')
-		sf.pop('height')
+		if 'width' in sf and 'height' in sf:
+			fig.set_size_inches(sf['width'],sf['height'])
+			sf.pop('width')
+			sf.pop('height')
 		plt.savefig(fname,**sf)
 		return
 
 	def saveObj(self,fname):
 		"""
-		saves the plot objects tio a file $fname$ to edit later
+		saves the plot objects to a file $fname$ to edit later
 
 		** args **
 		fname 	- path/filename to save to
 		"""
 		f = open(fname,'wb')
-		pickle.dump(self,f)
+		if self._SAVED is None:
+			#save_list = [self.PLOT_SETTINGS , self._LAYER_NAMES , self._LAYER_OBJECTS , self._LAYER_SETTINGS]
+			#pickle.dump(save_list,f)
+			pickle.dump(self,f,pickle.HIGHEST_PROTOCOL)
+		else:
+			f.write(self._SAVED)
 		f.close()
 		return
 
@@ -1064,10 +1068,12 @@ class kaplot():
 		shows the figure which has been generated
 		note : this depends on the backend selected
 		"""
+		if self._SAVED is None:
+			self._SAVED = pickle.dumps(self,pickle.HIGHEST_PROTOCOL)
 		plt.show()
 		return
 
-class kaxes():
+class kaxes(object):
 	"""
 	helper class for kaplot, all functions here are internal. 
 	used to build layer objects for the final figure.
@@ -1239,10 +1245,11 @@ def update_default_kwargs(default_dict,current_dict):
 	"""
 	return_dict = {}
 	for key,kval in default_dict.iteritems():
-		try:
+		if key in current_dict:
 			return_dict[key] = current_dict[key]
-		except:
-			return_dict[key] = kval
+		else:
+			if kval is not 'Auto':
+				return_dict[key] = kval
 	return return_dict
 
 def srange(start,end,incr,log=False):
