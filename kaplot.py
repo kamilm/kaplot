@@ -8,13 +8,20 @@ import matplotlib.pyplot as plt
 import pickle
 
 __author__		= 'Kamil'
-__version__		= '0.3'
+__version__		= '0.4a'
 __name__		= 'kaplot'
 __file__		= 'kaplot.py'
 
 """
 CHANGELOG
 =========
+** 03/05/2014 , v0.4a **
+	*	Morning Session *
+	-	added color_marker_fill_index() to makePlot() in order to fix the 
+		color/marker/fill selector bug
+	-	added the ability to select any color map (cmap) available to MPL
+		as optional arguement to set_unique_colors()
+
 ** 03/04/2014 , v0.3 **
 	- 	made changes to update_default_kwargs so that when value='Auto' those values are not included
 		and the plot resorts to default MPL behavior
@@ -39,11 +46,8 @@ TODO
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
  	- 	add_rectangle
- 	- 	add_plotdata
  	- 	update set_unique_colors to use cmap
  			+ 	user specified unique_colors
- 	- 	fix the color/marker/fill selector
- 	-	 fix random +1 in the ADD PLOTDATA portion of kaplot
  	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
 """
 
@@ -52,6 +56,7 @@ def check_name(fn):
 	decorator function for kaplot class. checks if the $name$ kwarg is 
 	valid and inserts $ind$ into the kwarg list. additionally, changes all
 	kwargs to be lower case.
+
 	** args **
 	fn 		- function
 	"""
@@ -262,12 +267,13 @@ class kaplot(object):
 		self._LAYER_OBJECTS		= []
 		self._LAYER_SETTINGS	= []
 		self._LAYER_PLT_OBJECT	= []
-		self.PLOT_SETTINGS 		= {	'tight_layout'	:	False 	, \
-									'xkcd'			:	False	, \
-									'x_label_sep_l'	:	' , '	, \
-									'x_label_sep_r'	:	''		, \
-									'y_label_sep_l'	:	' , '	, \
-									'y_label_sep_r'	:	''}
+		self.PLOT_SETTINGS 		= {	'tight_layout'	:	False 		, \
+									'xkcd'			:	False		, \
+									'x_label_sep_l'	:	' , '		, \
+									'x_label_sep_r'	:	''			, \
+									'y_label_sep_l'	:	' , '		, \
+									'y_label_sep_r'	:	''			, \
+									'color_map'		:	'gist_rainbow'}
 
 		self._LAYER_NAMES.append('main')
 		self._LAYER_OBJECTS.append(deepcopy(kaxes()))
@@ -730,9 +736,12 @@ class kaplot(object):
 
 		** kwargs **
 		name 	- layer name
+		cmap 	- MPL color map name
 		"""
+		if 'cmap' not in kwargs:
+			kwargs['cmap'] = self.PLOT_SETTINGS['color_map']
 		k = self._LAYER_OBJECTS[kwargs['ind']]
-		k.set_unique_colors(ubool)
+		k.set_unique_colors(ubool,kwargs['cmap'])
 		return
 
 	@check_name
@@ -865,6 +874,22 @@ class kaplot(object):
 		"""
 		generates the matplotlib object from all inputs
 		"""
+		## helper
+		def color_marker_fill_index(cnt):
+			"""
+			helper function which uses the cnt number to determine which
+			color , marker , fill will be used
+
+			** args **
+			cnt 	- integer number
+
+			returns tuple (color_index , marker_index , fill_index)
+			"""
+			cind = cnt%len(self._COLOR_LIST)
+			mind = (cnt // len(self._COLOR_LIST)) % len(self._MARKER_LIST)
+			find = (cnt // (len(self._COLOR_LIST)*len(self._MARKER_LIST))) % len(self._MARKER_FILL_LIST)
+			return (cind,mind,find)
+		## PLOTTING PORTION
 		if self.PLOT_SETTINGS['xkcd']:
 			plt.xkcd()
 		for i,name in enumerate(self._LAYER_NAMES):
@@ -898,24 +923,16 @@ class kaplot(object):
 				for pd in k.DATA_LIST:
 					if pd['increment']:
 						inc_cnt += 1
-				# unique colors
-				if k.SETTINGS['uniq_cols']:
-					cols = unique_colors(inc_cnt+1)
-					for col in cols:
-						color_marker_fill.append((col,None,None))
-				else:
-					for cnt in range(0,inc_cnt+1):
-						cind = cnt%len(self._COLOR_LIST)-1
-						mind = (cnt // len(self._COLOR_LIST)) % len(self._MARKER_LIST)
-						find = (cnt // (len(self._COLOR_LIST)*len(self._MARKER_LIST))) % len(self._MARKER_FILL_LIST)
-						color 	= self._COLOR_LIST[cind]
-						marker 	= self._MARKER_LIST[mind]
-						fill	= self._MARKER_FILL_LIST[find]
-						color_marker_fill.append((color,marker,fill))
 				# # plotting portion
 				cnt = 0
 				for pd in k.DATA_LIST:
-					col , mar , fill = color_marker_fill[cnt]
+					# unique colors
+					if k.SETTINGS['uniq_cols']:
+						cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+						col , mar , fill = cols[cnt] , None , None
+					else:
+						cind , mind , find = color_marker_fill_index(cnt)
+						col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
 					if pd['increment']:
 						cnt += 1
 					pd['color'] = col
@@ -1055,8 +1072,6 @@ class kaplot(object):
 		"""
 		f = open(fname,'wb')
 		if self._SAVED is None:
-			#save_list = [self.PLOT_SETTINGS , self._LAYER_NAMES , self._LAYER_OBJECTS , self._LAYER_SETTINGS]
-			#pickle.dump(save_list,f)
 			pickle.dump(self,f,pickle.HIGHEST_PROTOCOL)
 		else:
 			f.write(self._SAVED)
@@ -1082,32 +1097,33 @@ class kaxes(object):
 	_LOCATION = ['upper left', 'upper right', 'lower left', 'lower right']
 
 	def __init__(self):
-		self.SETTINGS 	= 	{	'plot_type'	:	'line'		, \
-								'uniq_cols'	:	False		, \
-								'location'	:	None		, \
-								'title'		:	None		, \
-								'title_prop':	None		, \
-								'grid_bool'	:	False		, \
-								'grid_prop'	:	None		, \
-								'axes_type'	:	'linear'	, \
-								'x_base'	:	1.0			, \
-								'y_base'	:	1.0			, \
-								'xlabel'	:	None		, \
-								'xlab_prop'	:	None		, \
-								'ylabel'	:	None		, \
-								'ylab_prop'	:	None		, \
-								'xticks'	:	None		, \
-								'xtick_prop':	None		, \
-								'yticks'	:	None		, \
-								'ytick_prop':	None		, \
-								'x_limit'	:	None		, \
-								'y_limit'	:	None		, \
-								'leg_props'	:	None		, \
+		self.SETTINGS 	= 	{	'plot_type'	:	'line'			, \
+								'uniq_cols'	:	False			, \
+								'color_map'	:	'gist_rainbow'	, \
+								'location'	:	None			, \
+								'title'		:	None			, \
+								'title_prop':	None			, \
+								'grid_bool'	:	False			, \
+								'grid_prop'	:	None			, \
+								'axes_type'	:	'linear'		, \
+								'x_base'	:	1.0				, \
+								'y_base'	:	1.0				, \
+								'xlabel'	:	None			, \
+								'xlab_prop'	:	None			, \
+								'ylabel'	:	None			, \
+								'ylab_prop'	:	None			, \
+								'xticks'	:	None			, \
+								'xtick_prop':	None			, \
+								'yticks'	:	None			, \
+								'ytick_prop':	None			, \
+								'x_limit'	:	None			, \
+								'y_limit'	:	None			, \
+								'leg_props'	:	None			, \
 								'leg_fprop'	:	None}
 
-		self.FRAMES 	= 	{	'top'		:	True 		, \
-								'bottom'	:	True 		, \
-								'left'		:	True 		, \
+		self.FRAMES 	= 	{	'top'		:	True 			, \
+								'bottom'	:	True 			, \
+								'left'		:	True 			, \
 								'right'		:	True}
 		self.XTICK_PARAM 	=	None
 		self.YTICK_PARAM 	=	None
@@ -1198,8 +1214,9 @@ class kaxes(object):
 		self.YTICK_PARAM = params
 		return
 
-	def set_unique_colors(self,ubool):
-		self.SETTINGS['uniq_cols'] = ubool
+	def set_unique_colors(self,ubool,cmap):
+		self.SETTINGS['uniq_cols'] 	= ubool
+		self.SETTINGS['color_map']	= cmap
 		return
 
 	def set_y_tick_format(self,**p):
