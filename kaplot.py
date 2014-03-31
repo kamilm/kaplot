@@ -6,16 +6,22 @@ import matplotlib
 matplotlib.use('macosx')
 import matplotlib.pyplot as plt 
 import pickle
+from scipy.interpolate import UnivariateSpline
+from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '0.5'
+__version__		= '0.6'
 __name__		= 'kaplot'
 __file__		= 'kaplot.py'
 
 """
 CHANGELOG
 =========
-** 03/24/2104 , 0.5 **
+** 03/24/2014 , v0.6 **
+	-	added spline to add_plotdata: kwargs - spline,sp_order,sp_smooth,sp_points
+	-	added scipy.interpolate and numpy.linspace imports for spline to work
+
+** 03/24/2104 , v0.5 **
 	-	changed makePlot so that add_plotdata and add_rectangle are near the ends
 	- 	added add_rectangle()
 	- 	changed add_plotdata() to avoid overwriting user specified
@@ -38,7 +44,6 @@ CHANGELOG
 	-	changed dictionaries to use 'Auto' so that rcParams are used by default
 	- 	updated saveObj()
 
-
 ** 03/03/2014 , v0.2 **
 	- 	documentation added to functions
 	- 	check_name now returns all lowercase kwargs
@@ -52,11 +57,8 @@ CHANGELOG
 TODO 
 ====
 	-	change $$ to `` in docstrings
-	- 	add spline
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
- 	- 	update set_unique_colors to use cmap
- 			+ 	user specified unique_colors
  	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
  	- 	add_arrow
 """
@@ -240,7 +242,11 @@ class kaplot(object):
 								'mfc' 		: 	'Auto'			, \
 								'ecolor'	:	'Auto'			, \
 								'elinewidth':	'Auto'			, \
-								'capsize'	:	'Auto'}
+								'capsize'	:	'Auto'			, \
+								'spline'	:	False			, \
+								'sp_order'	:	3				, \
+								'sp_smooth'	:	0 				, \
+								'sp_points'	:	1000}
 
 	_LEGEND_FONTPROPS	= {		'family'	:	'sans-serif'	, \
 								'style'		:	'normal'		, \
@@ -881,6 +887,12 @@ class kaplot(object):
 		ecolor 		- error line color
 		elinewidth	- error line width 
 		capsize		- error cap size
+
+		** spline kwargs **
+		spline 		- boolean to use a spline
+		sp_order 	- spline order, order of the fit 
+		sp_smooth 	- smoothing parameter, if None the spline will pass through all values 
+		sp_points 	- use #points between xmin/xmax
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		tmp 	= update_default_kwargs(self._LINE_DEFAULTS,kwargs)
@@ -1059,11 +1071,6 @@ class kaplot(object):
 				for txt in k.TEXT_LIST:
 					txt['s'] = txt.pop('txt')
 					mpobj.text(**txt)
-			# ADD LEGEND
-			if k.SETTINGS['leg_props'] is not None:
-				if k.SETTINGS['leg_props']['bool']:
-					k.SETTINGS['leg_props'].pop('bool')
-					mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
 			# ADD PLOTDATA
 			if len(k.DATA_LIST) is not 0:
 				# generate color,marker,fill list for the plot
@@ -1089,6 +1096,22 @@ class kaplot(object):
 						pd['marker']= mar
 					if 'mfc' not in pd:
 						pd['mfc']	= fill
+					# spline portion
+					sp_key 		= ['color','lw','ls']
+					if pd['spline']:
+						x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
+						y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
+						sp_dict 	= {}
+						for sp in sp_key:
+							if sp in pd:
+								sp_dict[sp] = pd[sp]
+						pd['lw'] = 0
+						pd['ls'] = ''
+						mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
+					pd.pop('spline')
+					pd.pop('sp_smooth')
+					pd.pop('sp_order')
+					pd.pop('sp_points')
 					pd.pop('increment')
 					mpobj.errorbar(**pd)
 			# ADD RECTANGLE
@@ -1120,6 +1143,12 @@ class kaplot(object):
 					rd['xmax']=convert_xy(mpobj,rd['xmax'],0)[0]
 					rd.pop('increment')
 					mpobj.axhspan(**rd)
+			# ADD LEGEND
+			# -- needs to go last, otherwise possible 'no label situation'
+			if k.SETTINGS['leg_props'] is not None:
+				if k.SETTINGS['leg_props']['bool']:
+					k.SETTINGS['leg_props'].pop('bool')
+					mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
 		if self.PLOT_SETTINGS['tight_layout']:
