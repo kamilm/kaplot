@@ -1,3 +1,16 @@
+"""
+kaplot is a plotting tool built around matplotlib. It combines the flexibilty and fantastic plot
+generation potention of matplotlib with an easier to use, object oriented, interface. The interface
+is simple enough to quickly prototype plots, or fine tune for publication quality results.
+
+TODO 
+====
+	-	change $$ to `` in docstrings
+	- 	need to add loadObj()
+	- 	fix latex output to use the same font
+ 	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
+"""
+
 from copy import deepcopy
 # required to make pydocs work
 from decorator import decorator
@@ -15,60 +28,6 @@ from numpy import linspace
 __author__		= 'Kamil'
 __version__		= '0.7'
 __name__		= 'kaplot'
-
-"""
-CHANGELOG
-=========
-** 03/26/2014 , v0.7 **
-	-	added add_arrow to add arrows to the figure
-	- 	added bar type plots to all layers, use set_plot_type('bar') and add_plotdata
-		* see docstring for details
-	-	rewrote a portion of makePlot , could still use work to make it neater
-
-** 03/24/2014 , v0.6 **
-	-	added spline to add_plotdata: kwargs - spline,sp_order,sp_smooth,sp_points
-	-	added scipy.interpolate and numpy.linspace imports for spline to work
-
-** 03/24/2104 , v0.5 **
-	-	changed makePlot so that add_plotdata and add_rectangle are near the ends
-	- 	added add_rectangle()
-	- 	changed add_plotdata() to avoid overwriting user specified
-	- 	updated color_marker_fill_index() to take lists to compare compare against
-	- 	removed functools import
-	-	changed check_name() args to work with new @decorator (ugh)
-		notes : no plans to add text to add_rectangle , see options for matplotlib.pyplot.axhspan()
-
-** 03/05/2014 , v0.4a **
-	*	Morning Session *
-	-	added color_marker_fill_index() to makePlot() in order to fix the 
-		color/marker/fill selector bug
-	-	added the ability to select any color map (cmap) available to MPL
-		as optional arguement to set_unique_colors()
-
-** 03/04/2014 , v0.3 **
-	- 	made changes to update_default_kwargs so that when value='Auto' those values are not included
-		and the plot resorts to default MPL behavior
-	-	fixed various bugs, including tick formatting bugs
-	-	changed dictionaries to use 'Auto' so that rcParams are used by default
-	- 	updated saveObj()
-
-** 03/03/2014 , v0.2 **
-	- 	documentation added to functions
-	- 	check_name now returns all lowercase kwargs
-	- 	added saveObj() ; which uses pickle. to be tested.
-	- 	ls/lw now standard in all dictionaries
-	- 	adjusted tight layout values for subplots
-
-** 03/02/2014 , v0.1 **
-	- 	initial release
-
-TODO 
-====
-	-	change $$ to `` in docstrings
-	- 	need to add loadObj()
-	- 	fix latex output to use the same font
- 	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
-"""
 
 @decorator
 def check_name(fn,self,*args,**kwargs):
@@ -379,7 +338,7 @@ class kaplot(object):
 
 	def add_layer(self,name,location=None,twin=None,twin_ref='main'):
 		"""
-		adds a new layer to the plot with name $name$
+		adds a new layer to the plot with name `name`
 
 		** args **
 		name 		- layer name
@@ -610,7 +569,7 @@ class kaplot(object):
 	def set_xticks(self,start,stop,incr,log=False,**kwargs):
 		"""
 		sets the values of the ticks , can be logarithmic or custom
-		if $myList$ is specified it will overwrite all other values
+		if `myList` is specified it will overwrite all other values
 
 		** args **
 		start 		- start value
@@ -645,7 +604,7 @@ class kaplot(object):
 	def set_yticks(self,start,stop,incr,log=False,**kwargs):
 		"""
 		sets the values of the ticks , can be logarithmic or custom
-		if $myList$ is specified it will overwrite all other values
+		if `myList` is specified it will overwrite all other values
 
 		** args **
 		start 		- start value
@@ -822,7 +781,7 @@ class kaplot(object):
 	@check_name
 	def add_axhline(self,location,**kwargs):
 		"""
-		adds a horizontal line to the layer at location y = $location$
+		adds a horizontal line to the layer at location y = `location`
 
 		** args **
 		location 	- the y-intercept of the horizontal line
@@ -850,7 +809,7 @@ class kaplot(object):
 	@check_name
 	def add_axvline(self,location,**kwargs):
 		"""
-		adds a vertical line to the layer at location x = $location$
+		adds a vertical line to the layer at location x = `location`
 
 		** args **
 		location 	- the x-intercept of the vertical line
@@ -878,7 +837,7 @@ class kaplot(object):
 	@check_name
 	def add_text(self,txt,x,y,**kwargs):
 		"""
-		adds text to the layer at the point $x$,$y$
+		adds text to the layer at the point `x`,`y`
 		
 		** args **
 		txt 		- text to be added
@@ -1277,7 +1236,7 @@ class kaplot(object):
 
 	def saveMe(self,fname,**kwargs):
 		"""
-		saves the figure to file $fname$ 
+		saves the figure to file `fname` 
 
 		** args **
 		fname 	- path/filename to save to
@@ -1300,7 +1259,7 @@ class kaplot(object):
 
 	def saveObj(self,fname):
 		"""
-		saves the plot objects to a file $fname$ to edit later
+		saves the plot objects to a file `fname` to edit later
 
 		** args **
 		fname 	- path/filename to save to
@@ -1496,8 +1455,8 @@ class kaxes(object):
 ## HELPER FUNCTIONS
 def update_default_kwargs(default_dict,current_dict):
 	"""
-	dictionary helper function. takes a $default_dict$ and combines it
-	with $current_dict$ while filling in missing values. 
+	dictionary helper function. takes a `default_dict` and combines it
+	with `current_dict` while filling in missing values. 
 
 	** args **
 	default_dict - complete dictionary
@@ -1516,9 +1475,9 @@ def update_default_kwargs(default_dict,current_dict):
 
 def srange(start,end,incr,log=False):
 	"""
-	returns a number range, from $start$ to $end$ with an 
-	increment value of $incr$ , it can also be incremented
-	multiplicativly by specifying the $log$ boolean.
+	returns a number range, from `start` to `end` with an 
+	increment value of `incr` , it can also be incremented
+	multiplicativly by specifying the `log` boolean.
 
 	** args **
 	start 	- start value
@@ -1548,7 +1507,7 @@ def srange(start,end,incr,log=False):
 
 def convert_xy(ax,x,y):
 	"""
-	converts $x$ and $y$ coordinates on an axes object, $ax$ to the 
+	converts `x` and `y` coordinates on an axes object, `ax` to the 
 	matplotlib normalized values.
 
 	** args **
@@ -1563,9 +1522,9 @@ def convert_xy(ax,x,y):
 
 def unique_colors(ncols,color_map='gist_rainbow'):
 	"""
-	color generating function. $ncols$ specifies how many unique colors 
-	to generate from $color_map$. for more color_map options consult :
-	http://matplotlib.org/examples/color/colormaps_reference.html
+	color generating function. `ncols` specifies how many unique colors 
+	to generate from `color_map`. for more color_map options consult :
+	<http://matplotlib.org/examples/color/colormaps_reference.html>.
 
 	** args **
 	ncols 		- number of colors

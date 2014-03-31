@@ -1,0 +1,44 @@
+CHANGELOG
+=========
+** 03/26/2014 , v0.7 **
+	-	added add_arrow to add arrows to the figure
+	- 	added bar type plots to all layers, use set_plot_type('bar') and add_plotdata
+		* see docstring for details
+	-	rewrote a portion of makePlot , could still use work to make it neater
+
+** 03/24/2014 , v0.6 **
+	-	added spline to add_plotdata: kwargs - spline,sp_order,sp_smooth,sp_points
+	-	added scipy.interpolate and numpy.linspace imports for spline to work
+
+** 03/24/2104 , v0.5 **
+	-	changed makePlot so that add_plotdata and add_rectangle are near the ends
+	- 	added add_rectangle()
+	- 	changed add_plotdata() to avoid overwriting user specified
+	- 	updated color_marker_fill_index() to take lists to compare compare against
+	- 	removed functools import
+	-	changed check_name() args to work with new @decorator (ugh)
+		notes : no plans to add text to add_rectangle , see options for matplotlib.pyplot.axhspan()
+
+** 03/05/2014 , v0.4a **
+	*	Morning Session *
+	-	added color_marker_fill_index() to makePlot() in order to fix the 
+		color/marker/fill selector bug
+	-	added the ability to select any color map (cmap) available to MPL
+		as optional arguement to set_unique_colors()
+
+** 03/04/2014 , v0.3 **
+	- 	made changes to update_default_kwargs so that when value='Auto' those values are not included
+		and the plot resorts to default MPL behavior
+	-	fixed various bugs, including tick formatting bugs
+	-	changed dictionaries to use 'Auto' so that rcParams are used by default
+	- 	updated saveObj()
+
+** 03/03/2014 , v0.2 **
+	- 	documentation added to functions
+	- 	check_name now returns all lowercase kwargs
+	- 	added saveObj() ; which uses pickle. to be tested.
+	- 	ls/lw now standard in all dictionaries
+	- 	adjusted tight layout values for subplots
+
+** 03/02/2014 , v0.1 **
+	- 	initial release
