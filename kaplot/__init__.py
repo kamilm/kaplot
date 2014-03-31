@@ -3,7 +3,10 @@ from copy import deepcopy
 from decorator import decorator
 import matplotlib
 # backends @ http://matplotlib.org/faq/usage_faq.html
-matplotlib.use('macosx')
+from kaplot_backend import get_backend
+if get_backend():
+	# If kaplot_backend wasn't imported, or no backend was set, then skip explicitly setting a backend
+	matplotlib.use(get_backend())
 import matplotlib.pyplot as plt 
 import pickle
 from scipy.interpolate import UnivariateSpline
