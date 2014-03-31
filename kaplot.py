@@ -10,13 +10,19 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '0.6'
+__version__		= '0.7'
 __name__		= 'kaplot'
 __file__		= 'kaplot.py'
 
 """
 CHANGELOG
 =========
+** 03/26/2014 , v0.7 **
+	-	added add_arrow to add arrows to the figure
+	- 	added bar type plots to all layers, use set_plot_type('bar') and add_plotdata
+		* see docstring for details
+	-	rewrote a portion of makePlot , could still use work to make it neater
+
 ** 03/24/2014 , v0.6 **
 	-	added spline to add_plotdata: kwargs - spline,sp_order,sp_smooth,sp_points
 	-	added scipy.interpolate and numpy.linspace imports for spline to work
@@ -60,7 +66,6 @@ TODO
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
  	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
- 	- 	add_arrow
 """
 
 @decorator
@@ -243,10 +248,32 @@ class kaplot(object):
 								'ecolor'	:	'Auto'			, \
 								'elinewidth':	'Auto'			, \
 								'capsize'	:	'Auto'			, \
+								'alpha'		:	'Auto'			, \
 								'spline'	:	False			, \
 								'sp_order'	:	3				, \
 								'sp_smooth'	:	0 				, \
 								'sp_points'	:	1000}
+
+	_BAR_DEFAULTS 		= 	{	'left'		:	None			, \
+								'height'	:	None			, \
+								'xerr'		:	None			, \
+								'yerr'		:	None			, \
+								'label'		:	'_nolegend_'	, \
+								'increment'	:	True			, \
+								'color'		:	'Auto'			, \
+								'lw'		:	'Auto'			, \
+								'ls'		:	'Auto'			, \
+								'ecolor'	:	'Auto'			, \
+								'elinewidth':	'Auto'			, \
+								'capsize'	:	'Auto'			, \
+								'edgecolor'	:	'Auto'			, \
+								'align'		:	'center'		, \
+								'width'		:	'Auto'			, \
+								'fill'		:	'Auto'			, \
+								'hatch'		:	'Auto'			, \
+								'facecolor'	:	'Auto'			, \
+								'bottom'	:	'Auto'			, \
+								'log'		:	'Auto'}
 
 	_LEGEND_FONTPROPS	= {		'family'	:	'sans-serif'	, \
 								'style'		:	'normal'		, \
@@ -282,6 +309,23 @@ class kaplot(object):
 								'ls'			:	'Auto'			, \
 								'lw'			:	'Auto'			, \
 								'alpha'			:	'Auto'}
+	_ARROW_DEFAULTS 	= {		'x'				:	'Auto'			, \
+								'y'				:	'Auto'			, \
+								'dx'			:	'Auto'			, \
+								'dy'			:	'Auto'			, \
+								'width'			:	'Auto'			, \
+				'length_includes_head'			:	'Auto'			, \
+								'head_width'	:	'Auto'			, \
+								'head_length'	:	'Auto'			, \
+								'shape'			:	'Auto'			, \
+								'overhang'		:	'Auto'			, \
+								'alpha'			:	'Auto'			, \
+								'ec'			:	'Auto'			, \
+								'fc'			:	'Auto'			, \
+								'fill'			:	'Auto'			, \
+								'hatch'			:	'Auto'			, \
+								'linestyle'		:	'Auto'			, \
+								'linewidth'		:	'Auto'}
 
 	_COLOR_LIST			= ['black' , 'red' , 'blue' , 'fuchsia' , 'orange' , 'lime' , 'aqua' , 'maroon' , '0.40' , '0.85']
 	_MARKER_LIST 		= [None , 's' , 'o' , '^' , 'D']
@@ -304,7 +348,6 @@ class kaplot(object):
 									'y_label_sep_l'	:	' , '		, \
 									'y_label_sep_r'	:	''			, \
 									'color_map'		:	'gist_rainbow'}
-
 		self._LAYER_NAMES.append('main')
 		self._LAYER_OBJECTS.append(deepcopy(kaxes()))
 		self._LAYER_SETTINGS.append(deepcopy(self.LAYER_SETTINGS))
@@ -365,7 +408,7 @@ class kaplot(object):
 		sets the plot type of the layer
 
 		** args **
-		ptype 	- plot type , either line , bar , rect 
+		ptype 	- plot type , either line , bar 
 
 		** kwargs **
 		name 	- layer name if not main
@@ -867,7 +910,7 @@ class kaplot(object):
 		** args **
 		x 			- x data array/list
 		y 			- y data array/list
-	
+
 		** kwargs **
 		name 		- layer name
 		xerr		- x-error data array/list
@@ -875,35 +918,48 @@ class kaplot(object):
 		label 		- data label to be used in legend
 		increment 	- True/False , increment the auto color/marker/fill
 
-		** line plot kwargs **
 		color 		- line color
 		ls 			- line style 
 		lw 			- line width
+		ecolor 		- error line color
+		elinewidth	- error line width 
+		capsize		- error cap size
+		alpha 		- alpha level
+
+		** line plot kwargs **
 		m 			- marker 
 		mec 		- marker edge color
 		ms 			- marker size 
 		markevery 	- marker every data points 
 		mfc 		- marker face color
-		ecolor 		- error line color
-		elinewidth	- error line width 
-		capsize		- error cap size
 
 		** spline kwargs **
 		spline 		- boolean to use a spline
 		sp_order 	- spline order, order of the fit 
 		sp_smooth 	- smoothing parameter, if None the spline will pass through all values 
 		sp_points 	- use #points between xmin/xmax
+
+		** bar chart kwargs ** 
+		edgecolor	- edge color
+		align		- alignment (center or left)
+		width		- width
+		fill		- fill (True/False)
+		hatch 		- hatching
+		facecolor 	- fill color
+		width 		- array with width for each value 
+		bottom		- y starting point
+		log 		- True/False 
 		"""
-		k 		= self._LAYER_OBJECTS[kwargs['ind']]
-		tmp 	= update_default_kwargs(self._LINE_DEFAULTS,kwargs)
-		tmp['x']= x
-		tmp['y']= y
-		pdict	= {}
-		# remove all auto
-		for key,val in tmp.iteritems():
-			if val is not 'Auto':
-				pdict[key] = val
-		k.add_plotdata(**pdict)
+		k 	= self._LAYER_OBJECTS[kwargs['ind']]
+		if k.SETTINGS['plot_type'] is 'line':
+			sdict 			= update_default_kwargs(self._LINE_DEFAULTS,kwargs)
+			sdict['x']		= x
+			sdict['y']		= y
+		elif k.SETTINGS['plot_type'] is 'bar':
+			sdict 			= update_default_kwargs(self._BAR_DEFAULTS,kwargs)
+			sdict['left']	= x 
+			sdict['height']	= y
+		k.add_plotdata(**sdict)
 		return
 
 	@check_name
@@ -936,6 +992,44 @@ class kaplot(object):
 		kwargs['xmin'] , kwargs['xmax'] = xmin , xmax
 		kwargs['ymin'] , kwargs['ymax'] = ymin , ymax
 		k.add_rectangle(**kwargs)
+		return
+
+	@check_name
+	def add_arrow(self,start,finish,**kwargs):
+		"""
+		adds arrow to the text with the coordinates given by start and finish
+
+		** args **
+		start 					- (x,y) tuple with starting coordinates , the tail
+		finish					- (x,y) tuple with the final coordinates , the tip (arrow head)
+
+		** kwargs **
+		name 					- layer name
+		width 					- width of full arrow tail
+		length_includes_head	- include head in the length, usually false
+		head_width				- width of the arrow head 
+		head_length				- length of arrow head 
+		shape					- 'full' , 'left' , 'right'
+		overhang				- fraction of head which is swept back , default is 0
+		alpha					- alpha level
+		ec 						- edge color 
+		fc 						- face color 
+		fill 					- True/False, fill 
+		hatch 					- hatch style 
+		linestyle				- line style 
+		linewidth				- line width
+		"""
+		k 		= self._LAYER_OBJECTS[kwargs['ind']]
+		x 		= start[0]
+		dx		= finish[0] - start[0]
+		y 		= start[1]
+		dy 		= finish[1] - start[1]
+		kwargs 	= update_default_kwargs(self._ARROW_DEFAULTS,kwargs)
+		kwargs['x']		= x 
+		kwargs['y'] 	= y 
+		kwargs['dx']	= dx
+		kwargs['dy']	= dy
+		k.add_arrow(**kwargs)
 		return
 
 	def makePlot(self):
@@ -1078,42 +1172,61 @@ class kaplot(object):
 				for pd in k.DATA_LIST:
 					if pd['increment']:
 						inc_cnt += 1
-				# # plotting portion
 				cnt = 0
 				for pd in k.DATA_LIST:
-					# unique colors
-					if k.SETTINGS['uniq_cols']:
-						cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
-						col , mar , fill = cols[cnt] , None , None
-					else:
-						cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
-						col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
-					if pd['increment']:
-						cnt += 1
-					if 'color' not in pd:
-						pd['color'] = col
-					if 'marker' not in pd:
-						pd['marker']= mar
-					if 'mfc' not in pd:
-						pd['mfc']	= fill
-					# spline portion
-					sp_key 		= ['color','lw','ls']
-					if pd['spline']:
-						x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
-						y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
-						sp_dict 	= {}
-						for sp in sp_key:
-							if sp in pd:
-								sp_dict[sp] = pd[sp]
-						pd['lw'] = 0
-						pd['ls'] = ''
-						mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
-					pd.pop('spline')
-					pd.pop('sp_smooth')
-					pd.pop('sp_order')
-					pd.pop('sp_points')
-					pd.pop('increment')
-					mpobj.errorbar(**pd)
+					# line plots
+					if k.SETTINGS['plot_type'] is 'line':
+						if k.SETTINGS['uniq_cols']:
+							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+							col , mar , fill = cols[cnt] , None , None
+						else:
+							cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
+							col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
+						if pd['increment']:
+							cnt += 1
+						if 'color' not in pd:
+							pd['color'] = col 
+						if 'marker' not in pd:
+							pd['marker'] = mar
+						if 'mfc' not in pd:
+							pd['mfc'] = fill
+						# spline portion
+						sp_key 		= ['color','lw','ls']
+						if pd['spline']:
+							x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
+							y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
+							sp_dict 	= {}
+							for sp in sp_key:
+								if sp in pd:
+									sp_dict[sp] = pd[sp]
+							pd['lw'] = 0
+							pd['ls'] = ''
+							mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
+						pd.pop('spline')
+						pd.pop('sp_smooth')
+						pd.pop('sp_order')
+						pd.pop('sp_points')
+						pd.pop('increment')
+						mpobj.errorbar(**pd)
+					# bar plots
+					elif k.SETTINGS['plot_type'] is 'bar':
+						if k.SETTINGS['uniq_cols']:
+							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+							col , hat , fill = cols[cnt] , None , None
+						else:
+							cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
+							col , hat , fill 	= self._COLOR_LIST[cind] , self._HATCH_LIST[hind] , self._HATCH_FILL_LIST[find]
+						if pd['increment']:
+							cnt += 1
+						# do not overwrite user specified values
+						if 'color' not in pd:
+							pd['color'] = col
+						if 'hatch' not in pd:
+							pd['hatch'] = hat
+						if 'fill' not in pd:
+							pd['fill'] = fill
+						pd.pop('increment')
+						mpobj.bar(**pd)
 			# ADD RECTANGLE
 			if len(k.RECT_LIST) is not 0:
 				inc_cnt = 0
@@ -1143,6 +1256,11 @@ class kaplot(object):
 					rd['xmax']=convert_xy(mpobj,rd['xmax'],0)[0]
 					rd.pop('increment')
 					mpobj.axhspan(**rd)
+			# ADD ARROW
+			if len(k.ARROW_LIST) is not 0:
+				print 'adding arrows'
+				for ad in k.ARROW_LIST:
+					mpobj.arrow(**ad)
 			# ADD LEGEND
 			# -- needs to go last, otherwise possible 'no label situation'
 			if k.SETTINGS['leg_props'] is not None:
@@ -1249,6 +1367,7 @@ class kaxes(object):
 		self.TEXT_LIST 		= 	[]
 		self.DATA_LIST		= 	[]
 		self.RECT_LIST		=	[]
+		self.ARROW_LIST 	= 	[]
 		return
 
 	def set_location(self,location):
@@ -1366,6 +1485,11 @@ class kaxes(object):
 
 	def add_rectangle(self,**pdict):
 		self.RECT_LIST.append(pdict)
+		return 
+
+	def add_arrow(self,**kwargs):
+		self.ARROW_LIST.append(kwargs)
+		return
 
 ## HELPER FUNCTIONS
 def update_default_kwargs(default_dict,current_dict):
