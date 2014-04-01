@@ -1,5 +1,14 @@
 CHANGELOG
 =========
+** 04/01/2014 , v0.8 **
+	- docs improvements
+	- made into packages (ie folders, init.py and setup.py)
+	- setup.py ready for putting on pypi
+	- backend switching
+	- kaplot.defaults submodule, and full custom settings implementation 
+	  (done in the settings dictionary of dictionary style)
+	- bump to version 0.8
+
 ** 03/26/2014 , v0.7 **
 	-	added add_arrow to add arrows to the figure
 	- 	added bar type plots to all layers, use set_plot_type('bar') and add_plotdata
