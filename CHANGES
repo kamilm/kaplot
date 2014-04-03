@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+** 04/02/2014 , v0.9 **
+	- Enhancements and fixes for pypi compatibility
+
 ** 04/01/2014 , v0.8 **
 	- docs improvements
 	- made into packages (ie folders, init.py and setup.py)
