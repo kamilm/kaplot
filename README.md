@@ -5,7 +5,7 @@ kaplot is a plotting tool built around matplotlib. It combines the flexibilty an
 generation potention of matplotlib with an easier to use, object oriented, interface. The interface
 is simple enough to quickly prototype plots, or fine tune for publication quality results.
 
-Detailed documentation is hosted on [GitHub](kamilm.github.io/kaplot). The package contains 2 modules:
+Detailed documentation is hosted on [GitHub](http://kamilm.github.io/kaplot). The package contains 2 modules:
 
 - kaplot is the main module, which contains the kaplot class for plotting.
     - kaplot.defaults is a submodule which contains a couple of pre-made plot settings, which
