@@ -152,7 +152,7 @@ default = {
 								'sp_smooth'	:	0 				, \
 								'sp_points'	:	1000},
 
-	'_BAR_DEFAULTS' 		:	{	'left'		:	None			, \
+	'_BAR_DEFAULTS' 	:	{	'left'		:	None			, \
 								'height'	:	None			, \
 								'xerr'		:	None			, \
 								'yerr'		:	None			, \
@@ -173,12 +173,12 @@ default = {
 								'bottom'	:	'Auto'			, \
 								'log'		:	'Auto'},
 
-	'_LEGEND_FONTPROPS'	:	{		'family'	:	'sans-serif'	, \
+	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
 								'style'		:	'normal'		, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'},
 
-	'_LEGEND_DEFAULTS'	:	{		'bool'			:	False			, \
+	'_LEGEND_DEFAULTS'	:	{	'bool'			:	False			, \
 								'loc'			:	'upper right'	, \
 								'numpoints'		:	1 				, \
 								'markerscale'	:	1 		 		, \
@@ -194,7 +194,7 @@ default = {
 								'handletextpad'	: 	0.25			, \
 								'columnspacing'	: 	0.1},
 
-	'_RECTANGLE_DEFAULTS' :	{		'ymin'			: 	'Auto'			, \
+	'_RECTANGLE_DEFAULTS' :	{	'ymin'			: 	'Auto'			, \
 								'ymax'			:	'Auto'			, \
 								'xmin'			:	'Auto'			, \
 								'xmax'			:	'Auto'			, \
@@ -223,8 +223,8 @@ default = {
 								'fc'			:	'Auto'			, \
 								'fill'			:	'Auto'			, \
 								'hatch'			:	'Auto'			, \
-								'linestyle'		:	'Auto'			, \
-								'linewidth'		:	'Auto'},
+								'ls'			:	'Auto'			, \
+								'lw'			:	'Auto'},
 
 	'_COLOR_LIST'		:	['black' , 'red' , 'blue' , 'fuchsia' , 'orange' , 'lime' , 'aqua' , 'maroon' , '0.40' , '0.85'],
 	'_MARKER_LIST' 		:	[None , 's' , 'o' , '^' , 'D'],

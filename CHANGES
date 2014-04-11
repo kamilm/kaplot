@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+** 04/11/2014 , v0.9.1 **
+	- linestyle and linewidth kwargs are consistent (ls and lw)
+	- updated docstring for add_rectangle
+
 ** 04/02/2014 , v0.9 **
 	- Enhancements and fixes for pypi compatibility
 
