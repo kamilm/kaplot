@@ -270,3 +270,18 @@ highres = {
 markers = {
 	'_MARKER_LIST' 		:	['s' , 'o' , '^' , 'D'],
 }
+
+parentheses = {
+	'PLOT_SETTINGS' 	:	{	'x_label_sep_l'	:	' ('		, \
+								'x_label_sep_r'	:	')'			, \
+								'y_label_sep_l'	:	' ('		, \
+								'y_label_sep_r'	:	')'			, \
+							},
+}
+
+paren = parentheses
+
+xkcd = {
+	'PLOT_SETTINGS' 	:	{	'xkcd'			:	True		,
+							},
+}
