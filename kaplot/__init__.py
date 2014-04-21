@@ -5,10 +5,8 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 
 TODO 
 ====
-	-	change $$ to `` in docstrings
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
- 	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle
 """
 
 from copy import deepcopy
@@ -27,7 +25,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '0.9'
+__version__		= '0.9a'
 __name__		= 'kaplot'
 
 @decorator
@@ -71,19 +69,13 @@ class kaplot(object):
 								'twin_ref'		:	None}
 
 	def __init__(self,settings=None):
-		# list of layers and associated properties
+		'''Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,
+		or list of dictionaries, to be passed as `settings` to adjust plot settings.'''
 		self._SAVED				= None
 		self._LAYER_NAMES		= []
 		self._LAYER_OBJECTS		= []
 		self._LAYER_SETTINGS	= []
 		self._LAYER_PLT_OBJECT	= []
-		self.PLOT_SETTINGS 		= {	'tight_layout'	:	False 		, \
-									'xkcd'			:	False		, \
-									'x_label_sep_l'	:	' , '		, \
-									'x_label_sep_r'	:	''			, \
-									'y_label_sep_l'	:	' , '		, \
-									'y_label_sep_r'	:	''			, \
-									'color_map'		:	'gist_rainbow'}
 		self._LAYER_NAMES.append('main')
 		self._LAYER_OBJECTS.append(deepcopy(kaxes()))
 		self._LAYER_SETTINGS.append(deepcopy(self.LAYER_SETTINGS))
@@ -95,26 +87,30 @@ class kaplot(object):
 		"""
 		Reads the settings from `settings`, adds default settings from kaplot.defaults.default,
 		and stores in object.
+		`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order
+		of the list
 		"""
 		if not settings:
 			# nothing custom was passed
 			for key,value in default.iteritems():
 				setattr(self,key,value)
 			return
-		# otherwise there are at least 1 additional settings provided in the `settings` dictionary
+		# otherwise there are at least 1 additional settings provided in `settings`
 		# since not all groups of settings might be updated, we loop through the default settings,
 		# update that group's dictionary with override settings, if present, and add to `self`.
 		# Note that some entries in the settings/default dictionary are actually lists. For those
 		# we simply overwrite.
+		if type(settings) != type([]):
+			settings = [settings,]			
 		for key,value in default.iteritems():
-			if key in settings:
-				if type(value) == type({}):
-					value.update(settings[key])
-					setattr(self,key,value)
-				else:
-					setattr(self,key,settings[key])
-			else:
-				setattr(self,key,value)
+			for setting in settings:
+				if key in setting:
+					if type(value) == type({}):
+						value.update(setting[key])
+					else:
+						value = deepcopy(setting[key])
+				# else, we're just using the default value anyway
+			setattr(self,key,value)
 
 	def set_tight(self,tl_bool):
 		"""
