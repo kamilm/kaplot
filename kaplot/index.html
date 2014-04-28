@@ -983,10 +983,8 @@ table {
 generation potention of matplotlib with an easier to use, object oriented, interface. The interface<br />
 is simple enough to quickly prototype plots, or fine tune for publication quality results.</p>
 <h1>TODO</h1>
-<div class="codehilite"><pre>    <span class="o">-</span>       <span class="n">change</span> <span class="err">$$</span> <span class="n">to</span> <span class="err">``</span> <span class="n">in</span> <span class="n">docstrings</span>
-    <span class="o">-</span>       <span class="n">need</span> <span class="n">to</span> <span class="n">add</span> <span class="n">loadObj</span><span class="p">()</span>
+<div class="codehilite"><pre>    <span class="o">-</span>       <span class="n">need</span> <span class="n">to</span> <span class="n">add</span> <span class="n">loadObj</span><span class="p">()</span>
     <span class="o">-</span>       <span class="n">fix</span> <span class="n">latex</span> <span class="n">output</span> <span class="n">to</span> <span class="n">use</span> <span class="n">the</span> <span class="n">same</span> <span class="n">font</span>
-    <span class="o">-</span>       <span class="n">plot_type</span> <span class="o">-</span> <span class="n">only</span> <span class="n">line</span> <span class="n">is</span> <span class="n">supported</span> <span class="n">now</span><span class="p">,</span> <span class="n">should</span> <span class="n">expand</span> <span class="n">to</span> <span class="o">:</span> <span class="n">line</span> <span class="p">,</span> <span class="n">bar</span> <span class="p">,</span> <span class="n">rectangle</span>
 </pre></div>
   
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot', this);">Show source.</a></p>
@@ -998,10 +996,8 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 
 <span class="sd">TODO </span>
 <span class="sd">====</span>
-<span class="sd">	-	change $$ to `` in docstrings</span>
 <span class="sd">	- 	need to add loadObj()</span>
 <span class="sd">	- 	fix latex output to use the same font</span>
-<span class="sd"> 	- 	plot_type - only line is supported now, should expand to : line , bar , rectangle</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -1020,7 +1016,7 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linspace</span>
 
 <span class="n">__author__</span>		<span class="o">=</span> <span class="s">&#39;Kamil&#39;</span>
-<span class="n">__version__</span>		<span class="o">=</span> <span class="s">&#39;0.8&#39;</span>
+<span class="n">__version__</span>		<span class="o">=</span> <span class="s">&#39;0.9.3&#39;</span>
 <span class="n">__name__</span>		<span class="o">=</span> <span class="s">&#39;kaplot&#39;</span>
 
 <span class="nd">@decorator</span>
@@ -1064,19 +1060,13 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 								<span class="s">&#39;twin_ref&#39;</span>		<span class="p">:</span>	<span class="bp">None</span><span class="p">}</span>
 
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-		<span class="c"># list of layers and associated properties</span>
+		<span class="sd">&#39;&#39;&#39;Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,</span>
+<span class="sd">		or list of dictionaries, to be passed as `settings` to adjust plot settings.&#39;&#39;&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_SAVED</span>				<span class="o">=</span> <span class="bp">None</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_NAMES</span>		<span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span>		<span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_SETTINGS</span>	<span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_PLT_OBJECT</span>	<span class="o">=</span> <span class="p">[]</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">PLOT_SETTINGS</span> 		<span class="o">=</span> <span class="p">{</span>	<span class="s">&#39;tight_layout&#39;</span>	<span class="p">:</span>	<span class="bp">False</span> 		<span class="p">,</span> \
-									<span class="s">&#39;xkcd&#39;</span>			<span class="p">:</span>	<span class="bp">False</span>		<span class="p">,</span> \
-									<span class="s">&#39;x_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
-									<span class="s">&#39;x_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
-									<span class="s">&#39;y_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
-									<span class="s">&#39;y_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
-									<span class="s">&#39;color_map&#39;</span>		<span class="p">:</span>	<span class="s">&#39;gist_rainbow&#39;</span><span class="p">}</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_NAMES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;main&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kaxes</span><span class="p">()))</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_SETTINGS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LAYER_SETTINGS</span><span class="p">))</span>
@@ -1088,26 +1078,30 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Reads the settings from `settings`, adds default settings from kaplot.defaults.default,</span>
 <span class="sd">		and stores in object.</span>
+<span class="sd">		`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order</span>
+<span class="sd">		of the list</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">:</span>
 			<span class="c"># nothing custom was passed</span>
 			<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">default</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
 				<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 			<span class="k">return</span>
-		<span class="c"># otherwise there are at least 1 additional settings provided in the `settings` dictionary</span>
+		<span class="c"># otherwise there are at least 1 additional settings provided in `settings`</span>
 		<span class="c"># since not all groups of settings might be updated, we loop through the default settings,</span>
 		<span class="c"># update that group&#39;s dictionary with override settings, if present, and add to `self`.</span>
 		<span class="c"># Note that some entries in the settings/default dictionary are actually lists. For those</span>
 		<span class="c"># we simply overwrite.</span>
+		<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">([]):</span>
+			<span class="n">settings</span> <span class="o">=</span> <span class="p">[</span><span class="n">settings</span><span class="p">,]</span>			
 		<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">default</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-			<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-				<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">({}):</span>
-					<span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-					<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
-				<span class="k">else</span><span class="p">:</span>
-					<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-			<span class="k">else</span><span class="p">:</span>
-				<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setting</span><span class="p">:</span>
+					<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">({}):</span>
+						<span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="n">value</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+				<span class="c"># else, we&#39;re just using the default value anyway</span>
+			<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 
 	<span class="k">def</span> <span class="nf">set_tight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tl_bool</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -1724,20 +1718,20 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 <span class="sd">		adds a rectangle to the plot with coordinates defined by top/bottom</span>
 
 <span class="sd">		** args **</span>
-<span class="sd">		top 		-	(x,y) tuple for the top left corner</span>
-<span class="sd">		bottom 		-	(x,y) tuple for the bottom right corner</span>
+<span class="sd">		top 		- (x,y) tuple for the top left corner</span>
+<span class="sd">		bottom 		- (x,y) tuple for the bottom right corner</span>
 
 <span class="sd">		** kwargs **</span>
-<span class="sd">		name 		- </span>
-<span class="sd">		increment 	- </span>
-<span class="sd">		color 		-  </span>
-<span class="sd">		ec 			- </span>
-<span class="sd">		fc 			- </span>
-<span class="sd">		fill		- </span>
-<span class="sd">		hatch		- </span>
-<span class="sd">		ls 			- </span>
-<span class="sd">		lw 			- </span>
-<span class="sd">		alpha 		- </span>
+<span class="sd">		name 		- layer name</span>
+<span class="sd">		increment 	- True/False , increment the auto color/marker/fill</span>
+<span class="sd">		color 		- line color </span>
+<span class="sd">		ec 			- edge color</span>
+<span class="sd">		fc 			- fill color </span>
+<span class="sd">		fill		- fill true/false</span>
+<span class="sd">		hatch		- hatching </span>
+<span class="sd">		ls 			- line style </span>
+<span class="sd">		lw 			- line width </span>
+<span class="sd">		alpha 		- alpha level</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">k</span> 		<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ind&#39;</span><span class="p">]]</span>
 		<span class="n">x_tup</span> 	<span class="o">=</span> <span class="p">[</span><span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
@@ -1772,8 +1766,8 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 <span class="sd">		fc 						- face color </span>
 <span class="sd">		fill 					- True/False, fill </span>
 <span class="sd">		hatch 					- hatch style </span>
-<span class="sd">		linestyle				- line style </span>
-<span class="sd">		linewidth				- line width</span>
+<span class="sd">		ls						- line style </span>
+<span class="sd">		lw						- line width</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">k</span> 		<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ind&#39;</span><span class="p">]]</span>
 		<span class="n">x</span> 		<span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -2753,19 +2747,13 @@ each LAYER can have any number of features added to it.</p></div>
 								<span class="s">&#39;twin_ref&#39;</span>		<span class="p">:</span>	<span class="bp">None</span><span class="p">}</span>
 
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-		<span class="c"># list of layers and associated properties</span>
+		<span class="sd">&#39;&#39;&#39;Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,</span>
+<span class="sd">		or list of dictionaries, to be passed as `settings` to adjust plot settings.&#39;&#39;&#39;</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_SAVED</span>				<span class="o">=</span> <span class="bp">None</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_NAMES</span>		<span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span>		<span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_SETTINGS</span>	<span class="o">=</span> <span class="p">[]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_PLT_OBJECT</span>	<span class="o">=</span> <span class="p">[]</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">PLOT_SETTINGS</span> 		<span class="o">=</span> <span class="p">{</span>	<span class="s">&#39;tight_layout&#39;</span>	<span class="p">:</span>	<span class="bp">False</span> 		<span class="p">,</span> \
-									<span class="s">&#39;xkcd&#39;</span>			<span class="p">:</span>	<span class="bp">False</span>		<span class="p">,</span> \
-									<span class="s">&#39;x_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
-									<span class="s">&#39;x_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
-									<span class="s">&#39;y_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
-									<span class="s">&#39;y_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
-									<span class="s">&#39;color_map&#39;</span>		<span class="p">:</span>	<span class="s">&#39;gist_rainbow&#39;</span><span class="p">}</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_NAMES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;main&#39;</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kaxes</span><span class="p">()))</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_SETTINGS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LAYER_SETTINGS</span><span class="p">))</span>
@@ -2777,26 +2765,30 @@ each LAYER can have any number of features added to it.</p></div>
 		<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">		Reads the settings from `settings`, adds default settings from kaplot.defaults.default,</span>
 <span class="sd">		and stores in object.</span>
+<span class="sd">		`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order</span>
+<span class="sd">		of the list</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">:</span>
 			<span class="c"># nothing custom was passed</span>
 			<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">default</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
 				<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 			<span class="k">return</span>
-		<span class="c"># otherwise there are at least 1 additional settings provided in the `settings` dictionary</span>
+		<span class="c"># otherwise there are at least 1 additional settings provided in `settings`</span>
 		<span class="c"># since not all groups of settings might be updated, we loop through the default settings,</span>
 		<span class="c"># update that group&#39;s dictionary with override settings, if present, and add to `self`.</span>
 		<span class="c"># Note that some entries in the settings/default dictionary are actually lists. For those</span>
 		<span class="c"># we simply overwrite.</span>
+		<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">([]):</span>
+			<span class="n">settings</span> <span class="o">=</span> <span class="p">[</span><span class="n">settings</span><span class="p">,]</span>			
 		<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">default</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-			<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-				<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">({}):</span>
-					<span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-					<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
-				<span class="k">else</span><span class="p">:</span>
-					<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-			<span class="k">else</span><span class="p">:</span>
-				<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setting</span><span class="p">:</span>
+					<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">({}):</span>
+						<span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="n">value</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+				<span class="c"># else, we&#39;re just using the default value anyway</span>
+			<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 
 	<span class="k">def</span> <span class="nf">set_tight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tl_bool</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;</span>
@@ -3413,20 +3405,20 @@ each LAYER can have any number of features added to it.</p></div>
 <span class="sd">		adds a rectangle to the plot with coordinates defined by top/bottom</span>
 
 <span class="sd">		** args **</span>
-<span class="sd">		top 		-	(x,y) tuple for the top left corner</span>
-<span class="sd">		bottom 		-	(x,y) tuple for the bottom right corner</span>
+<span class="sd">		top 		- (x,y) tuple for the top left corner</span>
+<span class="sd">		bottom 		- (x,y) tuple for the bottom right corner</span>
 
 <span class="sd">		** kwargs **</span>
-<span class="sd">		name 		- </span>
-<span class="sd">		increment 	- </span>
-<span class="sd">		color 		-  </span>
-<span class="sd">		ec 			- </span>
-<span class="sd">		fc 			- </span>
-<span class="sd">		fill		- </span>
-<span class="sd">		hatch		- </span>
-<span class="sd">		ls 			- </span>
-<span class="sd">		lw 			- </span>
-<span class="sd">		alpha 		- </span>
+<span class="sd">		name 		- layer name</span>
+<span class="sd">		increment 	- True/False , increment the auto color/marker/fill</span>
+<span class="sd">		color 		- line color </span>
+<span class="sd">		ec 			- edge color</span>
+<span class="sd">		fc 			- fill color </span>
+<span class="sd">		fill		- fill true/false</span>
+<span class="sd">		hatch		- hatching </span>
+<span class="sd">		ls 			- line style </span>
+<span class="sd">		lw 			- line width </span>
+<span class="sd">		alpha 		- alpha level</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">k</span> 		<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ind&#39;</span><span class="p">]]</span>
 		<span class="n">x_tup</span> 	<span class="o">=</span> <span class="p">[</span><span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
@@ -3461,8 +3453,8 @@ each LAYER can have any number of features added to it.</p></div>
 <span class="sd">		fc 						- face color </span>
 <span class="sd">		fill 					- True/False, fill </span>
 <span class="sd">		hatch 					- hatch style </span>
-<span class="sd">		linestyle				- line style </span>
-<span class="sd">		linewidth				- line width</span>
+<span class="sd">		ls						- line style </span>
+<span class="sd">		lw						- line width</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">k</span> 		<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ind&#39;</span><span class="p">]]</span>
 		<span class="n">x</span> 		<span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -3788,17 +3780,6 @@ each LAYER can have any number of features added to it.</p></div>
 </div>
 
                   </div>
-              <h4>Instance variables</h4>
-                  <div class="item">
-                    <p id="kaplot.kaplot.PLOT_SETTINGS" class="name">var <span class="ident">PLOT_SETTINGS</span></p>
-                    
-
-                    
-  
-    <div class="source_cont">
-</div>
-
-                  </div>
               <h4>Methods</h4>
                   
     <div class="item">
@@ -3809,23 +3790,19 @@ each LAYER can have any number of features added to it.</p></div>
 
       
   
+      <div class="desc"><p>Make <code>kaplot</code> object: list of layers and associated properties. Also allows for dictionary,<br />
+or list of dictionaries, to be passed as <code>settings</code> to adjust plot settings.</p></div>
     <div class="source_cont">
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot.kaplot.__init__', this);">Show source.</a></p>
     <div id="source-kaplot.kaplot.__init__" class="source">
       <div class="codehilite"><pre><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-	<span class="c"># list of layers and associated properties</span>
+	<span class="sd">&#39;&#39;&#39;Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,</span>
+<span class="sd">	or list of dictionaries, to be passed as `settings` to adjust plot settings.&#39;&#39;&#39;</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_SAVED</span>				<span class="o">=</span> <span class="bp">None</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_NAMES</span>		<span class="o">=</span> <span class="p">[]</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span>		<span class="o">=</span> <span class="p">[]</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_SETTINGS</span>	<span class="o">=</span> <span class="p">[]</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_PLT_OBJECT</span>	<span class="o">=</span> <span class="p">[]</span>
-	<span class="bp">self</span><span class="o">.</span><span class="n">PLOT_SETTINGS</span> 		<span class="o">=</span> <span class="p">{</span>	<span class="s">&#39;tight_layout&#39;</span>	<span class="p">:</span>	<span class="bp">False</span> 		<span class="p">,</span> \
-								<span class="s">&#39;xkcd&#39;</span>			<span class="p">:</span>	<span class="bp">False</span>		<span class="p">,</span> \
-								<span class="s">&#39;x_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
-								<span class="s">&#39;x_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
-								<span class="s">&#39;y_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
-								<span class="s">&#39;y_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
-								<span class="s">&#39;color_map&#39;</span>		<span class="p">:</span>	<span class="s">&#39;gist_rainbow&#39;</span><span class="p">}</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_NAMES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;main&#39;</span><span class="p">)</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kaxes</span><span class="p">()))</span>
 	<span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_SETTINGS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LAYER_SETTINGS</span><span class="p">))</span>
@@ -3865,8 +3842,8 @@ ec                                              - edge color <br />
 fc                                              - face color <br />
 fill                                    - True/False, fill <br />
 hatch                                   - hatch style <br />
-linestyle                               - line style <br />
-linewidth                               - line width</p></div>
+ls                                              - line style <br />
+lw                                              - line width</p></div>
     <div class="source_cont">
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot.kaplot.add_arrow', this);">Show source.</a></p>
     <div id="source-kaplot.kaplot.add_arrow" class="source">
@@ -3890,8 +3867,8 @@ linewidth                               - line width</p></div>
 <span class="sd">	fc 						- face color </span>
 <span class="sd">	fill 					- True/False, fill </span>
 <span class="sd">	hatch 					- hatch style </span>
-<span class="sd">	linestyle				- line style </span>
-<span class="sd">	linewidth				- line width</span>
+<span class="sd">	ls						- line style </span>
+<span class="sd">	lw						- line width</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">k</span> 		<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ind&#39;</span><span class="p">]]</span>
 	<span class="n">x</span> 		<span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -4193,19 +4170,19 @@ log             - True/False</p></div>
   
       <div class="desc"><p>adds a rectangle to the plot with coordinates defined by top/bottom</p>
 <p><strong> args </strong><br />
-top             -       (x,y) tuple for the top left corner<br />
-bottom          -       (x,y) tuple for the bottom right corner</p>
+top             - (x,y) tuple for the top left corner<br />
+bottom          - (x,y) tuple for the bottom right corner</p>
 <p><strong> kwargs </strong><br />
-name            - <br />
-increment       - <br />
-color           -<br />
-ec                      - <br />
-fc                      - <br />
-fill            - <br />
-hatch           - <br />
-ls                      - <br />
-lw                      - <br />
-alpha           -</p></div>
+name            - layer name<br />
+increment       - True/False , increment the auto color/marker/fill<br />
+color           - line color <br />
+ec                      - edge color<br />
+fc                      - fill color <br />
+fill            - fill true/false<br />
+hatch           - hatching <br />
+ls                      - line style <br />
+lw                      - line width <br />
+alpha           - alpha level</p></div>
     <div class="source_cont">
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot.kaplot.add_rectangle', this);">Show source.</a></p>
     <div id="source-kaplot.kaplot.add_rectangle" class="source">
@@ -4214,19 +4191,19 @@ alpha           -</p></div>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	adds a rectangle to the plot with coordinates defined by top/bottom</span>
 <span class="sd">	** args **</span>
-<span class="sd">	top 		-	(x,y) tuple for the top left corner</span>
-<span class="sd">	bottom 		-	(x,y) tuple for the bottom right corner</span>
+<span class="sd">	top 		- (x,y) tuple for the top left corner</span>
+<span class="sd">	bottom 		- (x,y) tuple for the bottom right corner</span>
 <span class="sd">	** kwargs **</span>
-<span class="sd">	name 		- </span>
-<span class="sd">	increment 	- </span>
-<span class="sd">	color 		-  </span>
-<span class="sd">	ec 			- </span>
-<span class="sd">	fc 			- </span>
-<span class="sd">	fill		- </span>
-<span class="sd">	hatch		- </span>
-<span class="sd">	ls 			- </span>
-<span class="sd">	lw 			- </span>
-<span class="sd">	alpha 		- </span>
+<span class="sd">	name 		- layer name</span>
+<span class="sd">	increment 	- True/False , increment the auto color/marker/fill</span>
+<span class="sd">	color 		- line color </span>
+<span class="sd">	ec 			- edge color</span>
+<span class="sd">	fc 			- fill color </span>
+<span class="sd">	fill		- fill true/false</span>
+<span class="sd">	hatch		- hatching </span>
+<span class="sd">	ls 			- line style </span>
+<span class="sd">	lw 			- line width </span>
+<span class="sd">	alpha 		- alpha level</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">k</span> 		<span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LAYER_OBJECTS</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ind&#39;</span><span class="p">]]</span>
 	<span class="n">x_tup</span> 	<span class="o">=</span> <span class="p">[</span><span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">bottom</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
@@ -4316,7 +4293,9 @@ rotation        - rotate text by some degree</p></div>
       
   
       <div class="desc"><p>Reads the settings from <code>settings</code>, adds default settings from kaplot.defaults.default,<br />
-and stores in object.</p></div>
+and stores in object.<br />
+<code>settings</code> may be a list or single dictionary. If a list, each setting within the list is applied in the order<br />
+of the list</p></div>
     <div class="source_cont">
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot.kaplot.load_settings', this);">Show source.</a></p>
     <div id="source-kaplot.kaplot.load_settings" class="source">
@@ -4324,26 +4303,30 @@ and stores in object.</p></div>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Reads the settings from `settings`, adds default settings from kaplot.defaults.default,</span>
 <span class="sd">	and stores in object.</span>
+<span class="sd">	`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order</span>
+<span class="sd">	of the list</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">:</span>
 		<span class="c"># nothing custom was passed</span>
 		<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">default</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
 			<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 		<span class="k">return</span>
-	<span class="c"># otherwise there are at least 1 additional settings provided in the `settings` dictionary</span>
+	<span class="c"># otherwise there are at least 1 additional settings provided in `settings`</span>
 	<span class="c"># since not all groups of settings might be updated, we loop through the default settings,</span>
 	<span class="c"># update that group&#39;s dictionary with override settings, if present, and add to `self`.</span>
 	<span class="c"># Note that some entries in the settings/default dictionary are actually lists. For those</span>
 	<span class="c"># we simply overwrite.</span>
+	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">([]):</span>
+		<span class="n">settings</span> <span class="o">=</span> <span class="p">[</span><span class="n">settings</span><span class="p">,]</span>			
 	<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">default</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-		<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-			<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">({}):</span>
-				<span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-				<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
-			<span class="k">else</span><span class="p">:</span>
-				<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setting</span><span class="p">:</span>
+				<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">({}):</span>
+					<span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">value</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">setting</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+			<span class="c"># else, we&#39;re just using the default value anyway</span>
+		<span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -6589,7 +6572,7 @@ used to build layer objects for the final figure.</p></div>
         
   
       <div class="desc"><p>Defines a couple of default settings dictionaries for importing into a kaplot object.<br />
-They are user overwritable, by passing a custom dictionary to the kaplot <code>__init__</code> function.<br />
+They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot <code>__init__</code> function.<br />
 Any parameters not specified by the user will come from the <code>default</code> settings dictionary.</p></div>
 
       </div>

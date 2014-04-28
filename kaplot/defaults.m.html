@@ -980,18 +980,26 @@ table {
 
   <h1>Module kaplot.defaults</h1>
   <p>Defines a couple of default settings dictionaries for importing into a kaplot object.<br />
-They are user overwritable, by passing a custom dictionary to the kaplot <code>__init__</code> function.<br />
+They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot <code>__init__</code> function.<br />
 Any parameters not specified by the user will come from the <code>default</code> settings dictionary.</p>
   
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot.defaults', this);">Show source.</a></p>
     <div id="source-kaplot.defaults" class="source">
       <div class="codehilite"><pre><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Defines a couple of default settings dictionaries for importing into a kaplot object.</span>
-<span class="sd">They are user overwritable, by passing a custom dictionary to the kaplot `__init__` function.</span>
+<span class="sd">They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot `__init__` function.</span>
 <span class="sd">Any parameters not specified by the user will come from the `default` settings dictionary.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">default</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s">&#39;PLOT_SETTINGS&#39;</span> 	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;tight_layout&#39;</span>	<span class="p">:</span>	<span class="bp">False</span> 		<span class="p">,</span> \
+								<span class="s">&#39;xkcd&#39;</span>			<span class="p">:</span>	<span class="bp">False</span>		<span class="p">,</span> \
+								<span class="s">&#39;x_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
+								<span class="s">&#39;x_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
+								<span class="s">&#39;y_label_sep_l&#39;</span>	<span class="p">:</span>	<span class="s">&#39; , &#39;</span>		<span class="p">,</span> \
+								<span class="s">&#39;y_label_sep_r&#39;</span>	<span class="p">:</span>	<span class="s">&#39;&#39;</span>			<span class="p">,</span> \
+								<span class="s">&#39;color_map&#39;</span>		<span class="p">:</span>	<span class="s">&#39;gist_rainbow&#39;</span><span class="p">},</span>
+
 	<span class="s">&#39;SAVEFIG_SETTINGS&#39;</span> 	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;dpi&#39;</span>			<span class="p">:</span>	<span class="mi">100</span>		<span class="p">,</span> \
 							  	<span class="s">&#39;transparent&#39;</span>	<span class="p">:</span>	<span class="bp">False</span>	<span class="p">,</span> \
 							  	<span class="s">&#39;width&#39;</span>			<span class="p">:</span>	<span class="mi">8</span>	<span class="p">,</span> \
@@ -1139,7 +1147,7 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;sp_smooth&#39;</span>	<span class="p">:</span>	<span class="mi">0</span> 				<span class="p">,</span> \
 								<span class="s">&#39;sp_points&#39;</span>	<span class="p">:</span>	<span class="mi">1000</span><span class="p">},</span>
 
-	<span class="s">&#39;_BAR_DEFAULTS&#39;</span> 		<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;left&#39;</span>		<span class="p">:</span>	<span class="bp">None</span>			<span class="p">,</span> \
+	<span class="s">&#39;_BAR_DEFAULTS&#39;</span> 	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;left&#39;</span>		<span class="p">:</span>	<span class="bp">None</span>			<span class="p">,</span> \
 								<span class="s">&#39;height&#39;</span>	<span class="p">:</span>	<span class="bp">None</span>			<span class="p">,</span> \
 								<span class="s">&#39;xerr&#39;</span>		<span class="p">:</span>	<span class="bp">None</span>			<span class="p">,</span> \
 								<span class="s">&#39;yerr&#39;</span>		<span class="p">:</span>	<span class="bp">None</span>			<span class="p">,</span> \
@@ -1160,12 +1168,12 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;bottom&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;log&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
-	<span class="s">&#39;_LEGEND_FONTPROPS&#39;</span>	<span class="p">:</span>	<span class="p">{</span>		<span class="s">&#39;family&#39;</span>	<span class="p">:</span>	<span class="s">&#39;sans-serif&#39;</span>	<span class="p">,</span> \
+	<span class="s">&#39;_LEGEND_FONTPROPS&#39;</span>	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span>	<span class="s">&#39;sans-serif&#39;</span>	<span class="p">,</span> \
 								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;normal&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;normal&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;medium&#39;</span><span class="p">},</span>
 
-	<span class="s">&#39;_LEGEND_DEFAULTS&#39;</span>	<span class="p">:</span>	<span class="p">{</span>		<span class="s">&#39;bool&#39;</span>			<span class="p">:</span>	<span class="bp">False</span>			<span class="p">,</span> \
+	<span class="s">&#39;_LEGEND_DEFAULTS&#39;</span>	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;bool&#39;</span>			<span class="p">:</span>	<span class="bp">False</span>			<span class="p">,</span> \
 								<span class="s">&#39;loc&#39;</span>			<span class="p">:</span>	<span class="s">&#39;upper right&#39;</span>	<span class="p">,</span> \
 								<span class="s">&#39;numpoints&#39;</span>		<span class="p">:</span>	<span class="mi">1</span> 				<span class="p">,</span> \
 								<span class="s">&#39;markerscale&#39;</span>	<span class="p">:</span>	<span class="mi">1</span> 		 		<span class="p">,</span> \
@@ -1181,7 +1189,7 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;handletextpad&#39;</span>	<span class="p">:</span> 	<span class="mf">0.25</span>			<span class="p">,</span> \
 								<span class="s">&#39;columnspacing&#39;</span>	<span class="p">:</span> 	<span class="mf">0.1</span><span class="p">},</span>
 
-	<span class="s">&#39;_RECTANGLE_DEFAULTS&#39;</span> <span class="p">:</span>	<span class="p">{</span>		<span class="s">&#39;ymin&#39;</span>			<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
+	<span class="s">&#39;_RECTANGLE_DEFAULTS&#39;</span> <span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;ymin&#39;</span>			<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;ymax&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;xmin&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;xmax&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
@@ -1210,8 +1218,8 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;fc&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;fill&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;hatch&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
-								<span class="s">&#39;linestyle&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
-								<span class="s">&#39;linewidth&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
+								<span class="s">&#39;ls&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
+								<span class="s">&#39;lw&#39;</span>			<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_COLOR_LIST&#39;</span>		<span class="p">:</span>	<span class="p">[</span><span class="s">&#39;black&#39;</span> <span class="p">,</span> <span class="s">&#39;red&#39;</span> <span class="p">,</span> <span class="s">&#39;blue&#39;</span> <span class="p">,</span> <span class="s">&#39;fuchsia&#39;</span> <span class="p">,</span> <span class="s">&#39;orange&#39;</span> <span class="p">,</span> <span class="s">&#39;lime&#39;</span> <span class="p">,</span> <span class="s">&#39;aqua&#39;</span> <span class="p">,</span> <span class="s">&#39;maroon&#39;</span> <span class="p">,</span> <span class="s">&#39;0.40&#39;</span> <span class="p">,</span> <span class="s">&#39;0.85&#39;</span><span class="p">],</span>
 	<span class="s">&#39;_MARKER_LIST&#39;</span> 		<span class="p">:</span>	<span class="p">[</span><span class="bp">None</span> <span class="p">,</span> <span class="s">&#39;s&#39;</span> <span class="p">,</span> <span class="s">&#39;o&#39;</span> <span class="p">,</span> <span class="s">&#39;^&#39;</span> <span class="p">,</span> <span class="s">&#39;D&#39;</span><span class="p">],</span>
@@ -1226,6 +1234,16 @@ Any parameters not specified by the user will come from the <code>default</code>
 <span class="p">}</span>
 
 <span class="n">grayscale</span> <span class="o">=</span> <span class="n">greyscale</span>
+
+<span class="n">blackandwhite</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s">&#39;_COLOR_LIST&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;black&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">bw</span> <span class="o">=</span> <span class="n">blackandwhite</span>
+
+<span class="n">markers</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s">&#39;_MARKER_LIST&#39;</span> 		<span class="p">:</span>	<span class="p">[</span><span class="s">&#39;s&#39;</span> <span class="p">,</span> <span class="s">&#39;o&#39;</span> <span class="p">,</span> <span class="s">&#39;^&#39;</span> <span class="p">,</span> <span class="s">&#39;D&#39;</span><span class="p">],</span>
+<span class="p">}</span>
 </pre></div>
 
     </div>
@@ -1240,13 +1258,16 @@ Any parameters not specified by the user will come from the <code>default</code>
   
   <div class="column_list">
       <ul>
-          <li class="mono"><a href="#kaplot.defaults.default">default</a></li>
+          <li class="mono"><a href="#kaplot.defaults.blackandwhite">blackandwhite</a></li>
+          <li class="mono"><a href="#kaplot.defaults.bw">bw</a></li>
       </ul>
       <ul>
+          <li class="mono"><a href="#kaplot.defaults.default">default</a></li>
           <li class="mono"><a href="#kaplot.defaults.grayscale">grayscale</a></li>
       </ul>
       <ul>
           <li class="mono"><a href="#kaplot.defaults.greyscale">greyscale</a></li>
+          <li class="mono"><a href="#kaplot.defaults.markers">markers</a></li>
       </ul>
   </div>
 
@@ -1257,6 +1278,22 @@ Any parameters not specified by the user will come from the <code>default</code>
   </ul>
 
   <h2 id="header-variables">Module variables</h2>
+      <div class="item">
+        <p id="kaplot.defaults.blackandwhite" class="name">var <span class="ident">blackandwhite</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.bw" class="name">var <span class="ident">bw</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
       <div class="item">
         <p id="kaplot.defaults.default" class="name">var <span class="ident">default</span></p>
         
@@ -1275,6 +1312,14 @@ Any parameters not specified by the user will come from the <code>default</code>
       </div>
       <div class="item">
         <p id="kaplot.defaults.greyscale" class="name">var <span class="ident">greyscale</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.markers" class="name">var <span class="ident">markers</span></p>
         
   
     <div class="source_cont">
