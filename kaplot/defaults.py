@@ -1,10 +1,18 @@
 """
 Defines a couple of default settings dictionaries for importing into a kaplot object.
-They are user overwritable, by passing a custom dictionary to the kaplot `__init__` function.
+They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot `__init__` function.
 Any parameters not specified by the user will come from the `default` settings dictionary.
 """
 
 default = {
+	'PLOT_SETTINGS' 	:	{	'tight_layout'	:	False 		, \
+								'xkcd'			:	False		, \
+								'x_label_sep_l'	:	' , '		, \
+								'x_label_sep_r'	:	''			, \
+								'y_label_sep_l'	:	' , '		, \
+								'y_label_sep_r'	:	''			, \
+								'color_map'		:	'gist_rainbow'},
+
 	'SAVEFIG_SETTINGS' 	:	{	'dpi'			:	100		, \
 							  	'transparent'	:	False	, \
 							  	'width'			:	8	, \
@@ -239,3 +247,13 @@ greyscale = {
 }
 
 grayscale = greyscale
+
+blackandwhite = {
+	'_COLOR_LIST' : ['black']
+}
+
+bw = blackandwhite
+
+markers = {
+	'_MARKER_LIST' 		:	['s' , 'o' , '^' , 'D'],
+}
