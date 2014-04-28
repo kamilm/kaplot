@@ -25,7 +25,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '0.9a'
+__version__		= '0.9.3'
 __name__		= 'kaplot'
 
 @decorator
@@ -727,20 +727,20 @@ class kaplot(object):
 		adds a rectangle to the plot with coordinates defined by top/bottom
 
 		** args **
-		top 		-	(x,y) tuple for the top left corner
-		bottom 		-	(x,y) tuple for the bottom right corner
+		top 		- (x,y) tuple for the top left corner
+		bottom 		- (x,y) tuple for the bottom right corner
 
 		** kwargs **
-		name 		- 
-		increment 	- 
-		color 		-  
-		ec 			- 
-		fc 			- 
-		fill		- 
-		hatch		- 
-		ls 			- 
-		lw 			- 
-		alpha 		- 
+		name 		- layer name
+		increment 	- True/False , increment the auto color/marker/fill
+		color 		- line color 
+		ec 			- edge color
+		fc 			- fill color 
+		fill		- fill true/false
+		hatch		- hatching 
+		ls 			- line style 
+		lw 			- line width 
+		alpha 		- alpha level
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		x_tup 	= [top[0],bottom[0]]
@@ -775,8 +775,8 @@ class kaplot(object):
 		fc 						- face color 
 		fill 					- True/False, fill 
 		hatch 					- hatch style 
-		linestyle				- line style 
-		linewidth				- line width
+		ls						- line style 
+		lw						- line width
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		x 		= start[0]
