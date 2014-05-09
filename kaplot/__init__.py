@@ -25,7 +25,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '0.9.3'
+__version__		= '0.9.4'
 __name__		= 'kaplot'
 
 @decorator

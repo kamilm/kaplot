@@ -2,7 +2,12 @@
 Defines a couple of default settings dictionaries for importing into a kaplot object.
 They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot `__init__` function.
 Any parameters not specified by the user will come from the `default` settings dictionary.
+
+If it exists, import any user-defined settings from ~/.kaplotdefaults.rc
 """
+
+from imp import load_source
+from os.path import expanduser
 
 default = {
 	'PLOT_SETTINGS' 	:	{	'tight_layout'	:	False 		, \
@@ -257,3 +262,12 @@ bw = blackandwhite
 markers = {
 	'_MARKER_LIST' 		:	['s' , 'o' , '^' , 'D'],
 }
+
+try:
+	kud = load_source('kaplotUserDefaults',expanduser('~/.kaplotdefaults.rc'))
+	for key,value in kud.__dict__.iteritems():
+		if key.startswith('__'):
+			continue
+		globals()[key] = value
+except IOError:
+	pass
