@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+** 05/08/2014 , v0.9.4 **
+	- kaplot.defaults also imports any settings defined in ~/.kaplotdefaults.rc transparently.
+
 ** 04/28/2014 , v0.9.3 **
 	- kaplot initization optionally takes settings as list
 	- Addition of `markers` default which produces plots with only markers
