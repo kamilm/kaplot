@@ -19,6 +19,7 @@ if get_backend():
 	# If kaplot_backend wasn't imported, or no backend was set, then skip explicitly setting a backend
 	matplotlib.use(get_backend())
 from kaplot.defaults import default
+import kaplot.defaults as kd
 import matplotlib.pyplot as plt 
 import pickle
 from scipy.interpolate import UnivariateSpline
@@ -88,7 +89,8 @@ class kaplot(object):
 		Reads the settings from `settings`, adds default settings from kaplot.defaults.default,
 		and stores in object.
 		`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order
-		of the list
+		of the list. It may also be a single or list of strings, in which case kaplot will try to import from 
+		kaplot.defaults.
 		"""
 		if not settings:
 			# nothing custom was passed
@@ -104,6 +106,11 @@ class kaplot(object):
 			settings = [settings,]			
 		for key,value in default.iteritems():
 			for setting in settings:
+				if type(setting) == type(''):
+					try:
+						setting = getattr(kd,setting)
+					except AttributeError:
+						raise AttributeError('%s not found in kaplot.defaults or .kaplotdefaults.rc' % setting)
 				if key in setting:
 					if type(value) == type({}):
 						value.update(setting[key])
