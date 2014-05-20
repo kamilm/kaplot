@@ -25,7 +25,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '0.9.4'
+__version__		= '0.9.5'
 __name__		= 'kaplot'
 
 @decorator
@@ -831,7 +831,9 @@ class kaplot(object):
 				mpobj 	= plt.axes()
 			else:
 				loc_txt = k.SETTINGS['location']
-				if self.PLOT_SETTINGS['tight_layout']:
+				if type(loc_txt) is type([]):
+					loc_cor = loc_txt
+				elif self.PLOT_SETTINGS['tight_layout']:
 					loc_cor = self._LOCATION_TIGHT[loc_txt]
 				else:
 					loc_cor = self._LOCATION[loc_txt]
@@ -1130,7 +1132,7 @@ class kaxes(object):
 		return
 
 	def set_location(self,location):
-		if location is type([]) and len(location) == 4:
+		if type(location) is type([]) and len(location) == 4:
 			self.SETTINGS['location'] = location
 		elif location is None:
 			self.SETTINGS['location'] = None
