@@ -1037,8 +1037,6 @@ class kaplot(object):
 					mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
-		if self.PLOT_SETTINGS['tight_layout']:
-			plt.tight_layout(pad=1.0)
 		return
 
 	def saveMe(self,fname,**kwargs):
@@ -1061,6 +1059,8 @@ class kaplot(object):
 			fig.set_size_inches(sf['width'],sf['height'])
 			sf.pop('width')
 			sf.pop('height')
+		if self.PLOT_SETTINGS['tight_layout']:
+			plt.tight_layout(pad=1.0)
 		plt.savefig(fname,**sf)
 		return
 
