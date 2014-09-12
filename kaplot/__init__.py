@@ -1305,18 +1305,33 @@ def srange(start,end,incr,log=False):
 		return []
 	if start == end:
 		return []
+	## type checking
+	# if everything can be shown as an int then make all values int
+	if int(start) == float(start):
+		start = int(start)
+	else:
+		start = float(start)
+	if int(end) == float(end):
+		end = int(end)
+	else:
+		end = float(end)
+	if int(incr) == float(incr):
+		incr = int(incr)
+	else:
+		incr = float(incr)
+	## /type checking
 	if log == False:
-		cval = float(start)
+		cval = start
 		retList =[]
 		while cval <= end:
 			retList.append(cval)
-			cval = float(cval)+float(incr)
+			cval = cval+incr
 	else:
 		cval = start
 		retList = []
 		while cval <= end:
 			retList.append(cval)
-			cval = float(cval)*float(incr)
+			cval = cval*incr
 	return retList
 
 def convert_xy(ax,x,y):
