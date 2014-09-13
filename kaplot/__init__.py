@@ -386,6 +386,7 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		mylist		- custom list
+		mylabels	- custom lables 
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
@@ -399,12 +400,25 @@ class kaplot(object):
 		"""
 		fdict 		= update_default_kwargs(self._FONT_XTICK,kwargs)
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
-		tick_list	= []
-		if 'mylist' in kwargs:
-			tick_list = kwargs['mylist']
-		else:
-			tick_list = srange(start,stop,incr,log)
-		k.set_xticks(tick_list,**fdict)
+		tick_list		= []
+		tick_labels		= []
+		if start is not None:
+			# start, stop, incr are specified
+			tick_list 	= srange(start,stop,incr,log)
+			tick_labels	= srange(start,stop,incr,log)
+			# custom labels
+			if 'mylist' in kwargs and 'mylabels' in kwargs:
+				for i,val in enumerate(kwargs['mylist']):
+					try:
+						li = tick_labels.index(val)
+						tick_labels[li] = kwargs['mylabels'][i]
+					except ValueError:
+						print 'The Value '+val+' is not in '+tick_labels+'. Ignoring.'
+			# custom ticks but no labels
+			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
+				tick_list 	= kwargs['mylist']
+				tick_labels	= kwargs['mylabels']
+		k.set_xticks(tick_list,tick_labels,**fdict)
 		return
 
 	@check_name
@@ -935,8 +949,10 @@ class kaplot(object):
 				mpobj.set_ylabel(k.SETTINGS['ylabel'],**k.SETTINGS['ylab_prop'])
 			if k.SETTINGS['xticks'] is not None:
 				mpobj.set_xticks(k.SETTINGS['xticks'])
-			if k.SETTINGS['xtick_prop'] is not None:
-			 	mpobj.set_xticklabels(mpobj.get_xticks(),**k.SETTINGS['xtick_prop'])
+				mpobj.set_xticklabels(k.SETTINGS['xtick_labels'],**k.SETTINGS['xtick_prop'])
+			else:
+				# change settings even if no ticks are specified
+			 	mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
 			if k.SETTINGS['yticks'] is not None:
 				mpobj.set_yticks(k.SETTINGS['yticks'])
 			if k.SETTINGS['ytick_prop'] is not None:
@@ -1103,34 +1119,35 @@ class kaxes(object):
 	_LOCATION = ['upper left', 'upper right', 'lower left', 'lower right']
 
 	def __init__(self):
-		self.SETTINGS 	= 	{	'plot_type'	:	'line'			, \
-								'uniq_cols'	:	False			, \
-								'color_map'	:	'gist_rainbow'	, \
-								'location'	:	None			, \
-								'title'		:	None			, \
-								'title_prop':	None			, \
-								'grid_bool'	:	False			, \
-								'grid_prop'	:	None			, \
-								'axes_type'	:	'linear'		, \
-								'x_base'	:	1.0				, \
-								'y_base'	:	1.0				, \
-								'xlabel'	:	None			, \
-								'xlab_prop'	:	None			, \
-								'ylabel'	:	None			, \
-								'ylab_prop'	:	None			, \
-								'xticks'	:	None			, \
-								'xtick_prop':	None			, \
-								'yticks'	:	None			, \
-								'ytick_prop':	None			, \
-								'x_limit'	:	None			, \
-								'y_limit'	:	None			, \
-								'leg_props'	:	None			, \
-								'leg_fprop'	:	None}
+		self.SETTINGS 	= 	{	'plot_type'		:	'line'			, \
+								'uniq_cols'		:	False			, \
+								'color_map'		:	'gist_rainbow'	, \
+								'location'		:	None			, \
+								'title'			:	None			, \
+								'title_prop'	:	None			, \
+								'grid_bool'		:	False			, \
+								'grid_prop'		:	None			, \
+								'axes_type'		:	'linear'		, \
+								'x_base'		:	1.0				, \
+								'y_base'		:	1.0				, \
+								'xlabel'		:	None			, \
+								'xlab_prop'		:	None			, \
+								'ylabel'		:	None			, \
+								'ylab_prop'		:	None			, \
+								'xticks'		:	None			, \
+								'xtick_labels'	:	None			, \
+								'xtick_prop'	:	None			, \
+								'yticks'		:	None			, \
+								'ytick_prop'	:	None			, \
+								'x_limit'		:	None			, \
+								'y_limit'		:	None			, \
+								'leg_props'		:	None			, \
+								'leg_fprop'		:	None}
 
-		self.FRAMES 	= 	{	'top'		:	True 			, \
-								'bottom'	:	True 			, \
-								'left'		:	True 			, \
-								'right'		:	True}
+		self.FRAMES 	= 	{	'top'			:	True 			, \
+								'bottom'		:	True 			, \
+								'left'			:	True 			, \
+								'right'			:	True}
 		self.XTICK_PARAM 	=	None
 		self.YTICK_PARAM 	=	None
 		self.XTICK_FORMAT 	= 	None
@@ -1191,10 +1208,11 @@ class kaxes(object):
 		self.SETTINGS['ylab_prop']	= fdict
 		return
 
-	def set_xticks(self,myList,**fdict):
+	def set_xticks(self,myList,myLabels,**fdict):
 		self.SETTINGS['xtick_prop']	= fdict
 		if len(myList) != 0:
-			self.SETTINGS['xticks']	= myList	
+			self.SETTINGS['xticks']			= myList
+			self.SETTINGS['xtick_labels']	= myLabels
 		return
 
 	def set_yticks(self,myList,**fdict):
