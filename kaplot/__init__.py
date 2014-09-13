@@ -386,7 +386,7 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		mylist		- custom list
-		mylabels	- custom lables 
+		mylabels	- custom labels 
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
@@ -398,8 +398,8 @@ class kaplot(object):
 		ha 			- horizontal alignment , 'center' , 'right' , 'left'
 		rotation	- rotate text by some degree
 		"""
-		fdict 		= update_default_kwargs(self._FONT_XTICK,kwargs)
-		k 			= self._LAYER_OBJECTS[kwargs['ind']]
+		fdict 			= update_default_kwargs(self._FONT_XTICK,kwargs)
+		k 				= self._LAYER_OBJECTS[kwargs['ind']]
 		tick_list		= []
 		tick_labels		= []
 		if start is not None:
@@ -413,7 +413,7 @@ class kaplot(object):
 						li = tick_labels.index(val)
 						tick_labels[li] = kwargs['mylabels'][i]
 					except ValueError:
-						print 'The Value '+val+' is not in '+tick_labels+'. Ignoring.'
+						print 'The Value ',val,' is not in ',tick_labels,'. Ignoring.'
 			# custom ticks but no labels
 			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
 				tick_list 	= kwargs['mylist']
@@ -436,6 +436,7 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		mylist		- custom list
+		mylabels 	- custom labels
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		style 		- 'normal' or 'oblique'
@@ -447,14 +448,27 @@ class kaplot(object):
 		ha 			- horizontal alignment , 'center' , 'right' , 'left'
 		rotation	- rotate text by some degree
 		"""
-		fdict 		= update_default_kwargs(self._FONT_YTICK,kwargs)
-		k 			= self._LAYER_OBJECTS[kwargs['ind']]
-		tick_list	= []
-		if 'mylist' in kwargs:
-			tick_list = kwargs['mylist']
-		else:
-			tick_list = srange(start,stop,incr,log)
-		k.set_yticks(tick_list,**fdict)
+		fdict 			= update_default_kwargs(self._FONT_YTICK,kwargs)
+		k 				= self._LAYER_OBJECTS[kwargs['ind']]
+		tick_list		= []
+		tick_labels 	= []
+		if start is not None:
+			# start, stop, incr are specified
+			tick_list 	= srange(start,stop,incr,log)
+			tick_labels	= srange(start,stop,incr,log)
+			# custom labels
+			if 'mylist' in kwargs and 'mylabels' in kwargs:
+				for i,val in enumerate(kwargs['mylist']):
+					try:
+						li = tick_labels.index(val)
+						tick_labels[li] = kwargs['mylabels'][i]
+					except ValueError:
+						print 'The Value ',val,' is not in ',tick_labels,'. Ignoring.'
+			# custom ticks but no labels
+			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
+				tick_list 	= kwargs['mylist']
+				tick_labels	= kwargs['mylabels']
+		k.set_yticks(tick_list,tick_labels,**fdict)
 		return
 
 	@check_name
@@ -955,8 +969,10 @@ class kaplot(object):
 			 	mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
 			if k.SETTINGS['yticks'] is not None:
 				mpobj.set_yticks(k.SETTINGS['yticks'])
-			if k.SETTINGS['ytick_prop'] is not None:
-				mpobj.set_yticklabels(mpobj.get_yticks(),**k.SETTINGS['ytick_prop'])
+				mpobj.set_yticklabels(k.SETTINGS['ytick_labels'],**k.SETTINGS['ytick_prop'])
+			else:
+				# change settings eben if no ticks are specified
+				mpobj.set_yticklabels(mpobj.get_yticklabels(),**k.SETTINGS['ytick_prop'])
 			if k.XTICK_FORMAT is not None:
 				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
 				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
@@ -1138,6 +1154,7 @@ class kaxes(object):
 								'xtick_labels'	:	None			, \
 								'xtick_prop'	:	None			, \
 								'yticks'		:	None			, \
+								'ytick_labels'	:	None			, \
 								'ytick_prop'	:	None			, \
 								'x_limit'		:	None			, \
 								'y_limit'		:	None			, \
@@ -1215,10 +1232,11 @@ class kaxes(object):
 			self.SETTINGS['xtick_labels']	= myLabels
 		return
 
-	def set_yticks(self,myList,**fdict):
+	def set_yticks(self,myList,myLabels,**fdict):
 		self.SETTINGS['ytick_prop']	= fdict
 		if len(myList) != 0:
-			self.SETTINGS['yticks']		= myList
+			self.SETTINGS['yticks']			= myList
+			self.SETTINGS['ytick_labels']	= myLabels
 		return
 
 	def set_xlim(self,xmin,xmax):
