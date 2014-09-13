@@ -964,13 +964,13 @@ class kaplot(object):
 			if k.SETTINGS['xticks'] is not None:
 				mpobj.set_xticks(k.SETTINGS['xticks'])
 				mpobj.set_xticklabels(k.SETTINGS['xtick_labels'],**k.SETTINGS['xtick_prop'])
-			else:
+			elif k.SETTINGS['xtick_prop'] is not None:
 				# change settings even if no ticks are specified
 			 	mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
 			if k.SETTINGS['yticks'] is not None:
 				mpobj.set_yticks(k.SETTINGS['yticks'])
 				mpobj.set_yticklabels(k.SETTINGS['ytick_labels'],**k.SETTINGS['ytick_prop'])
-			else:
+			elif k.SETTINGS['ytick_prop'] is not None:
 				# change settings eben if no ticks are specified
 				mpobj.set_yticklabels(mpobj.get_yticklabels(),**k.SETTINGS['ytick_prop'])
 			if k.XTICK_FORMAT is not None:
