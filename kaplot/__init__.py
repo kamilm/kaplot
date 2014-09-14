@@ -207,7 +207,6 @@ class kaplot(object):
 		framealpha		- alpha level for the frame
 		ncol 			- number of legend columns
 		title 			- legend title 
-		fontsize 		- font size 
 		borderpad		- padding inside the legend 
 		labelspacing	- spacing between labels
 		handletextpad	- spacing between legend handle and text 

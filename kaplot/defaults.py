@@ -202,7 +202,6 @@ default = {
 								'framealpha'	:	1.0 			, \
 								'ncol'			:	1 				, \
 								'title'			:	None			, \
-								'fontsize'		:	'medium'		, \
 								'borderpad'		:	0.1 			, \
 								'labelspacing'	: 	0.1 			, \
 								'handletextpad'	: 	0.25			, \
