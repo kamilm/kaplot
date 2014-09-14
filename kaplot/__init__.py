@@ -417,7 +417,7 @@ class kaplot(object):
 			# custom ticks but no labels
 			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
 				tick_list 	= kwargs['mylist']
-				tick_labels	= kwargs['mylabels']
+				tick_labels	= kwargs['mylist']
 		k.set_xticks(tick_list,tick_labels,**fdict)
 		return
 
@@ -467,7 +467,7 @@ class kaplot(object):
 			# custom ticks but no labels
 			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
 				tick_list 	= kwargs['mylist']
-				tick_labels	= kwargs['mylabels']
+				tick_labels	= kwargs['mylist']
 		k.set_yticks(tick_list,tick_labels,**fdict)
 		return
 
