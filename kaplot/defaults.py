@@ -20,7 +20,7 @@ default = {
 
 	'SAVEFIG_SETTINGS' 	:	{	'dpi'			:	100		, \
 							  	'transparent'	:	False	, \
-							  	'width'			:	8	, \
+							  	'width'			:	8		, \
 							  	'height'		:	6},
 
 	'_LOCATION_TIGHT'	:	{	'upper left'	:	[0.18,0.595,0.25,0.25] , \
