@@ -524,13 +524,13 @@ class kaplot(object):
 		labelsize	- tick label font size
 		labelcolor 	- tick label font color
 
-		* valid in both / x-axis *
+		* valid in x-axis * (both is experimental)
 		labeltop	- True/False 
 		labelbottom	- True/False
 		top 		- True/False , draw ticks
 		bottom		- True/False , draw ticks
 
-		* valid in both / y-axis *
+		* valid in y-axis * (both is experimental)
 		labelleft	- True/False
 		labelright	- True/False
 		left 		- True/False , draw ticks
