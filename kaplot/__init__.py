@@ -1070,7 +1070,9 @@ class kaplot(object):
 			if k.SETTINGS['leg_props'] is not None:
 				if k.SETTINGS['leg_props']['bool']:
 					k.SETTINGS['leg_props'].pop('bool')
-					mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
+					l = mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
+					# update the legend title also
+					plt.setp(l.get_title(),**k.SETTINGS['leg_fprop'])
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
 		return
