@@ -184,7 +184,8 @@ default = {
 								'hatch'		:	'Auto'			, \
 								'facecolor'	:	'Auto'			, \
 								'bottom'	:	'Auto'			, \
-								'log'		:	'Auto'},
+								'log'		:	'Auto'			, \
+								'alpha'		:	'Auto'},
 
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
 								'style'		:	'normal'		, \

@@ -724,7 +724,7 @@ class kaplot(object):
 		alpha 		- alpha level
 
 		** line plot kwargs **
-		m 			- marker 
+		marker		- marker 
 		mec 		- marker edge color
 		ms 			- marker size 
 		markevery 	- marker every data points 
