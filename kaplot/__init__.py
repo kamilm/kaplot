@@ -5,6 +5,7 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 
 TODO 
 ====
+	-	find a way to implement '\!' (negative space) into latex strings to remove that annoying whitespace after a super/sub script
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
 """
