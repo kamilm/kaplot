@@ -34,7 +34,6 @@ default = {
 								'lower left'	:	[0.22,0.180,0.25,0.25]},
 
 	'_FONT_TITLE'		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -44,7 +43,6 @@ default = {
 								'rotation'	:	'Auto'},
 
 	'_FONT_XLABEL'		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -54,7 +52,6 @@ default = {
 								'rotation'	:	'Auto'},
 
 	'_FONT_YLABEL'		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -69,7 +66,6 @@ default = {
 								'lw'		:	'Auto'},
 
 	'_FONT_XTICK' 		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -79,7 +75,6 @@ default = {
 								'rotation'	:	'Auto'},
 
 	'_FONT_YTICK' 		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -133,7 +128,6 @@ default = {
 								'color'		:	'Auto'},
 
 	'_TEXT_FONT' 		:	{ 	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -188,7 +182,6 @@ default = {
 								'alpha'		:	'Auto'},
 
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
-								'style'		:	'normal'		, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'},
 

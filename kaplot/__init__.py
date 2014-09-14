@@ -214,7 +214,6 @@ class kaplot(object):
 
 		** font prop kwargs **
 		family			- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 			- 'normal' or 'oblique'
 		weight			- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 			- font size , #points 'xx-small' 'medium' 'xx-large'
 		"""
@@ -237,7 +236,7 @@ class kaplot(object):
 		name 		- layer name
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
 		alpha 		- alpha level
@@ -321,7 +320,6 @@ class kaplot(object):
 		name 		- layer name
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
@@ -352,7 +350,6 @@ class kaplot(object):
 		name 		- layer name
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
@@ -388,7 +385,6 @@ class kaplot(object):
 		mylabels	- custom labels 
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		color 		- font color
@@ -438,7 +434,6 @@ class kaplot(object):
 		mylabels 	- custom labels
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		color 		- font color
@@ -682,7 +677,7 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
 		alpha 		- alpha level
