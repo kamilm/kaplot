@@ -20,7 +20,7 @@ default = {
 
 	'SAVEFIG_SETTINGS' 	:	{	'dpi'			:	100		, \
 							  	'transparent'	:	False	, \
-							  	'width'			:	8	, \
+							  	'width'			:	8		, \
 							  	'height'		:	6},
 
 	'_LOCATION_TIGHT'	:	{	'upper left'	:	[0.18,0.595,0.25,0.25] , \
@@ -34,7 +34,6 @@ default = {
 								'lower left'	:	[0.22,0.180,0.25,0.25]},
 
 	'_FONT_TITLE'		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -44,7 +43,6 @@ default = {
 								'rotation'	:	'Auto'},
 
 	'_FONT_XLABEL'		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -54,7 +52,6 @@ default = {
 								'rotation'	:	'Auto'},
 
 	'_FONT_YLABEL'		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -69,7 +66,6 @@ default = {
 								'lw'		:	'Auto'},
 
 	'_FONT_XTICK' 		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -79,7 +75,6 @@ default = {
 								'rotation'	:	'Auto'},
 
 	'_FONT_YTICK' 		:	{	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -133,7 +128,6 @@ default = {
 								'color'		:	'Auto'},
 
 	'_TEXT_FONT' 		:	{ 	'family'	: 	'Auto' 		, \
-								'style'		:	'Auto'		, \
 								'weight'	:	'Auto'		, \
 								'size'		:	'Auto'		, \
 								'color'		:	'Auto'		, \
@@ -184,10 +178,10 @@ default = {
 								'hatch'		:	'Auto'			, \
 								'facecolor'	:	'Auto'			, \
 								'bottom'	:	'Auto'			, \
-								'log'		:	'Auto'},
+								'log'		:	'Auto'			, \
+								'alpha'		:	'Auto'},
 
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
-								'style'		:	'normal'		, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'},
 
@@ -201,7 +195,6 @@ default = {
 								'framealpha'	:	1.0 			, \
 								'ncol'			:	1 				, \
 								'title'			:	None			, \
-								'fontsize'		:	'medium'		, \
 								'borderpad'		:	0.1 			, \
 								'labelspacing'	: 	0.1 			, \
 								'handletextpad'	: 	0.25			, \

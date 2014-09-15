@@ -5,6 +5,7 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 
 TODO 
 ====
+	-	find a way to implement '\!' (negative space) into latex strings to remove that annoying whitespace after a super/sub script
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
 """
@@ -26,7 +27,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta2'
+__version__		= '1.0.0~beta3'
 __name__		= 'kaplot'
 
 @decorator
@@ -82,6 +83,7 @@ class kaplot(object):
 		self._LAYER_SETTINGS.append(deepcopy(self.LAYER_SETTINGS))
 		# Add settings
 		self.load_settings(settings)
+		plt.clf()
 		return
 
 	def load_settings(self,settings):
@@ -206,7 +208,6 @@ class kaplot(object):
 		framealpha		- alpha level for the frame
 		ncol 			- number of legend columns
 		title 			- legend title 
-		fontsize 		- font size 
 		borderpad		- padding inside the legend 
 		labelspacing	- spacing between labels
 		handletextpad	- spacing between legend handle and text 
@@ -214,7 +215,6 @@ class kaplot(object):
 
 		** font prop kwargs **
 		family			- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 			- 'normal' or 'oblique'
 		weight			- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 			- font size , #points 'xx-small' 'medium' 'xx-large'
 		"""
@@ -237,7 +237,7 @@ class kaplot(object):
 		name 		- layer name
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
 		alpha 		- alpha level
@@ -321,7 +321,6 @@ class kaplot(object):
 		name 		- layer name
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
@@ -352,7 +351,6 @@ class kaplot(object):
 		name 		- layer name
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
@@ -371,7 +369,7 @@ class kaplot(object):
 		return
 
 	@check_name
-	def set_xticks(self,start,stop,incr,log=False,**kwargs):
+	def set_xticks(self,start=None,stop=None,incr=None,log=False,**kwargs):
 		"""
 		sets the values of the ticks , can be logarithmic or custom
 		if `myList` is specified it will overwrite all other values
@@ -385,9 +383,9 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		mylist		- custom list
+		mylabels	- custom labels 
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		color 		- font color
@@ -396,17 +394,31 @@ class kaplot(object):
 		ha 			- horizontal alignment , 'center' , 'right' , 'left'
 		rotation	- rotate text by some degree
 		"""
-		fdict 	= update_default_kwargs(self._FONT_XTICK,kwargs)
-		k 		= self._LAYER_OBJECTS[kwargs['ind']]
-		if 'mylist' in kwargs:
-			tick_list = kwargs['mylist']
-		else:
-			tick_list = srange(start,stop,incr,log)
-		k.set_xticks(tick_list,**fdict)
+		fdict 			= update_default_kwargs(self._FONT_XTICK,kwargs)
+		k 				= self._LAYER_OBJECTS[kwargs['ind']]
+		tick_list		= []
+		tick_labels		= []
+		if start is not None:
+			# start, stop, incr are specified
+			tick_list 	= srange(start,stop,incr,log)
+			tick_labels	= srange(start,stop,incr,log)
+			# custom labels
+			if 'mylist' in kwargs and 'mylabels' in kwargs:
+				for i,val in enumerate(kwargs['mylist']):
+					try:
+						li = tick_labels.index(val)
+						tick_labels[li] = kwargs['mylabels'][i]
+					except ValueError:
+						print 'The Value ',val,' is not in ',tick_labels,'. Ignoring.'
+			# custom ticks but no labels
+			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
+				tick_list 	= kwargs['mylist']
+				tick_labels	= kwargs['mylist']
+		k.set_xticks(tick_list,tick_labels,**fdict)
 		return
 
 	@check_name
-	def set_yticks(self,start,stop,incr,log=False,**kwargs):
+	def set_yticks(self,start=None,stop=None,incr=None,log=False,**kwargs):
 		"""
 		sets the values of the ticks , can be logarithmic or custom
 		if `myList` is specified it will overwrite all other values
@@ -420,9 +432,9 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		mylist		- custom list
+		mylabels 	- custom labels
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		color 		- font color
@@ -431,13 +443,27 @@ class kaplot(object):
 		ha 			- horizontal alignment , 'center' , 'right' , 'left'
 		rotation	- rotate text by some degree
 		"""
-		fdict 	= update_default_kwargs(self._FONT_YTICK,kwargs)
-		k 		= self._LAYER_OBJECTS[kwargs['ind']]
-		if 'mylist' in kwargs:
-			tick_list = kwargs['mylist']
-		else:
-			tick_list = srange(start,stop,incr,log)
-		k.set_yticks(tick_list,**fdict)
+		fdict 			= update_default_kwargs(self._FONT_YTICK,kwargs)
+		k 				= self._LAYER_OBJECTS[kwargs['ind']]
+		tick_list		= []
+		tick_labels 	= []
+		if start is not None:
+			# start, stop, incr are specified
+			tick_list 	= srange(start,stop,incr,log)
+			tick_labels	= srange(start,stop,incr,log)
+			# custom labels
+			if 'mylist' in kwargs and 'mylabels' in kwargs:
+				for i,val in enumerate(kwargs['mylist']):
+					try:
+						li = tick_labels.index(val)
+						tick_labels[li] = kwargs['mylabels'][i]
+					except ValueError:
+						print 'The Value ',val,' is not in ',tick_labels,'. Ignoring.'
+			# custom ticks but no labels
+			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
+				tick_list 	= kwargs['mylist']
+				tick_labels	= kwargs['mylist']
+		k.set_yticks(tick_list,tick_labels,**fdict)
 		return
 
 	@check_name
@@ -499,13 +525,13 @@ class kaplot(object):
 		labelsize	- tick label font size
 		labelcolor 	- tick label font color
 
-		* valid in both / x-axis *
+		* valid in x-axis * (both is experimental)
 		labeltop	- True/False 
 		labelbottom	- True/False
 		top 		- True/False , draw ticks
 		bottom		- True/False , draw ticks
 
-		* valid in both / y-axis *
+		* valid in y-axis * (both is experimental)
 		labelleft	- True/False
 		labelright	- True/False
 		left 		- True/False , draw ticks
@@ -652,7 +678,7 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
-		style 		- 'normal' or 'oblique'
+		weight		- 'normal' 'regular' 'semibold' 'bold' 'black'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
 		color 		- font color
 		alpha 		- alpha level
@@ -693,7 +719,7 @@ class kaplot(object):
 		alpha 		- alpha level
 
 		** line plot kwargs **
-		m 			- marker 
+		marker		- marker 
 		mec 		- marker edge color
 		ms 			- marker size 
 		markevery 	- marker every data points 
@@ -851,88 +877,6 @@ class kaplot(object):
 			# GRID
 			if k.SETTINGS['grid_bool']:
 				mpobj.grid(**k.SETTINGS['grid_prop'])
-			# AXES TYPE AND BASE SETTING
-			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
-				if k.SETTINGS['axes_type'] is 'log-log':
-					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
-					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
-				elif k.SETTINGS['axes_type'] is 'semilog-y':
-					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
-				else:
-					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
-			else:
-				mpobj.set_xscale('linear')
-				mpobj.set_yscale('linear')
-			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
-			if k.SETTINGS['xlabel'] is not None:
-				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
-			if k.SETTINGS['ylabel'] is not None:
-				mpobj.set_ylabel(k.SETTINGS['ylabel'],**k.SETTINGS['ylab_prop'])
-			if k.SETTINGS['xticks'] is not None:
-				mpobj.set_xticks(k.SETTINGS['xticks'])
-				mpobj.set_xticklabels(k.SETTINGS['xticks'],**k.SETTINGS['xtick_prop'])
-			if k.SETTINGS['yticks'] is not None:
-				mpobj.set_yticks(k.SETTINGS['yticks'])
-				mpobj.set_yticklabels(k.SETTINGS['yticks'],**k.SETTINGS['ytick_prop'])
-			if k.XTICK_FORMAT is not None:
-				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
-			if k.YTICK_FORMAT is not None:
-				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)				
-			if k.XTICK_PARAM is not None:
-				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
-			if k.YTICK_PARAM is not None:
-				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
-			# AXES LIMITS
-			if k.SETTINGS['x_limit'] is not None:
-				xmin , xmax = k.SETTINGS['x_limit']
-				if xmin is not None:
-					mpobj.set_xlim(xmin=xmin)
-				if xmax is not None:
-					mpobj.set_xlim(xmax=xmax)
-			if k.SETTINGS['y_limit'] is not None:
-				ymin , ymax = k.SETTINGS['y_limit']
-				if ymin is not None:
-					mpobj.set_ylim(ymin=ymin)
-				if ymax is not None:
-					mpobj.set_ylim(ymax=ymax)
-			# FRAME ELEMENTS
-			if not k.FRAMES['top']:
-				mpobj.spines['top'].set_color('None')
-			if not k.FRAMES['bottom']:
-				mpobj.spines['bottom'].set_color('None')
-			if not k.FRAMES['right']:
-				mpobj.spines['right'].set_color('None')
-			if not k.FRAMES['left']:
-				mpobj.spines['left'].set_color('None')
-			# ADD AXHLINE
-			if len(k.AXHLINE_LIST) is not 0:
-				for ax in k.AXHLINE_LIST:
-					# convert xmin and xmax values to x,y values
-					if 'xmin' in ax.keys():
-						xmin , err = convert_xy(mpobj,ax['xmin'],0)
-						ax['xmin'] = xmin
-					if 'xmax' in ax.keys():
-						xmax , err = convert_xy(mpobj,ax['xmax'],0)
-						ax['xmax'] = xmax
-					mpobj.axhline(**ax)
-			# ADD AXVLINE
-			if len(k.AXVLINE_LIST) is not 0:
-				for ax in k.AXVLINE_LIST:
-					# convert ymin and xmax values to x,y values
-					if 'ymin' in ax.keys():
-						err , ymin = convert_xy(mpobj,0,ax['ymin'])
-						ax['ymin'] = ymin
-					if 'ymax' in ax.keys():
-						err, ymax  = convert_xy(mpobj,0,ax['ymax'])
-						ax['ymax'] = ymax
-					mpobj.axvline(**ax)
-			# ADD TEXT
-			if len(k.TEXT_LIST) is not 0:
-				for txt in k.TEXT_LIST:
-					txt['s'] = txt.pop('txt')
-					mpobj.text(**txt)
 			# ADD PLOTDATA
 			if len(k.DATA_LIST) is not 0:
 				# generate color,marker,fill list for the plot
@@ -995,6 +939,94 @@ class kaplot(object):
 							pd['fill'] = fill
 						pd.pop('increment')
 						mpobj.bar(**pd)
+			# AXES TYPE AND BASE SETTING
+			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
+				if k.SETTINGS['axes_type'] is 'log-log':
+					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
+					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
+				elif k.SETTINGS['axes_type'] is 'semilog-y':
+					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
+				else:
+					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
+			else:
+				mpobj.set_xscale('linear')
+				mpobj.set_yscale('linear')
+			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
+			if k.SETTINGS['xlabel'] is not None:
+				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
+			if k.SETTINGS['ylabel'] is not None:
+				mpobj.set_ylabel(k.SETTINGS['ylabel'],**k.SETTINGS['ylab_prop'])
+			if k.SETTINGS['xticks'] is not None:
+				mpobj.set_xticks(k.SETTINGS['xticks'])
+				mpobj.set_xticklabels(k.SETTINGS['xtick_labels'],**k.SETTINGS['xtick_prop'])
+			elif k.SETTINGS['xtick_prop'] is not None:
+				# change settings even if no ticks are specified
+			 	mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
+			if k.SETTINGS['yticks'] is not None:
+				mpobj.set_yticks(k.SETTINGS['yticks'])
+				mpobj.set_yticklabels(k.SETTINGS['ytick_labels'],**k.SETTINGS['ytick_prop'])
+			elif k.SETTINGS['ytick_prop'] is not None:
+				# change settings eben if no ticks are specified
+				mpobj.set_yticklabels(mpobj.get_yticklabels(),**k.SETTINGS['ytick_prop'])
+			if k.XTICK_FORMAT is not None:
+				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
+			if k.YTICK_FORMAT is not None:
+				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)				
+			if k.XTICK_PARAM is not None:
+				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
+			if k.YTICK_PARAM is not None:
+				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
+			# AXES LIMITS
+			if k.SETTINGS['x_limit'] is not None:
+				xmin , xmax = k.SETTINGS['x_limit']
+				if xmin is not None:
+					mpobj.set_xlim(xmin=xmin)
+				if xmax is not None:
+					mpobj.set_xlim(xmax=xmax)
+			if k.SETTINGS['y_limit'] is not None:
+				ymin , ymax = k.SETTINGS['y_limit']
+				if ymin is not None:
+					mpobj.set_ylim(ymin=ymin)
+				if ymax is not None:
+					mpobj.set_ylim(ymax=ymax)
+			# FRAME ELEMENTS
+			if not k.FRAMES['top']:
+				mpobj.spines['top'].set_color('None')
+			if not k.FRAMES['bottom']:
+				mpobj.spines['bottom'].set_color('None')
+			if not k.FRAMES['right']:
+				mpobj.spines['right'].set_color('None')
+			if not k.FRAMES['left']:
+				mpobj.spines['left'].set_color('None')
+			# ADD AXHLINE
+			if len(k.AXHLINE_LIST) is not 0:
+				for ax in k.AXHLINE_LIST:
+					# convert xmin and xmax values to x,y values
+					if 'xmin' in ax.keys():
+						xmin , err = convert_xy(mpobj,ax['xmin'],0)
+						ax['xmin'] = xmin
+					if 'xmax' in ax.keys():
+						xmax , err = convert_xy(mpobj,ax['xmax'],0)
+						ax['xmax'] = xmax
+					mpobj.axhline(**ax)
+			# ADD AXVLINE
+			if len(k.AXVLINE_LIST) is not 0:
+				for ax in k.AXVLINE_LIST:
+					# convert ymin and xmax values to x,y values
+					if 'ymin' in ax.keys():
+						err , ymin = convert_xy(mpobj,0,ax['ymin'])
+						ax['ymin'] = ymin
+					if 'ymax' in ax.keys():
+						err, ymax  = convert_xy(mpobj,0,ax['ymax'])
+						ax['ymax'] = ymax
+					mpobj.axvline(**ax)
+			# ADD TEXT
+			if len(k.TEXT_LIST) is not 0:
+				for txt in k.TEXT_LIST:
+					txt['s'] = txt.pop('txt')
+					mpobj.text(**txt)
 			# ADD RECTANGLE
 			if len(k.RECT_LIST) is not 0:
 				inc_cnt = 0
@@ -1034,7 +1066,9 @@ class kaplot(object):
 			if k.SETTINGS['leg_props'] is not None:
 				if k.SETTINGS['leg_props']['bool']:
 					k.SETTINGS['leg_props'].pop('bool')
-					mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
+					l = mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
+					# update the legend title also
+					plt.setp(l.get_title(),**k.SETTINGS['leg_fprop'])
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
 		return
@@ -1098,34 +1132,36 @@ class kaxes(object):
 	_LOCATION = ['upper left', 'upper right', 'lower left', 'lower right']
 
 	def __init__(self):
-		self.SETTINGS 	= 	{	'plot_type'	:	'line'			, \
-								'uniq_cols'	:	False			, \
-								'color_map'	:	'gist_rainbow'	, \
-								'location'	:	None			, \
-								'title'		:	None			, \
-								'title_prop':	None			, \
-								'grid_bool'	:	False			, \
-								'grid_prop'	:	None			, \
-								'axes_type'	:	'linear'		, \
-								'x_base'	:	1.0				, \
-								'y_base'	:	1.0				, \
-								'xlabel'	:	None			, \
-								'xlab_prop'	:	None			, \
-								'ylabel'	:	None			, \
-								'ylab_prop'	:	None			, \
-								'xticks'	:	None			, \
-								'xtick_prop':	None			, \
-								'yticks'	:	None			, \
-								'ytick_prop':	None			, \
-								'x_limit'	:	None			, \
-								'y_limit'	:	None			, \
-								'leg_props'	:	None			, \
-								'leg_fprop'	:	None}
+		self.SETTINGS 	= 	{	'plot_type'		:	'line'			, \
+								'uniq_cols'		:	False			, \
+								'color_map'		:	'gist_rainbow'	, \
+								'location'		:	None			, \
+								'title'			:	None			, \
+								'title_prop'	:	None			, \
+								'grid_bool'		:	False			, \
+								'grid_prop'		:	None			, \
+								'axes_type'		:	'linear'		, \
+								'x_base'		:	1.0				, \
+								'y_base'		:	1.0				, \
+								'xlabel'		:	None			, \
+								'xlab_prop'		:	None			, \
+								'ylabel'		:	None			, \
+								'ylab_prop'		:	None			, \
+								'xticks'		:	None			, \
+								'xtick_labels'	:	None			, \
+								'xtick_prop'	:	None			, \
+								'yticks'		:	None			, \
+								'ytick_labels'	:	None			, \
+								'ytick_prop'	:	None			, \
+								'x_limit'		:	None			, \
+								'y_limit'		:	None			, \
+								'leg_props'		:	None			, \
+								'leg_fprop'		:	None}
 
-		self.FRAMES 	= 	{	'top'		:	True 			, \
-								'bottom'	:	True 			, \
-								'left'		:	True 			, \
-								'right'		:	True}
+		self.FRAMES 	= 	{	'top'			:	True 			, \
+								'bottom'		:	True 			, \
+								'left'			:	True 			, \
+								'right'			:	True}
 		self.XTICK_PARAM 	=	None
 		self.YTICK_PARAM 	=	None
 		self.XTICK_FORMAT 	= 	None
@@ -1186,14 +1222,18 @@ class kaxes(object):
 		self.SETTINGS['ylab_prop']	= fdict
 		return
 
-	def set_xticks(self,myList,**fdict):
-		self.SETTINGS['xticks']		= myList
+	def set_xticks(self,myList,myLabels,**fdict):
 		self.SETTINGS['xtick_prop']	= fdict
+		if len(myList) != 0:
+			self.SETTINGS['xticks']			= myList
+			self.SETTINGS['xtick_labels']	= myLabels
 		return
 
-	def set_yticks(self,myList,**fdict):
-		self.SETTINGS['yticks']		= myList
+	def set_yticks(self,myList,myLabels,**fdict):
 		self.SETTINGS['ytick_prop']	= fdict
+		if len(myList) != 0:
+			self.SETTINGS['yticks']			= myList
+			self.SETTINGS['ytick_labels']	= myLabels
 		return
 
 	def set_xlim(self,xmin,xmax):
@@ -1298,18 +1338,33 @@ def srange(start,end,incr,log=False):
 		return []
 	if start == end:
 		return []
+	## type checking
+	# if everything can be shown as an int then make all values int
+	if int(start) == float(start):
+		start = int(start)
+	else:
+		start = float(start)
+	if int(end) == float(end):
+		end = int(end)
+	else:
+		end = float(end)
+	if int(incr) == float(incr):
+		incr = int(incr)
+	else:
+		incr = float(incr)
+	## /type checking
 	if log == False:
-		cval = float(start)
+		cval = start
 		retList =[]
 		while cval <= end:
 			retList.append(cval)
-			cval = float(cval)+float(incr)
+			cval = cval+incr
 	else:
 		cval = start
 		retList = []
 		while cval <= end:
 			retList.append(cval)
-			cval = float(cval)*float(incr)
+			cval = cval*incr
 	return retList
 
 def convert_xy(ax,x,y):
