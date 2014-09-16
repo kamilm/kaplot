@@ -982,6 +982,7 @@ table {
   <p>Defines a couple of default settings dictionaries for importing into a kaplot object.<br />
 They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot <code>__init__</code> function.<br />
 Any parameters not specified by the user will come from the <code>default</code> settings dictionary.</p>
+<p>If it exists, import any user-defined settings from ~/.kaplotdefaults.rc</p>
   
     <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-kaplot.defaults', this);">Show source.</a></p>
     <div id="source-kaplot.defaults" class="source">
@@ -989,7 +990,12 @@ Any parameters not specified by the user will come from the <code>default</code>
 <span class="sd">Defines a couple of default settings dictionaries for importing into a kaplot object.</span>
 <span class="sd">They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot `__init__` function.</span>
 <span class="sd">Any parameters not specified by the user will come from the `default` settings dictionary.</span>
+
+<span class="sd">If it exists, import any user-defined settings from ~/.kaplotdefaults.rc</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">imp</span> <span class="kn">import</span> <span class="n">load_source</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">expanduser</span>
 
 <span class="n">default</span> <span class="o">=</span> <span class="p">{</span>
 	<span class="s">&#39;PLOT_SETTINGS&#39;</span> 	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;tight_layout&#39;</span>	<span class="p">:</span>	<span class="bp">False</span> 		<span class="p">,</span> \
@@ -1002,7 +1008,7 @@ Any parameters not specified by the user will come from the <code>default</code>
 
 	<span class="s">&#39;SAVEFIG_SETTINGS&#39;</span> 	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;dpi&#39;</span>			<span class="p">:</span>	<span class="mi">100</span>		<span class="p">,</span> \
 							  	<span class="s">&#39;transparent&#39;</span>	<span class="p">:</span>	<span class="bp">False</span>	<span class="p">,</span> \
-							  	<span class="s">&#39;width&#39;</span>			<span class="p">:</span>	<span class="mi">8</span>	<span class="p">,</span> \
+							  	<span class="s">&#39;width&#39;</span>			<span class="p">:</span>	<span class="mi">8</span>		<span class="p">,</span> \
 							  	<span class="s">&#39;height&#39;</span>		<span class="p">:</span>	<span class="mi">6</span><span class="p">},</span>
 
 	<span class="s">&#39;_LOCATION_TIGHT&#39;</span>	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;upper left&#39;</span>	<span class="p">:</span>	<span class="p">[</span><span class="mf">0.18</span><span class="p">,</span><span class="mf">0.595</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.25</span><span class="p">]</span> <span class="p">,</span> \
@@ -1016,7 +1022,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;lower left&#39;</span>	<span class="p">:</span>	<span class="p">[</span><span class="mf">0.22</span><span class="p">,</span><span class="mf">0.180</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.25</span><span class="p">]},</span>
 
 	<span class="s">&#39;_FONT_TITLE&#39;</span>		<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span> 		<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
@@ -1026,7 +1031,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;rotation&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_FONT_XLABEL&#39;</span>		<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span> 		<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
@@ -1036,7 +1040,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;rotation&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_FONT_YLABEL&#39;</span>		<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span> 		<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
@@ -1051,7 +1054,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;lw&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_FONT_XTICK&#39;</span> 		<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span> 		<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
@@ -1061,7 +1063,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;rotation&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_FONT_YTICK&#39;</span> 		<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span> 		<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
@@ -1115,7 +1116,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_TEXT_FONT&#39;</span> 		<span class="p">:</span>	<span class="p">{</span> 	<span class="s">&#39;family&#39;</span>	<span class="p">:</span> 	<span class="s">&#39;Auto&#39;</span> 		<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;color&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>		<span class="p">,</span> \
@@ -1166,10 +1166,10 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;hatch&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;facecolor&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
 								<span class="s">&#39;bottom&#39;</span>	<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
-								<span class="s">&#39;log&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
+								<span class="s">&#39;log&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span>			<span class="p">,</span> \
+								<span class="s">&#39;alpha&#39;</span>		<span class="p">:</span>	<span class="s">&#39;Auto&#39;</span><span class="p">},</span>
 
 	<span class="s">&#39;_LEGEND_FONTPROPS&#39;</span>	<span class="p">:</span>	<span class="p">{</span>	<span class="s">&#39;family&#39;</span>	<span class="p">:</span>	<span class="s">&#39;sans-serif&#39;</span>	<span class="p">,</span> \
-								<span class="s">&#39;style&#39;</span>		<span class="p">:</span>	<span class="s">&#39;normal&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;weight&#39;</span>	<span class="p">:</span>	<span class="s">&#39;normal&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;size&#39;</span>		<span class="p">:</span>	<span class="s">&#39;medium&#39;</span><span class="p">},</span>
 
@@ -1183,7 +1183,6 @@ Any parameters not specified by the user will come from the <code>default</code>
 								<span class="s">&#39;framealpha&#39;</span>	<span class="p">:</span>	<span class="mf">1.0</span> 			<span class="p">,</span> \
 								<span class="s">&#39;ncol&#39;</span>			<span class="p">:</span>	<span class="mi">1</span> 				<span class="p">,</span> \
 								<span class="s">&#39;title&#39;</span>			<span class="p">:</span>	<span class="bp">None</span>			<span class="p">,</span> \
-								<span class="s">&#39;fontsize&#39;</span>		<span class="p">:</span>	<span class="s">&#39;medium&#39;</span>		<span class="p">,</span> \
 								<span class="s">&#39;borderpad&#39;</span>		<span class="p">:</span>	<span class="mf">0.1</span> 			<span class="p">,</span> \
 								<span class="s">&#39;labelspacing&#39;</span>	<span class="p">:</span> 	<span class="mf">0.1</span> 			<span class="p">,</span> \
 								<span class="s">&#39;handletextpad&#39;</span>	<span class="p">:</span> 	<span class="mf">0.25</span>			<span class="p">,</span> \
@@ -1244,6 +1243,15 @@ Any parameters not specified by the user will come from the <code>default</code>
 <span class="n">markers</span> <span class="o">=</span> <span class="p">{</span>
 	<span class="s">&#39;_MARKER_LIST&#39;</span> 		<span class="p">:</span>	<span class="p">[</span><span class="s">&#39;s&#39;</span> <span class="p">,</span> <span class="s">&#39;o&#39;</span> <span class="p">,</span> <span class="s">&#39;^&#39;</span> <span class="p">,</span> <span class="s">&#39;D&#39;</span><span class="p">],</span>
 <span class="p">}</span>
+
+<span class="k">try</span><span class="p">:</span>
+	<span class="n">kud</span> <span class="o">=</span> <span class="n">load_source</span><span class="p">(</span><span class="s">&#39;kaplotUserDefaults&#39;</span><span class="p">,</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~/.kaplotdefaults.rc&#39;</span><span class="p">))</span>
+	<span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">kud</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+		<span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;__&#39;</span><span class="p">):</span>
+			<span class="k">continue</span>
+		<span class="nb">globals</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+<span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+	<span class="k">pass</span>
 </pre></div>
 
     </div>
@@ -1260,14 +1268,22 @@ Any parameters not specified by the user will come from the <code>default</code>
       <ul>
           <li class="mono"><a href="#kaplot.defaults.blackandwhite">blackandwhite</a></li>
           <li class="mono"><a href="#kaplot.defaults.bw">bw</a></li>
-      </ul>
-      <ul>
           <li class="mono"><a href="#kaplot.defaults.default">default</a></li>
-          <li class="mono"><a href="#kaplot.defaults.grayscale">grayscale</a></li>
+          <li class="mono"><a href="#kaplot.defaults.escargo">escargo</a></li>
+          <li class="mono"><a href="#kaplot.defaults.escargosize">escargosize</a></li>
       </ul>
       <ul>
+          <li class="mono"><a href="#kaplot.defaults.grayscale">grayscale</a></li>
           <li class="mono"><a href="#kaplot.defaults.greyscale">greyscale</a></li>
+          <li class="mono"><a href="#kaplot.defaults.highres">highres</a></li>
+          <li class="mono"><a href="#kaplot.defaults.key">key</a></li>
           <li class="mono"><a href="#kaplot.defaults.markers">markers</a></li>
+      </ul>
+      <ul>
+          <li class="mono"><a href="#kaplot.defaults.paren">paren</a></li>
+          <li class="mono"><a href="#kaplot.defaults.small">small</a></li>
+          <li class="mono"><a href="#kaplot.defaults.tiny">tiny</a></li>
+          <li class="mono"><a href="#kaplot.defaults.value">value</a></li>
       </ul>
   </div>
 
@@ -1303,6 +1319,22 @@ Any parameters not specified by the user will come from the <code>default</code>
 
       </div>
       <div class="item">
+        <p id="kaplot.defaults.escargo" class="name">var <span class="ident">escargo</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.escargosize" class="name">var <span class="ident">escargosize</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
         <p id="kaplot.defaults.grayscale" class="name">var <span class="ident">grayscale</span></p>
         
   
@@ -1319,7 +1351,55 @@ Any parameters not specified by the user will come from the <code>default</code>
 
       </div>
       <div class="item">
+        <p id="kaplot.defaults.highres" class="name">var <span class="ident">highres</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.key" class="name">var <span class="ident">key</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
         <p id="kaplot.defaults.markers" class="name">var <span class="ident">markers</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.paren" class="name">var <span class="ident">paren</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.small" class="name">var <span class="ident">small</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.tiny" class="name">var <span class="ident">tiny</span></p>
+        
+  
+    <div class="source_cont">
+</div>
+
+      </div>
+      <div class="item">
+        <p id="kaplot.defaults.value" class="name">var <span class="ident">value</span></p>
         
   
     <div class="source_cont">
