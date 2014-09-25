@@ -742,16 +742,10 @@ class kaplot(object):
 		bottom		- y starting point
 		log 		- True/False 
 		"""
-		k 	= self._LAYER_OBJECTS[kwargs['ind']]
-		if k.SETTINGS['plot_type'] is 'line':
-			sdict 			= update_default_kwargs(self._LINE_DEFAULTS,kwargs)
-			sdict['x']		= x
-			sdict['y']		= y
-		elif k.SETTINGS['plot_type'] is 'bar':
-			sdict 			= update_default_kwargs(self._BAR_DEFAULTS,kwargs)
-			sdict['left']	= x 
-			sdict['height']	= y
-		k.add_plotdata(**sdict)
+		k 			= self._LAYER_OBJECTS[kwargs['ind']]
+		kwargs['x']	= x
+		kwargs['y'] = y 
+		k.add_plotdata(**kwargs)
 		return
 
 	@check_name
@@ -879,6 +873,17 @@ class kaplot(object):
 				mpobj.grid(**k.SETTINGS['grid_prop'])
 			# ADD PLOTDATA
 			if len(k.DATA_LIST) is not 0:
+				# 
+				for i,pd in enumerate(k.DATA_LIST):
+					# update plt settings
+					if k.SETTINGS['plot_type'] == 'line':
+						npd 			= update_default_kwargs(self._LINE_DEFAULTS,pd)
+						k.DATA_LIST[i] 	= npd
+					elif k.SETTINGS['plot_type'] == 'bar':
+						npd 			= update_default_kwargs(self._BAR_DEFAULTS,pd)
+						npd['left']		= pd['x'] 
+						npd['height']	= pd['y']
+						k.DATA_LIST[i] 	= npd
 				# generate color,marker,fill list for the plot
 				inc_cnt = 0
 				for pd in k.DATA_LIST:
