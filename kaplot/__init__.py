@@ -27,7 +27,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta3'
+__version__		= '1.0.0~beta4'
 __name__		= 'kaplot'
 
 @decorator
@@ -541,12 +541,12 @@ class kaplot(object):
 		# gets both lists, regardless
 		x_params= update_default_kwargs(self._XTICK_PARAMS,kwargs)
 		y_params= update_default_kwargs(self._YTICK_PARAMS,kwargs)
-		if axis is 'both':
+		if axis == 'both':
 			k.set_x_tick_params(**y_params)
 			k.set_y_tick_params(**y_params)
-		elif axis is 'x':
+		elif axis == 'x':
 			k.set_x_tick_params(**x_params)
-		elif axis is 'y':
+		elif axis == 'y':
 			k.set_y_tick_params(**y_params)			
 		return
 
@@ -567,12 +567,12 @@ class kaplot(object):
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		x_format = update_default_kwargs(self._XTICK_FORMAT,kwargs)
 		y_format = update_default_kwargs(self._YTICK_FORMAT,kwargs)
-		if axis is 'both':
+		if axis == 'both':
 			k.set_x_tick_format(**x_format)
 			k.set_y_tick_format(**y_format)
-		elif axis is 'x':
+		elif axis == 'x':
 			k.set_x_tick_format(**x_format)
-		elif axis is 'y':
+		elif axis == 'y':
 			k.set_y_tick_format(**y_format)
 		return
 
@@ -742,16 +742,10 @@ class kaplot(object):
 		bottom		- y starting point
 		log 		- True/False 
 		"""
-		k 	= self._LAYER_OBJECTS[kwargs['ind']]
-		if k.SETTINGS['plot_type'] is 'line':
-			sdict 			= update_default_kwargs(self._LINE_DEFAULTS,kwargs)
-			sdict['x']		= x
-			sdict['y']		= y
-		elif k.SETTINGS['plot_type'] is 'bar':
-			sdict 			= update_default_kwargs(self._BAR_DEFAULTS,kwargs)
-			sdict['left']	= x 
-			sdict['height']	= y
-		k.add_plotdata(**sdict)
+		k 			= self._LAYER_OBJECTS[kwargs['ind']]
+		kwargs['x']	= x
+		kwargs['y'] = y 
+		k.add_plotdata(**kwargs)
 		return
 
 	@check_name
@@ -878,7 +872,18 @@ class kaplot(object):
 			if k.SETTINGS['grid_bool']:
 				mpobj.grid(**k.SETTINGS['grid_prop'])
 			# ADD PLOTDATA
-			if len(k.DATA_LIST) is not 0:
+			if len(k.DATA_LIST) != 0:
+				# 
+				for i,pd in enumerate(k.DATA_LIST):
+					# update plt settings
+					if k.SETTINGS['plot_type'] == 'line':
+						npd 			= update_default_kwargs(self._LINE_DEFAULTS,pd)
+						k.DATA_LIST[i] 	= npd
+					elif k.SETTINGS['plot_type'] == 'bar':
+						npd 			= update_default_kwargs(self._BAR_DEFAULTS,pd)
+						npd['left']		= pd['x'] 
+						npd['height']	= pd['y']
+						k.DATA_LIST[i] 	= npd
 				# generate color,marker,fill list for the plot
 				inc_cnt = 0
 				for pd in k.DATA_LIST:
@@ -887,7 +892,7 @@ class kaplot(object):
 				cnt = 0
 				for pd in k.DATA_LIST:
 					# line plots
-					if k.SETTINGS['plot_type'] is 'line':
+					if k.SETTINGS['plot_type'] == 'line':
 						if k.SETTINGS['uniq_cols']:
 							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
 							col , mar , fill = cols[cnt] , None , None
@@ -921,7 +926,7 @@ class kaplot(object):
 						pd.pop('increment')
 						mpobj.errorbar(**pd)
 					# bar plots
-					elif k.SETTINGS['plot_type'] is 'bar':
+					elif k.SETTINGS['plot_type'] == 'bar':
 						if k.SETTINGS['uniq_cols']:
 							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
 							col , hat , fill = cols[cnt] , None , None
@@ -941,10 +946,10 @@ class kaplot(object):
 						mpobj.bar(**pd)
 			# AXES TYPE AND BASE SETTING
 			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
-				if k.SETTINGS['axes_type'] is 'log-log':
+				if k.SETTINGS['axes_type'] == 'log-log':
 					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
 					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
-				elif k.SETTINGS['axes_type'] is 'semilog-y':
+				elif k.SETTINGS['axes_type'] == 'semilog-y':
 					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
 				else:
 					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
@@ -1001,7 +1006,7 @@ class kaplot(object):
 			if not k.FRAMES['left']:
 				mpobj.spines['left'].set_color('None')
 			# ADD AXHLINE
-			if len(k.AXHLINE_LIST) is not 0:
+			if len(k.AXHLINE_LIST) != 0:
 				for ax in k.AXHLINE_LIST:
 					# convert xmin and xmax values to x,y values
 					if 'xmin' in ax.keys():
@@ -1012,7 +1017,7 @@ class kaplot(object):
 						ax['xmax'] = xmax
 					mpobj.axhline(**ax)
 			# ADD AXVLINE
-			if len(k.AXVLINE_LIST) is not 0:
+			if len(k.AXVLINE_LIST) != 0:
 				for ax in k.AXVLINE_LIST:
 					# convert ymin and xmax values to x,y values
 					if 'ymin' in ax.keys():
@@ -1023,12 +1028,12 @@ class kaplot(object):
 						ax['ymax'] = ymax
 					mpobj.axvline(**ax)
 			# ADD TEXT
-			if len(k.TEXT_LIST) is not 0:
+			if len(k.TEXT_LIST) != 0:
 				for txt in k.TEXT_LIST:
 					txt['s'] = txt.pop('txt')
 					mpobj.text(**txt)
 			# ADD RECTANGLE
-			if len(k.RECT_LIST) is not 0:
+			if len(k.RECT_LIST) != 0:
 				inc_cnt = 0
 				for rd in k.RECT_LIST:
 					if rd['increment']:
@@ -1057,7 +1062,7 @@ class kaplot(object):
 					rd.pop('increment')
 					mpobj.axhspan(**rd)
 			# ADD ARROW
-			if len(k.ARROW_LIST) is not 0:
+			if len(k.ARROW_LIST) != 0:
 				print 'adding arrows'
 				for ad in k.ARROW_LIST:
 					mpobj.arrow(**ad)
@@ -1316,7 +1321,7 @@ def update_default_kwargs(default_dict,current_dict):
 		if key in current_dict:
 			return_dict[key] = current_dict[key]
 		else:
-			if kval is not 'Auto':
+			if kval != 'Auto':
 				return_dict[key] = kval
 	return return_dict
 
