@@ -5,6 +5,7 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 
 TODO 
 ====
+	- 	sanitize linestyle/ls = '-',... vs 'solid','dashed','dashdot','dotted'
 	-	find a way to implement '\!' (negative space) into latex strings to remove that annoying whitespace after a super/sub script
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
@@ -27,7 +28,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta4'
+__version__		= '1.0.0~beta5'
 __name__		= 'kaplot'
 
 @decorator
