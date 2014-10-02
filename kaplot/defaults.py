@@ -181,6 +181,27 @@ default = {
 								'log'		:	'Auto'			, \
 								'alpha'		:	'Auto'},
 
+	'_HIST_DEFAULTS'	:	{	'bins'			: 'Auto'		, \
+								'increment'		: True			, \
+								'min' 			: 'Auto'		, \
+								'max' 			: 'Auto'		, \
+								'normed' 		: 'Auto'		, \
+								'cumulative'	: 'Auto'		, \
+								'histtype' 		: 'Auto'		, \
+								'align'			: 'Auto'		, \
+								'orientation' 	: 'Auto'		, \
+								'log' 			: 'Auto'		, \
+								'color' 		: 'Auto'		, \
+								'label' 		: 'Auto'		, \
+								'stacked' 		: 'Auto'		, \
+								'alpha' 		: 'Auto'		, \
+								'edgecolor'		: 'Auto'		, \
+								'facecolor' 	: 'Auto'		, \
+								'fill' 			: 'Auto'		, \
+								'hatch' 		: 'Auto'		, \
+								'ls' 			: 'Auto'		, \
+								'lw' 			: 'Auto'},
+
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'},
