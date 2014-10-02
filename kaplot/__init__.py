@@ -5,6 +5,7 @@ is simple enough to quickly prototype plots, or fine tune for publication qualit
 
 TODO 
 ====
+	- 	sanitize linestyle/ls = '-',... vs 'solid','dashed','dashdot','dotted'
 	-	find a way to implement '\!' (negative space) into latex strings to remove that annoying whitespace after a super/sub script
 	- 	need to add loadObj()
 	- 	fix latex output to use the same font
@@ -27,7 +28,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta4'
+__version__		= '1.0.0~beta5'
 __name__		= 'kaplot'
 
 @decorator
@@ -182,7 +183,9 @@ class kaplot(object):
 		name 	- layer name if not main
 		"""
 		k = self._LAYER_OBJECTS[kwargs['ind']]
-		if ptype.lower() in ['line', 'bar']:
+		if ptype.lower() in ['line', 'bar','hist','histogram']:
+			if ptype.lower() in ['hist', 'histogram']:
+				ptype = 'hist'
 			k.set_plot_type(ptype)
 		else:
 			print "KAPLOT Error. Not a valid plot"
@@ -741,6 +744,28 @@ class kaplot(object):
 		width 		- array with width for each value 
 		bottom		- y starting point
 		log 		- True/False 
+
+		** histogram chart kwargs **
+		http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.hist
+		bins		- bins to uses during binning 
+		min 		- lower value for bins, less than min are ignored
+		max 		- upper value for bins, grather than max are ignored
+		normed 		- True/False : normalize the values, integral is 1
+		cumulative	- True/False : each bin is sum of previous bins + new values
+		histtype 	- 'bar' , 'barstacked' , 'step' , 'stepfilled'
+		align 		- alignment (left, mid, right)
+		orientation - 'horizontal' or 'vertical'
+		log 		- True/False : Use log scale?
+		color 		- color 
+		label 		- data label 
+		stacked 	- True/False : stack data on top of each other (true) or next to each other (false)
+		alpha 		- alpha level
+		edgecolor	- 
+		facecolor 	- 
+		fill 		- True/False
+		hatch 		- 
+		ls 			- line style
+		lw 			- line width
 		"""
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
 		kwargs['x']	= x
@@ -884,6 +909,16 @@ class kaplot(object):
 						npd['left']		= pd['x'] 
 						npd['height']	= pd['y']
 						k.DATA_LIST[i] 	= npd
+					elif k.SETTINGS['plot_type'] == 'hist':
+						npd 			= update_default_kwargs(self._HIST_DEFAULTS,pd)
+						npd['x']		= pd['y']
+						if 'min' in npd.keys() or 'max' in npd.keys():
+							npd['range'] = [None,None]
+							if 'min' in npd.keys():
+								npd['range'][0] = npd.pop('min')
+							if 'max' in npd.keys():
+								npd['range'][1] = npd.pop('max')
+						k.DATA_LIST[i]	= npd
 				# generate color,marker,fill list for the plot
 				inc_cnt = 0
 				for pd in k.DATA_LIST:
@@ -926,7 +961,7 @@ class kaplot(object):
 						pd.pop('increment')
 						mpobj.errorbar(**pd)
 					# bar plots
-					elif k.SETTINGS['plot_type'] == 'bar':
+					elif k.SETTINGS['plot_type'] in ['bar', 'hist']:
 						if k.SETTINGS['uniq_cols']:
 							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
 							col , hat , fill = cols[cnt] , None , None
@@ -943,7 +978,10 @@ class kaplot(object):
 						if 'fill' not in pd:
 							pd['fill'] = fill
 						pd.pop('increment')
-						mpobj.bar(**pd)
+						if k.SETTINGS['plot_type'] == 'bar':
+							mpobj.bar(**pd)
+						else:
+							mpobj.hist(**pd)
 			# AXES TYPE AND BASE SETTING
 			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
 				if k.SETTINGS['axes_type'] == 'log-log':
