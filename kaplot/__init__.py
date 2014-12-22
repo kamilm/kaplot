@@ -890,6 +890,18 @@ class kaplot(object):
 				else:
 					loc_cor = self._LOCATION[loc_txt]
 				mpobj = plt.axes(loc_cor)
+			# AXES TYPE AND BASE SETTING
+			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
+				if k.SETTINGS['axes_type'] == 'log-log':
+					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
+					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
+				elif k.SETTINGS['axes_type'] == 'semilog-y':
+					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
+				else:
+					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
+			else:
+				mpobj.set_xscale('linear')
+				mpobj.set_yscale('linear')
 			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
@@ -982,18 +994,6 @@ class kaplot(object):
 							mpobj.bar(**pd)
 						else:
 							mpobj.hist(**pd)
-			# AXES TYPE AND BASE SETTING
-			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
-				if k.SETTINGS['axes_type'] == 'log-log':
-					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
-					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
-				elif k.SETTINGS['axes_type'] == 'semilog-y':
-					mpobj.set_yscale('log',basey=k.SETTINGS['y_base'])
-				else:
-					mpobj.set_xscale('log',basex=k.SETTINGS['x_base'])
-			else:
-				mpobj.set_xscale('linear')
-				mpobj.set_yscale('linear')
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
