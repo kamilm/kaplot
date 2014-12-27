@@ -3,6 +3,10 @@ kaplot is a plotting tool built around matplotlib. It combines the flexibilty an
 generation potention of matplotlib with an easier to use, object oriented, interface. The interface
 is simple enough to quickly prototype plots, or fine tune for publication quality results.
 
+NOTES
+=====
+	- plot_type = boxplot : kwargs passed to any iteration of add_plotdata() will be used for all instances of add_plotdata
+
 TODO 
 ====
 	- 	sanitize linestyle/ls = '-',... vs 'solid','dashed','dashdot','dotted'
@@ -28,7 +32,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta5'
+__version__		= '1.0.0~beta6'
 __name__		= 'kaplot'
 
 @decorator
@@ -183,9 +187,11 @@ class kaplot(object):
 		name 	- layer name if not main
 		"""
 		k = self._LAYER_OBJECTS[kwargs['ind']]
-		if ptype.lower() in ['line', 'bar','hist','histogram']:
+		if ptype.lower() in ['line', 'bar','hist','histogram', 'box', 'boxplot']:
 			if ptype.lower() in ['hist', 'histogram']:
 				ptype = 'hist'
+			if ptype.lower() in ['box', 'boxplot']:
+				ptype = 'boxplot'
 			k.set_plot_type(ptype)
 		else:
 			print "KAPLOT Error. Not a valid plot"
@@ -766,6 +772,27 @@ class kaplot(object):
 		hatch 		- 
 		ls 			- line style
 		lw 			- line width
+
+		** boxplot chart kwargs **
+		http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.boxplot
+		vert 		- True/False 	:	plot verical or horizontal
+		whis 		- 1.5			:	size of the whiskers, $whis$ * Quartile
+		loc 		- axes location : 	maps to positions (array)
+		width 		- width of box 	: 	maps to widths	(array)
+		meanline 	- True/False 	:	show a mean as a line
+		showmean 	- True/False 	: 	show the mean according to meanprops (maps to showmeans)
+		showcap		- True/False 	: 	show the caps at the end of whiskers (maps to showcaps)
+		showbox 	- True/False 	: 	show the box portion of boxplot 
+		showfliers	- True/False 	:	show the outliers 
+		boxprop		- dictionary 	: 	properties for the box 
+		label 		- the label 	: 	maps to labels (array)
+		flierprops	- dictionary 	: 	properties for fliers 
+		medianprops	- dictionary	: 	properties for median line 
+		meanprops 	- dictionary	: 	properties for the mean line 
+		capprops 	- dictionary	:	properties for the caps 
+		whiskerprops- dictionary 	: 	properties for the whisker lines 
+		manage_xticks- True/False 	: 	whether or not 'label' is given to the tick
+		# TODO : test manage ticks
 		"""
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
 		kwargs['x']	= x
@@ -931,69 +958,135 @@ class kaplot(object):
 							if 'max' in npd.keys():
 								npd['range'][1] = npd.pop('max')
 						k.DATA_LIST[i]	= npd
-				# generate color,marker,fill list for the plot
-				inc_cnt = 0
-				for pd in k.DATA_LIST:
-					if pd['increment']:
-						inc_cnt += 1
-				cnt = 0
-				for pd in k.DATA_LIST:
-					# line plots
-					if k.SETTINGS['plot_type'] == 'line':
-						if k.SETTINGS['uniq_cols']:
-							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
-							col , mar , fill = cols[cnt] , None , None
-						else:
-							cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
-							col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
+					elif k.SETTINGS['plot_type'] == 'boxplot':
+						npd 			= update_default_kwargs(self._BOXPLOT_DEFAULTS,pd)
+						npd['x']		= pd['y']
+						k.DATA_LIST[i]	= npd
+				if k.SETTINGS['plot_type'] in ['line','bar']:
+					# generate color,marker,fill list for the plot
+					inc_cnt = 0
+					for pd in k.DATA_LIST:
 						if pd['increment']:
-							cnt += 1
-						if 'color' not in pd:
-							pd['color'] = col 
-						if 'marker' not in pd:
-							pd['marker'] = mar
-						if 'mfc' not in pd:
-							pd['mfc'] = fill
-						# spline portion
-						sp_key 		= ['color','lw','ls']
-						if pd['spline']:
-							x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
-							y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
-							sp_dict 	= {}
-							for sp in sp_key:
-								if sp in pd:
-									sp_dict[sp] = pd[sp]
-							pd['lw'] = 0
-							pd['ls'] = ''
-							mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
-						pd.pop('spline')
-						pd.pop('sp_smooth')
-						pd.pop('sp_order')
-						pd.pop('sp_points')
-						pd.pop('increment')
-						mpobj.errorbar(**pd)
-					# bar plots
-					elif k.SETTINGS['plot_type'] in ['bar', 'hist']:
-						if k.SETTINGS['uniq_cols']:
-							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
-							col , hat , fill = cols[cnt] , None , None
-						else:
-							cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
-							col , hat , fill 	= self._COLOR_LIST[cind] , self._HATCH_LIST[hind] , self._HATCH_FILL_LIST[find]
-						if pd['increment']:
-							cnt += 1
-						# do not overwrite user specified values
-						if 'color' not in pd:
-							pd['color'] = col
-						if 'hatch' not in pd:
-							pd['hatch'] = hat
-						if 'fill' not in pd:
-							pd['fill'] = fill
-						pd.pop('increment')
-						if k.SETTINGS['plot_type'] == 'bar':
+							inc_cnt += 1
+					cnt = 0
+					for pd in k.DATA_LIST:
+						# line plots
+						if k.SETTINGS['plot_type'] == 'line':
+							if k.SETTINGS['uniq_cols']:
+								cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+								col , mar , fill = cols[cnt] , None , None
+							else:
+								cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
+								col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
+							if pd['increment']:
+								cnt += 1
+							if 'color' not in pd:
+								pd['color'] = col 
+							if 'marker' not in pd:
+								pd['marker'] = mar
+							if 'mfc' not in pd:
+								pd['mfc'] = fill
+							# spline portion
+							sp_key 		= ['color','lw','ls']
+							if pd['spline']:
+								x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
+								y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
+								sp_dict 	= {}
+								for sp in sp_key:
+									if sp in pd:
+										sp_dict[sp] = pd[sp]
+								pd['lw'] = 0
+								pd['ls'] = ''
+								mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
+							pd.pop('spline')
+							pd.pop('sp_smooth')
+							pd.pop('sp_order')
+							pd.pop('sp_points')
+							pd.pop('increment')
+							mpobj.errorbar(**pd)
+						# bar plots
+						elif k.SETTINGS['plot_type'] in ['bar']:
+							if k.SETTINGS['uniq_cols']:
+								cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+								col , hat , fill = cols[cnt] , None , None
+							else:
+								cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
+								col , hat , fill 	= self._COLOR_LIST[cind] , self._HATCH_LIST[hind] , self._HATCH_FILL_LIST[find]
+							if pd['increment']:
+								cnt += 1
+							# do not overwrite user specified values
+							if 'color' not in pd:
+								pd['color'] = col
+							if 'hatch' not in pd:
+								pd['hatch'] = hat
+							if 'fill' not in pd:
+								pd['fill'] = fill
+							pd.pop('increment')
 							mpobj.bar(**pd)
-						else:
-							mpobj.hist(**pd)
+				elif k.SETTINGS['plot_type'] in ['hist','boxplot']:
+					if k.SETTINGS['plot_type'] == 'hist':
+						x_list		= []
+						labels 		= []
+						colors		= []
+						histargs	= {}
+						for i,pd in enumerate(k.DATA_LIST):
+							if k.SETTINGS['uniq_cols']:
+								cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+								col = cols[cnt]
+							else:
+								cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
+								col = self._COLOR_LIST[cind]
+							if pd['increment']:
+								cnt += 1
+							pd.pop('increment')
+							# do not overwrite user specified values
+							if 'color' not in pd:
+								colors.append(col)
+							else:
+								colors.append(pd['color'])
+								pd.pop('color')
+							# data addition
+							x_list.append(pd['x'])
+							pd.pop('x')
+							# data labels
+							if 'label' in pd:
+								labels.append(pd['label'])
+								pd.pop('label')
+							else:
+								labels.append('')
+							# build large plot args
+							for key,val in pd.iteritems():
+								histargs[key] = val
+						mpobj.hist(x=x_list,label=labels,color=colors,**histargs)
+					elif k.SETTINGS['plot_type'] == 'boxplot':
+						x_list 		= []
+						labels 		= []
+						positions	= []
+						bpargs 		= {}
+						for i,pd in enumerate(k.DATA_LIST):
+							# add data to plot
+							x_list.append(pd['x'])
+							# pop off the values that are not required anymore. 
+							pd.pop('x')
+							pd.pop('increment')
+							# add labels to the data sets
+							if 'label' in pd:
+								labels.append(pd['label'])
+								pd.pop('label')
+							else:
+								labels.append(None)
+							# customize the positions
+							if 'loc' in pd:
+								positions.append(pd['loc'])
+								pd.pop('loc')
+							else:
+								positions.append(i+1)
+							# update bpargs with user passed variabls and preform rename if required
+							for key,val in pd.iteritems():
+								if key in ['width','showmean','showcap']:
+									key = key+'s'
+								bpargs[key] = val
+						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
@@ -1111,7 +1204,8 @@ class kaplot(object):
 					k.SETTINGS['leg_props'].pop('bool')
 					l = mpobj.legend(prop=k.SETTINGS['leg_fprop'],**k.SETTINGS['leg_props'])
 					# update the legend title also
-					plt.setp(l.get_title(),**k.SETTINGS['leg_fprop'])
+					if k.SETTINGS['leg_props']['title'] is not None:
+						plt.setp(l.get_title(),**k.SETTINGS['leg_fprop'])
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
 		return

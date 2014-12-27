@@ -181,8 +181,8 @@ default = {
 								'log'		:	'Auto'			, \
 								'alpha'		:	'Auto'},
 
-	'_HIST_DEFAULTS'	:	{	'bins'			: 'Auto'		, \
-								'increment'		: True			, \
+	'_HIST_DEFAULTS'	:	{	'increment'		: True			, \
+								'bins'			: 'Auto'		, \
 								'min' 			: 'Auto'		, \
 								'max' 			: 'Auto'		, \
 								'normed' 		: 'Auto'		, \
@@ -201,6 +201,25 @@ default = {
 								'hatch' 		: 'Auto'		, \
 								'ls' 			: 'Auto'		, \
 								'lw' 			: 'Auto'},
+
+	'_BOXPLOT_DEFAULTS'	:	{	'increment'		: True			, \
+								'label'			: 'Auto'		, \
+								'loc'			: 'Auto'		, \
+								'whis'			: 'Auto'		, \
+								'vert'			: 'Auto'		, \
+								'width'			: 'Auto'		, \
+								'meanline'		: 'Auto'		, \
+								'showmean'		: 'Auto'		, \
+								'showcap'		: 'Auto'		, \
+								'showbox'		: 'Auto'		, \
+								'showfliers'	: 'Auto'		, \
+								'boxprops'		: 'Auto'		, \
+								'flierprops'	: 'Auto'		, \
+								'medianprops'	: 'Auto'		, \
+								'meanprops'		: 'Auto'		, \
+								'capprops'		: 'Auto'		, \
+								'whiskerprops'	: 'Auto'		, \
+								'manage_xticks'	: 'Auto'},
 
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
 								'weight'	:	'normal'		, \
