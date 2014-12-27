@@ -1025,8 +1025,39 @@ class kaplot(object):
 							mpobj.bar(**pd)
 				elif k.SETTINGS['plot_type'] in ['hist','boxplot']:
 					if k.SETTINGS['plot_type'] == 'hist':
-						print 'make histogram work'
-						#mpobj.hist(**pd)
+						x_list		= []
+						labels 		= []
+						colors		= []
+						histargs	= {}
+						for i,pd in enumerate(k.DATA_LIST):
+							if k.SETTINGS['uniq_cols']:
+								cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+								col = cols[cnt]
+							else:
+								cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
+								col = self._COLOR_LIST[cind]
+							if pd['increment']:
+								cnt += 1
+							pd.pop('increment')
+							# do not overwrite user specified values
+							if 'color' not in pd:
+								colors.append(col)
+							else:
+								colors.append(pd['color'])
+								pd.pop('color')
+							# data addition
+							x_list.append(pd['x'])
+							pd.pop('x')
+							# data labels
+							if 'label' in pd:
+								labels.append(pd['label'])
+								pd.pop('label')
+							else:
+								labels.append('')
+							# build large plot args
+							for key,val in pd.iteritems():
+								histargs[key] = val
+						mpobj.hist(x=x_list,label=labels,color=colors,**histargs)
 					elif k.SETTINGS['plot_type'] == 'boxplot':
 						x_list 		= []
 						labels 		= []

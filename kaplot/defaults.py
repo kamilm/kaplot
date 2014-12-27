@@ -181,8 +181,8 @@ default = {
 								'log'		:	'Auto'			, \
 								'alpha'		:	'Auto'},
 
-	'_HIST_DEFAULTS'	:	{	'bins'			: 'Auto'		, \
-								'increment'		: True			, \
+	'_HIST_DEFAULTS'	:	{	'increment'		: True			, \
+								'bins'			: 'Auto'		, \
 								'min' 			: 'Auto'		, \
 								'max' 			: 'Auto'		, \
 								'normed' 		: 'Auto'		, \
