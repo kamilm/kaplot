@@ -1020,8 +1020,37 @@ class kaplot(object):
 						print 'make histogram work'
 						#mpobj.hist(**pd)
 					elif k.SETTINGS['plot_type'] == 'boxplot':
-						print 'make historgram work'
-						#mpobj.boxplot(**pd)
+						x_list 		= []
+						labels 		= []
+						positions	= []
+						bpargs 		= {}
+						for i,pd in enumerate(k.DATA_LIST):
+							# add data to plot
+							x_list.append(pd['y'])
+							pd.pop('x')
+							pd.pop('y')
+							pd.pop('ind')
+							pd.pop('name')
+							# add labels to the data sets
+							if 'label' in pd:
+								labels.append(pd['label'])
+								pd.pop('label')
+							else:
+								labels.append(None)
+							# customize the positions
+							if 'loc' in pd:
+								positions.append(pd['loc'])
+								pd.pop('loc')
+							else:
+								positions.append(i+1)
+							# update bpargs with user passed variabls and preform rename if required
+							for key,val in pd.iteritems():
+								if key in ['width','showmean','showcap']:
+									key = key+'s'
+								bpargs[key] = val
+						print bpargs
+						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
+						print 'make boxplot work'
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
