@@ -3,6 +3,10 @@ kaplot is a plotting tool built around matplotlib. It combines the flexibilty an
 generation potention of matplotlib with an easier to use, object oriented, interface. The interface
 is simple enough to quickly prototype plots, or fine tune for publication quality results.
 
+NOTES
+=====
+	- plot_type = boxplot : kwargs passed to any iteration of add_plotdata() will be used for all instances of add_plotdata
+
 TODO 
 ====
 	- 	sanitize linestyle/ls = '-',... vs 'solid','dashed','dashdot','dotted'
@@ -28,7 +32,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta5'
+__version__		= '1.0.0~beta6'
 __name__		= 'kaplot'
 
 @decorator
@@ -787,7 +791,7 @@ class kaplot(object):
 		meanprops 	- dictionary	: 	properties for the mean line 
 		capprops 	- dictionary	:	properties for the caps 
 		whiskerprops- dictionary 	: 	properties for the whisker lines 
-		manage_xticks- True/False 	: 	- to be tested
+		manage_xticks- True/False 	: 	whether or not 'label' is given to the tick
 		# TODO : test manage ticks
 		"""
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
@@ -1027,6 +1031,7 @@ class kaplot(object):
 						for i,pd in enumerate(k.DATA_LIST):
 							# add data to plot
 							x_list.append(pd['y'])
+							# pop off the values that are not required anymore. 
 							pd.pop('x')
 							pd.pop('y')
 							pd.pop('ind')
@@ -1048,9 +1053,7 @@ class kaplot(object):
 								if key in ['width','showmean','showcap']:
 									key = key+'s'
 								bpargs[key] = val
-						print bpargs
 						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
-						print 'make boxplot work'
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
