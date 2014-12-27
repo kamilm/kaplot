@@ -954,13 +954,13 @@ class kaplot(object):
 							if 'max' in npd.keys():
 								npd['range'][1] = npd.pop('max')
 						k.DATA_LIST[i]	= npd
-				# generate color,marker,fill list for the plot
-				inc_cnt = 0
-				for pd in k.DATA_LIST:
-					if pd['increment']:
-						inc_cnt += 1
-				cnt = 0
 				if k.SETTINGS['plot_type'] in ['line','bar']:
+					# generate color,marker,fill list for the plot
+					inc_cnt = 0
+					for pd in k.DATA_LIST:
+						if pd['increment']:
+							inc_cnt += 1
+					cnt = 0
 					for pd in k.DATA_LIST:
 						# line plots
 						if k.SETTINGS['plot_type'] == 'line':
