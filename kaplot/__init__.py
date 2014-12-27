@@ -960,63 +960,68 @@ class kaplot(object):
 					if pd['increment']:
 						inc_cnt += 1
 				cnt = 0
-				for pd in k.DATA_LIST:
-					# line plots
-					if k.SETTINGS['plot_type'] == 'line':
-						if k.SETTINGS['uniq_cols']:
-							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
-							col , mar , fill = cols[cnt] , None , None
-						else:
-							cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
-							col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
-						if pd['increment']:
-							cnt += 1
-						if 'color' not in pd:
-							pd['color'] = col 
-						if 'marker' not in pd:
-							pd['marker'] = mar
-						if 'mfc' not in pd:
-							pd['mfc'] = fill
-						# spline portion
-						sp_key 		= ['color','lw','ls']
-						if pd['spline']:
-							x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
-							y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
-							sp_dict 	= {}
-							for sp in sp_key:
-								if sp in pd:
-									sp_dict[sp] = pd[sp]
-							pd['lw'] = 0
-							pd['ls'] = ''
-							mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
-						pd.pop('spline')
-						pd.pop('sp_smooth')
-						pd.pop('sp_order')
-						pd.pop('sp_points')
-						pd.pop('increment')
-						mpobj.errorbar(**pd)
-					# bar plots
-					elif k.SETTINGS['plot_type'] in ['bar', 'hist']:
-						if k.SETTINGS['uniq_cols']:
-							cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
-							col , hat , fill = cols[cnt] , None , None
-						else:
-							cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
-							col , hat , fill 	= self._COLOR_LIST[cind] , self._HATCH_LIST[hind] , self._HATCH_FILL_LIST[find]
-						if pd['increment']:
-							cnt += 1
-						# do not overwrite user specified values
-						if 'color' not in pd:
-							pd['color'] = col
-						if 'hatch' not in pd:
-							pd['hatch'] = hat
-						if 'fill' not in pd:
-							pd['fill'] = fill
-						pd.pop('increment')
-						if k.SETTINGS['plot_type'] == 'bar':
+				if k.SETTINGS['plot_type'] in ['line','bar']:
+					for pd in k.DATA_LIST:
+						# line plots
+						if k.SETTINGS['plot_type'] == 'line':
+							if k.SETTINGS['uniq_cols']:
+								cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+								col , mar , fill = cols[cnt] , None , None
+							else:
+								cind , mind , find = color_marker_fill_index(cnt,self._COLOR_LIST,self._MARKER_LIST,self._MARKER_FILL_LIST)
+								col , mar , fill = self._COLOR_LIST[cind] , self._MARKER_LIST[mind] , self._MARKER_FILL_LIST[find]
+							if pd['increment']:
+								cnt += 1
+							if 'color' not in pd:
+								pd['color'] = col 
+							if 'marker' not in pd:
+								pd['marker'] = mar
+							if 'mfc' not in pd:
+								pd['mfc'] = fill
+							# spline portion
+							sp_key 		= ['color','lw','ls']
+							if pd['spline']:
+								x_spline 	= linspace(pd['x'][0],pd['x'][-1],pd['sp_points'])
+								y_spline 	= UnivariateSpline(pd['x'],pd['y'],k=pd['sp_order'],s=pd['sp_smooth'])(x_spline)
+								sp_dict 	= {}
+								for sp in sp_key:
+									if sp in pd:
+										sp_dict[sp] = pd[sp]
+								pd['lw'] = 0
+								pd['ls'] = ''
+								mpobj.errorbar(x=x_spline,y=y_spline,**sp_dict)
+							pd.pop('spline')
+							pd.pop('sp_smooth')
+							pd.pop('sp_order')
+							pd.pop('sp_points')
+							pd.pop('increment')
+							mpobj.errorbar(**pd)
+						# bar plots
+						elif k.SETTINGS['plot_type'] in ['bar']:
+							if k.SETTINGS['uniq_cols']:
+								cols = unique_colors(inc_cnt+1,k.SETTINGS['color_map'])
+								col , hat , fill = cols[cnt] , None , None
+							else:
+								cind , hind , find 	= color_marker_fill_index(cnt,self._COLOR_LIST,self._HATCH_LIST,self._HATCH_FILL_LIST)
+								col , hat , fill 	= self._COLOR_LIST[cind] , self._HATCH_LIST[hind] , self._HATCH_FILL_LIST[find]
+							if pd['increment']:
+								cnt += 1
+							# do not overwrite user specified values
+							if 'color' not in pd:
+								pd['color'] = col
+							if 'hatch' not in pd:
+								pd['hatch'] = hat
+							if 'fill' not in pd:
+								pd['fill'] = fill
+							pd.pop('increment')
 							mpobj.bar(**pd)
-						else:
-							mpobj.hist(**pd)
+				elif k.SETTINGS['plot_type'] in ['hist','boxplot']:
+					if k.SETTINGS['plot_type'] == 'hist':
+						print 'make histogram work'
+						#mpobj.hist(**pd)
+					elif k.SETTINGS['plot_type'] == 'boxplot':
+						print 'make historgram work'
+						#mpobj.boxplot(**pd)
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
