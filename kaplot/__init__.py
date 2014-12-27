@@ -183,9 +183,11 @@ class kaplot(object):
 		name 	- layer name if not main
 		"""
 		k = self._LAYER_OBJECTS[kwargs['ind']]
-		if ptype.lower() in ['line', 'bar','hist','histogram']:
+		if ptype.lower() in ['line', 'bar','hist','histogram', 'box', 'boxplot']:
 			if ptype.lower() in ['hist', 'histogram']:
 				ptype = 'hist'
+			if ptype.lower() in ['box', 'boxplot']:
+				ptype = 'boxplot'
 			k.set_plot_type(ptype)
 		else:
 			print "KAPLOT Error. Not a valid plot"
