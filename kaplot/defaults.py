@@ -201,6 +201,25 @@ default = {
 								'hatch' 		: 'Auto'		, \
 								'ls' 			: 'Auto'		, \
 								'lw' 			: 'Auto'},
+								
+	'_BOXPLOT_DEFAULTS'	:	{	'increment'		: True			, \
+								'label'			: 'Auto'		, \
+								'loc'			: 'Auto'		, \
+								'vert'			: 'Auto'		, \
+								'whis'			: 'Auto'		, \
+								'width'			: 'Auto'		, \
+								'meanline'		: 'Auto'		, \
+								'showmean'		: 'Auto'		, \
+								'showcap'		: 'Auto'		, \
+								'showbox'		: 'Auto'		, \
+								'showfliers'	: 'Auto'		, \
+								'boxprops'		: 'Auto'		, \
+								'flierprops'	: 'Auto'		, \
+								'medianprops'	: 'Auto'		, \
+								'meanprops'		: 'Auto'		, \
+								'cappprops'		: 'Auto'		, \
+								'whiskerprops'	: 'Auto'		, \
+								'manage_xticks'	: 'Auto'},
 
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
 								'weight'	:	'normal'		, \
