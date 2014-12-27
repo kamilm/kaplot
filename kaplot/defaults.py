@@ -201,12 +201,12 @@ default = {
 								'hatch' 		: 'Auto'		, \
 								'ls' 			: 'Auto'		, \
 								'lw' 			: 'Auto'},
-								
+
 	'_BOXPLOT_DEFAULTS'	:	{	'increment'		: True			, \
 								'label'			: 'Auto'		, \
 								'loc'			: 'Auto'		, \
-								'vert'			: 'Auto'		, \
 								'whis'			: 'Auto'		, \
+								'vert'			: 'Auto'		, \
 								'width'			: 'Auto'		, \
 								'meanline'		: 'Auto'		, \
 								'showmean'		: 'Auto'		, \
@@ -217,7 +217,7 @@ default = {
 								'flierprops'	: 'Auto'		, \
 								'medianprops'	: 'Auto'		, \
 								'meanprops'		: 'Auto'		, \
-								'cappprops'		: 'Auto'		, \
+								'capprops'		: 'Auto'		, \
 								'whiskerprops'	: 'Auto'		, \
 								'manage_xticks'	: 'Auto'},
 
