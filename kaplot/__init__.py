@@ -768,6 +768,27 @@ class kaplot(object):
 		hatch 		- 
 		ls 			- line style
 		lw 			- line width
+
+		** boxplot chart kwargs **
+		http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.boxplot
+		vert 		- True/False 	:	plot verical or horizontal
+		whis 		- 1.5			:	size of the whiskers, $whis$ * Quartile
+		loc 		- axes location : 	maps to positions (array)
+		width 		- width of box 	: 	maps to widths	(array)
+		meanline 	- True/False 	:	show a mean as a line
+		showmean 	- True/False 	: 	show the mean according to meanprops (maps to showmeans)
+		showcap		- True/False 	: 	show the caps at the end of whiskers (maps to showcaps)
+		showbox 	- True/False 	: 	show the box portion of boxplot 
+		showfliers	- True/False 	:	show the outliers 
+		boxprop		- dictionary 	: 	properties for the box 
+		label 		- the label 	: 	maps to labels (array)
+		flierprops	- dictionary 	: 	properties for fliers 
+		medianprops	- dictionary	: 	properties for median line 
+		meanprops 	- dictionary	: 	properties for the mean line 
+		capprops 	- dictionary	:	properties for the caps 
+		whiskerprops- dictionary 	: 	properties for the whisker lines 
+		manage_xticks- True/False 	: 	- to be tested
+		# TODO : test manage ticks
 		"""
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
 		kwargs['x']	= x
