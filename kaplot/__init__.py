@@ -958,6 +958,10 @@ class kaplot(object):
 							if 'max' in npd.keys():
 								npd['range'][1] = npd.pop('max')
 						k.DATA_LIST[i]	= npd
+					elif k.SETTINGS['plot_type'] == 'boxplot':
+						npd 			= update_default_kwargs(self._BOXPLOT_DEFAULTS,pd)
+						npd['x']		= pd['y']
+						k.DATA_LIST[i]	= npd
 				if k.SETTINGS['plot_type'] in ['line','bar']:
 					# generate color,marker,fill list for the plot
 					inc_cnt = 0
@@ -1030,12 +1034,10 @@ class kaplot(object):
 						bpargs 		= {}
 						for i,pd in enumerate(k.DATA_LIST):
 							# add data to plot
-							x_list.append(pd['y'])
+							x_list.append(pd['x'])
 							# pop off the values that are not required anymore. 
 							pd.pop('x')
-							pd.pop('y')
-							pd.pop('ind')
-							pd.pop('name')
+							pd.pop('increment')
 							# add labels to the data sets
 							if 'label' in pd:
 								labels.append(pd['label'])
