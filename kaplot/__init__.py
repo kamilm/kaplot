@@ -32,7 +32,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta6'
+__version__		= '1.0.0~beta7'
 __name__		= 'kaplot'
 
 @decorator
@@ -1024,6 +1024,12 @@ class kaplot(object):
 							pd.pop('increment')
 							mpobj.bar(**pd)
 				elif k.SETTINGS['plot_type'] in ['hist','boxplot']:
+					# generate color,marker,fill list for the plot
+					inc_cnt = 0
+					for pd in k.DATA_LIST:
+						if pd['increment']:
+							inc_cnt += 1
+					cnt = 0
 					if k.SETTINGS['plot_type'] == 'hist':
 						x_list		= []
 						labels 		= []
