@@ -32,7 +32,7 @@ from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta6'
+__version__		= '1.0.0~beta7'
 __name__		= 'kaplot'
 
 @decorator
@@ -74,7 +74,8 @@ class kaplot(object):
 
 	LAYER_SETTINGS		=	{ 	'twin'			:	None 	, \
 								'twin_ref'		:	None}
-
+	# do not add to label/legend if the value exists
+	SKIP_LABELS	 		= 	['_nolegend_']
 	def __init__(self,settings=None):
 		'''Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,
 		or list of dictionaries, to be passed as `settings` to adjust plot settings.'''
@@ -1024,6 +1025,12 @@ class kaplot(object):
 							pd.pop('increment')
 							mpobj.bar(**pd)
 				elif k.SETTINGS['plot_type'] in ['hist','boxplot']:
+					# generate color,marker,fill list for the plot
+					inc_cnt = 0
+					for pd in k.DATA_LIST:
+						if pd['increment']:
+							inc_cnt += 1
+					cnt = 0
 					if k.SETTINGS['plot_type'] == 'hist':
 						x_list		= []
 						labels 		= []
@@ -1050,7 +1057,10 @@ class kaplot(object):
 							pd.pop('x')
 							# data labels
 							if 'label' in pd:
-								labels.append(pd['label'])
+								if pd['label'] not in self.SKIP_LABELS:
+									labels.append(pd['label'])
+								else:
+									labels.append('')
 								pd.pop('label')
 							else:
 								labels.append('')
@@ -1071,7 +1081,10 @@ class kaplot(object):
 							pd.pop('increment')
 							# add labels to the data sets
 							if 'label' in pd:
-								labels.append(pd['label'])
+								if pd['label'] not in self.SKIP_LABELS:
+									labels.append(pd['label'])
+								else:
+									labels.append(None)
 								pd.pop('label')
 							else:
 								labels.append(None)
