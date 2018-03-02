@@ -44,7 +44,7 @@ from numpy import linspace
 from matplotlib.ticker import ScalarFormatter
 
 __author__		= 'Kamil'
-__version__		= '0.1'
+__version__		= '0.2'
 __name__		= 'kaplot3'
 
 @decorator
