@@ -30,8 +30,13 @@ rcParams.update({'figure.autolayout':True})
 # 	# If kaplot3_backend wasn't imported, or no backend was set, then skip explicitly setting a backend
 # 	print(get_backend())
 # 	matplotlib.use(get_backend())
-from libs.kaplot3.defaults import default
-from libs.kaplot3 import defaults as kd
+
+# another project imports
+#from libs.kaplot3.defaults import default
+#from libs.kaplot3 import defaults as kd
+
+from kaplot.defaults import default
+from kaplot import defaults as kd
 import matplotlib.pyplot as plt
 import pickle
 from scipy.interpolate import UnivariateSpline
@@ -1289,12 +1294,12 @@ class kaplot3(object):
 		f.close()
 		return
 
-	def showMe(self):
+	def showMe(self, saveBool=False):
 		"""
 		shows the figure which has been generated
 		note : this depends on the backend selected
 		"""
-		if self._SAVED is None:
+		if saveBool:
 			self._SAVED = pickle.dumps(self,pickle.HIGHEST_PROTOCOL)
 		plt.show()
 		return
