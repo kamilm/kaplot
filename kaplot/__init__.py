@@ -203,17 +203,19 @@ class kaplot3(object):
 		sets the plot type of the layer
 
 		** args **
-		ptype 	- plot type , either line , bar
+		ptype 	- line, bar, hist(ogram), box(plot), boxscatter
 
 		** kwargs **
 		name 	- layer name if not main
 		"""
 		k = self._LAYER_OBJECTS[kwargs['ind']]
-		if ptype.lower() in ['line', 'bar','hist','histogram', 'box', 'boxplot']:
+		if ptype.lower() in ['line', 'bar','hist','histogram', 'box', 'boxplot', 'boxscatter']:
 			if ptype.lower() in ['hist', 'histogram']:
 				ptype = 'hist'
 			if ptype.lower() in ['box', 'boxplot']:
 				ptype = 'boxplot'
+			if ptype.lower() in ['boxscatter']:
+				ptype = 'boxscatter'
 			k.set_plot_type(ptype)
 		else:
 			print('KAPLOT3 Error. Not a valid plot')
@@ -967,7 +969,6 @@ class kaplot3(object):
 				mpobj.grid(**k.SETTINGS['grid_prop'])
 			# ADD PLOTDATA
 			if len(k.DATA_LIST) != 0:
-				#
 				for i,pd in enumerate(k.DATA_LIST):
 					# update plt settings
 					if k.SETTINGS['plot_type'] == 'line':
@@ -988,8 +989,9 @@ class kaplot3(object):
 							if 'max' in npd.keys():
 								npd['range'][1] = npd.pop('max')
 						k.DATA_LIST[i]	= npd
-					elif k.SETTINGS['plot_type'] == 'boxplot':
+					elif k.SETTINGS['plot_type'] in ['boxplot', 'boxscatter']:
 						npd 			= update_default_kwargs(self._BOXPLOT_DEFAULTS,pd)
+						npd['boxscatter'] = update_default_kwargs(self._BOXSCATTER_DEFAULTS,pd)
 						npd['x']		= pd['y']
 						k.DATA_LIST[i]	= npd
 				if k.SETTINGS['plot_type'] in ['line','bar']:
@@ -1053,7 +1055,7 @@ class kaplot3(object):
 								pd['fill'] = fill
 							pd.pop('increment')
 							mpobj.bar(**pd)
-				elif k.SETTINGS['plot_type'] in ['hist','boxplot']:
+				elif k.SETTINGS['plot_type'] in ['hist','boxplot', 'boxscatter']:
 					# generate color,marker,fill list for the plot
 					inc_cnt = 0
 					for pd in k.DATA_LIST:
@@ -1097,11 +1099,12 @@ class kaplot3(object):
 							for key,val in pd.items():
 								histargs[key] = val
 						mpobj.hist(x=x_list,label=labels,color=colors,**histargs)
-					elif k.SETTINGS['plot_type'] == 'boxplot':
+					elif k.SETTINGS['plot_type'] in ['boxplot', 'boxscatter']:
 						x_list 		= []
 						labels 		= []
 						positions	= []
 						bpargs 		= {}
+						bsargs 		= {}
 						for i,pd in enumerate(k.DATA_LIST):
 							# add data to plot
 							x_list.append(pd['x'])
@@ -1124,11 +1127,26 @@ class kaplot3(object):
 							else:
 								positions.append(i+1)
 							# update bpargs with user passed variabls and preform rename if required
+							bsargs = pd.pop('boxscatter')
 							for key,val in pd.items():
 								if key in ['width','showmean','showcap']:
 									key = key+'s'
 								bpargs[key] = val
+
 						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
+						# add the scatter option overtop
+						if k.SETTINGS['plot_type'] == 'boxscatter':
+							pos_array = []
+							val_array = []
+							for ind,pos in enumerate(positions):
+								# positions
+								pos_array_ent = [pos]*len(x_list[ind])
+								pos_array = pos_array + pos_array_ent
+								# values
+								val_array = val_array + list(x_list[i])
+							mpobj.scatter(pos_array,val_array,**bsargs)
+
+
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])

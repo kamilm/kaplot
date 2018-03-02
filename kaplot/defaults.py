@@ -224,6 +224,16 @@ default = {
 								'whiskerprops'	: 'Auto'		, \
 								'manage_xticks'	: 'Auto'},
 
+	'_BOXSCATTER_DEFAULTS'	:	{'label'	: 	'_nolegend_'	, \
+								'color'		:	'Auto'			, \
+								'marker'	:	'Auto'			, \
+								'mec' 		: 	'Auto'			, \
+								'ms'		:	'Auto'			, \
+								'markevery'	:	'Auto'			, \
+								'mfc' 		: 	'Auto'			, \
+								'alpha'		:	'Auto'},
+
+
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
 								'weight'	:	'normal'		, \
 								'size'		:	'medium'},
