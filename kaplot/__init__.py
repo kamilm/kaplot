@@ -1,13 +1,13 @@
 """
-kaplot is a plotting tool built around matplotlib. It combines the flexibilty and fantastic plot
-generation potention of matplotlib with an easier to use, object oriented, interface. The interface
+kaplot3 is a plotting tool built around matplotlib. It combines the flexibilty and fantastic plot
+generation potential of matplotlib with an easier to use, object oriented, interface. The interface
 is simple enough to quickly prototype plots, or fine tune for publication quality results.
 
 NOTES
 =====
 	- plot_type = boxplot : kwargs passed to any iteration of add_plotdata() will be used for all instances of add_plotdata
 
-TODO 
+TODO
 ====
 	- 	sanitize linestyle/ls = '-',... vs 'solid','dashed','dashdot','dotted'
 	-	find a way to implement '\!' (negative space) into latex strings to remove that annoying whitespace after a super/sub script
@@ -19,26 +19,33 @@ from copy import deepcopy
 # required to make pydocs work
 from decorator import decorator
 import matplotlib
-# backends @ http://matplotlib.org/faq/usage_faq.html
-from kaplot_backend import get_backend
-if get_backend():
-	# If kaplot_backend wasn't imported, or no backend was set, then skip explicitly setting a backend
-	matplotlib.use(get_backend())
-from kaplot.defaults import default
-import kaplot.defaults as kd
-import matplotlib.pyplot as plt 
+matplotlib.use('TkAgg')
+# attempt to fix issues with cropping of labels
+from matplotlib import rcParams
+rcParams.update({'figure.autolayout':True})
+
+# # backends @ http://matplotlib.org/faq/usage_faq.html
+# from libs.kaplot3_backend import get_backend
+# if get_backend():
+# 	# If kaplot3_backend wasn't imported, or no backend was set, then skip explicitly setting a backend
+# 	print(get_backend())
+# 	matplotlib.use(get_backend())
+from libs.kaplot3.defaults import default
+from libs.kaplot3 import defaults as kd
+import matplotlib.pyplot as plt
 import pickle
 from scipy.interpolate import UnivariateSpline
 from numpy import linspace
+from matplotlib.ticker import ScalarFormatter
 
 __author__		= 'Kamil'
-__version__		= '1.0.0~beta7'
-__name__		= 'kaplot'
+__version__		= '0.1'
+__name__		= 'kaplot3'
 
 @decorator
 def check_name(fn,self,*args,**kwargs):
 		"""
-		decorator function for kaplot class. checks if the `name` kwarg is
+		decorator function for kaplot3 class. checks if the `name` kwarg is
 		valid and inserts `ind` into the kwarg list. additionally, changes all
 		kwargs to be lower case.
 		** args **
@@ -51,16 +58,16 @@ def check_name(fn,self,*args,**kwargs):
 			kwargs['ind'] = oind
 			# rebuild kwargs
 			new_kwargs = {}
-			for key,val in kwargs.iteritems():
+			for key,val in kwargs.items():
 				new_kwargs[key.lower()] = val
 			return fn(self,*args,**new_kwargs)
 		raise AttributeError('No layer/axes named %s' % kwargs['name'])
 
-class kaplot(object):
+class kaplot3(object):
 	"""
 	multi layer plotting class
 
-	organization ; 
+	organization ;
 	a PLOT contains any number of LAYERS,
 	each LAYER has a NAME associated with it,
 	the NAME is how a LAYER can be identified,
@@ -77,7 +84,7 @@ class kaplot(object):
 	# do not add to label/legend if the value exists
 	SKIP_LABELS	 		= 	['_nolegend_']
 	def __init__(self,settings=None):
-		'''Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,
+		'''Make `kaplot3` object: list of layers and associated properties. Also allows for dictionary,
 		or list of dictionaries, to be passed as `settings` to adjust plot settings.'''
 		self._SAVED				= None
 		self._LAYER_NAMES		= []
@@ -94,15 +101,15 @@ class kaplot(object):
 
 	def load_settings(self,settings):
 		"""
-		Reads the settings from `settings`, adds default settings from kaplot.defaults.default,
+		Reads the settings from `settings`, adds default settings from kaplot3.defaults.default,
 		and stores in object.
 		`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order
-		of the list. It may also be a single or list of strings, in which case kaplot will try to import from 
-		kaplot.defaults.
+		of the list. It may also be a single or list of strings, in which case kaplot3 will try to import from
+		kaplot3.defaults.
 		"""
 		if not settings:
 			# nothing custom was passed
-			for key,value in default.iteritems():
+			for key,value in default.items():
 				setattr(self,key,value)
 			return
 		# otherwise there are at least 1 additional settings provided in `settings`
@@ -111,14 +118,14 @@ class kaplot(object):
 		# Note that some entries in the settings/default dictionary are actually lists. For those
 		# we simply overwrite.
 		if type(settings) != type([]):
-			settings = [settings,]			
-		for key,value in default.iteritems():
+			settings = [settings,]
+		for key,value in default.items():
 			for setting in settings:
 				if type(setting) == type(''):
 					try:
 						setting = getattr(kd,setting)
 					except AttributeError:
-						raise AttributeError('%s not found in kaplot.defaults or .kaplotdefaults.rc' % setting)
+						raise AttributeError('%s not found in kaplot3.defaults or .kaplot3defaults.rc' % setting)
 				if key in setting:
 					if type(value) == type({}):
 						value.update(setting[key])
@@ -126,6 +133,15 @@ class kaplot(object):
 						value = deepcopy(setting[key])
 				# else, we're just using the default value anyway
 			setattr(self,key,value)
+
+	def set_style(self,mpl_style):
+		"""
+		sets the matplotlib style via pyplot.style.use('style_name')
+		** args **
+		mpl_style 	- valid style name
+		"""
+		self.PLOT_SETTINGS['style'] = mpl_style
+		return
 
 	def set_tight(self,tl_bool):
 		"""
@@ -173,7 +189,7 @@ class kaplot(object):
 				tmp['twin_ref']	= twin_ref.lower()
 			self._LAYER_SETTINGS.append(tmp)
 		else:
-			print 'KAPLOT: add_layer error. layer exists.'
+			print('KAPLOT3: add_layer error. layer exists.')
 		return
 
 	@check_name
@@ -182,7 +198,7 @@ class kaplot(object):
 		sets the plot type of the layer
 
 		** args **
-		ptype 	- plot type , either line , bar 
+		ptype 	- plot type , either line , bar
 
 		** kwargs **
 		name 	- layer name if not main
@@ -195,7 +211,7 @@ class kaplot(object):
 				ptype = 'boxplot'
 			k.set_plot_type(ptype)
 		else:
-			print "KAPLOT Error. Not a valid plot"
+			print('KAPLOT3 Error. Not a valid plot')
 		return
 
 	@check_name
@@ -207,7 +223,7 @@ class kaplot(object):
 		lbool 			- True/False for displaying a legend
 
 		** kwargs **
-		name 			- layer name, if not main 
+		name 			- layer name, if not main
 
 		loc 			- location 'upper', 'lower', 'left' , 'right', 'center'
 		numpoints		- number of markers to show
@@ -217,10 +233,10 @@ class kaplot(object):
 		shadow			- True/False , draw a shadow behind the frame
 		framealpha		- alpha level for the frame
 		ncol 			- number of legend columns
-		title 			- legend title 
-		borderpad		- padding inside the legend 
+		title 			- legend title
+		borderpad		- padding inside the legend
 		labelspacing	- spacing between labels
-		handletextpad	- spacing between legend handle and text 
+		handletextpad	- spacing between legend handle and text
 		columnspacing	- spacing between columns
 
 		** font prop kwargs **
@@ -268,9 +284,9 @@ class kaplot(object):
 		** args **
 		gbool 	- True/False for turning grid bool
 
-		** kwargs ** 
+		** kwargs **
 		name 	- layer name
-		alpha	- alpha level 
+		alpha	- alpha level
 		color 	- line color
 		ls 		- line style
 		lw 		- line width
@@ -295,7 +311,7 @@ class kaplot(object):
 			k 	= self._LAYER_OBJECTS[kwargs['ind']]
 			k.set_axes_type(ptype.lower())
 		else:
-			print 'KAPLOT: set_axes_type error. ptype must be either linear,log-log,semilog-x,semilog-y.'
+			print('KAPLOT3: set_axes_type error. ptype must be either linear,log-log,semilog-x,semilog-y.')
 		return
 
 	@check_name
@@ -305,7 +321,7 @@ class kaplot(object):
 
 		** args **
 		basex 	- x base
-		basey 	- y base 
+		basey 	- y base
 
 		** kwargs **
 		name 	- layer name
@@ -316,7 +332,7 @@ class kaplot(object):
 			k = self._LAYER_OBJECTS[kwargs['ind']]
 			k.set_base(basex,basey)
 		except:
-			print 'KAPLOT: set_base error. basex or basey must be a valid float.'
+			print('KAPLOT3: set_base error. basex or basey must be a valid float.')
 
 	@check_name
 	def set_xlabel(self,lab='',unit=None,**kwargs):
@@ -324,7 +340,7 @@ class kaplot(object):
 		adds a xlabel to the layer
 
 		** args **
-		lab 		- long label 
+		lab 		- long label
 		unit 		- label unit
 
 		** kwargs **
@@ -354,7 +370,7 @@ class kaplot(object):
 		adds a ylabel to the layer
 
 		** args **
-		lab 		- long label 
+		lab 		- long label
 		unit 		- label unit
 
 		** kwargs **
@@ -393,7 +409,7 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		mylist		- custom list
-		mylabels	- custom labels 
+		mylabels	- custom labels
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
@@ -419,7 +435,7 @@ class kaplot(object):
 						li = tick_labels.index(val)
 						tick_labels[li] = kwargs['mylabels'][i]
 					except ValueError:
-						print 'The Value ',val,' is not in ',tick_labels,'. Ignoring.'
+						print('The Value ',val,' is not in ',tick_labels,'. Ignoring.')
 			# custom ticks but no labels
 			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
 				tick_list 	= kwargs['mylist']
@@ -468,7 +484,7 @@ class kaplot(object):
 						li = tick_labels.index(val)
 						tick_labels[li] = kwargs['mylabels'][i]
 					except ValueError:
-						print 'The Value ',val,' is not in ',tick_labels,'. Ignoring.'
+						print('The Value ',val,' is not in ',tick_labels,'. Ignoring.')
 			# custom ticks but no labels
 			elif 'mylist' in kwargs and 'mylabels' not in kwargs:
 				tick_list 	= kwargs['mylist']
@@ -519,7 +535,7 @@ class kaplot(object):
 	@check_name
 	def set_tick_params(self,axis='both',**kwargs):
 		"""
-		sets the properties of ticks, tick labels and axes labels 
+		sets the properties of ticks, tick labels and axes labels
 
 		** args **
 		axis 		- which axis to modify, 'both' 'x' 'y'
@@ -536,7 +552,7 @@ class kaplot(object):
 		labelcolor 	- tick label font color
 
 		* valid in x-axis * (both is experimental)
-		labeltop	- True/False 
+		labeltop	- True/False
 		labelbottom	- True/False
 		top 		- True/False , draw ticks
 		bottom		- True/False , draw ticks
@@ -557,7 +573,7 @@ class kaplot(object):
 		elif axis == 'x':
 			k.set_x_tick_params(**x_params)
 		elif axis == 'y':
-			k.set_y_tick_params(**y_params)			
+			k.set_y_tick_params(**y_params)
 		return
 
 	@check_name
@@ -573,6 +589,7 @@ class kaplot(object):
 		style 		- 'plain' or 'sci'
 		sci_min		- min for sci notation
 		sci_max		- max for sci notation
+		useOffset  	- bool
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		x_format = update_default_kwargs(self._XTICK_FORMAT,kwargs)
@@ -590,7 +607,7 @@ class kaplot(object):
 	def set_frames(self,**kwargs):
 		"""
 		removes frames from plots , this function should
-		be used in combination with set_tick_params() to 
+		be used in combination with set_tick_params() to
 		remove ticks
 
 		** kwargs **
@@ -630,19 +647,19 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		min 		- minimum x value
-		max 		- maximum x value 
-		alpha 		- alpha level 
+		max 		- maximum x value
+		alpha 		- alpha level
 		ls			- line style
-		lw			- line width 
+		lw			- line width
 		color 		- line color
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		ax = update_default_kwargs(self._AX_LINE,kwargs)
-		ax['y']			= location
+		ax['y']			= float(location)
 		if 'min' in kwargs:
 			ax['xmin']		= ax.pop('min')
 		if 'max' in kwargs:
-			ax['xmax']		= ax.pop('max')	
+			ax['xmax']		= ax.pop('max')
 		# remove all 'auto' values
 		k.add_axhline(**ax)
 		return
@@ -658,19 +675,19 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		min 		- minimum y value
-		max 		- maximum y value 
-		alpha 		- alpha level 
+		max 		- maximum y value
+		alpha 		- alpha level
 		ls			- line style
-		lw			- line width 
+		lw			- line width
 		color 		- line color
 		"""
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		ax = update_default_kwargs(self._AX_LINE,kwargs)
-		ax['x']			= location
+		ax['x']			= float(location)
 		if 'min' in kwargs:
 			ax['ymin']		= ax.pop('min')
 		if 'max' in kwargs:
-			ax['ymax']		= ax.pop('max')	
+			ax['ymax']		= ax.pop('max')
 		# remove all 'auto' values
 		k.add_axvline(**ax)
 		return
@@ -679,7 +696,7 @@ class kaplot(object):
 	def add_text(self,txt,x,y,**kwargs):
 		"""
 		adds text to the layer at the point `x`,`y`
-		
+
 		** args **
 		txt 		- text to be added
 		x 			- x-coordinate in data coordinates
@@ -721,40 +738,40 @@ class kaplot(object):
 		increment 	- True/False , increment the auto color/marker/fill
 
 		color 		- line color
-		ls 			- line style 
+		ls 			- line style
 		lw 			- line width
 		ecolor 		- error line color
-		elinewidth	- error line width 
+		elinewidth	- error line width
 		capsize		- error cap size
 		alpha 		- alpha level
 
 		** line plot kwargs **
-		marker		- marker 
+		marker		- marker
 		mec 		- marker edge color
-		ms 			- marker size 
-		markevery 	- marker every data points 
+		ms 			- marker size
+		markevery 	- marker every data points
 		mfc 		- marker face color
 
 		** spline kwargs **
 		spline 		- boolean to use a spline
-		sp_order 	- spline order, order of the fit 
-		sp_smooth 	- smoothing parameter, if None the spline will pass through all values 
+		sp_order 	- spline order, order of the fit
+		sp_smooth 	- smoothing parameter, if None the spline will pass through all values
 		sp_points 	- use #points between xmin/xmax
 
-		** bar chart kwargs ** 
+		** bar chart kwargs **
 		edgecolor	- edge color
 		align		- alignment (center or left)
 		width		- width
 		fill		- fill (True/False)
 		hatch 		- hatching
 		facecolor 	- fill color
-		width 		- array with width for each value 
+		width 		- array with width for each value
 		bottom		- y starting point
-		log 		- True/False 
+		log 		- True/False
 
 		** histogram chart kwargs **
 		http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.hist
-		bins		- bins to uses during binning 
+		bins		- bins to uses during binning
 		min 		- lower value for bins, less than min are ignored
 		max 		- upper value for bins, grather than max are ignored
 		normed 		- True/False : normalize the values, integral is 1
@@ -763,14 +780,14 @@ class kaplot(object):
 		align 		- alignment (left, mid, right)
 		orientation - 'horizontal' or 'vertical'
 		log 		- True/False : Use log scale?
-		color 		- color 
-		label 		- data label 
+		color 		- color
+		label 		- data label
 		stacked 	- True/False : stack data on top of each other (true) or next to each other (false)
 		alpha 		- alpha level
-		edgecolor	- 
-		facecolor 	- 
+		edgecolor	-
+		facecolor 	-
 		fill 		- True/False
-		hatch 		- 
+		hatch 		-
 		ls 			- line style
 		lw 			- line width
 
@@ -783,21 +800,21 @@ class kaplot(object):
 		meanline 	- True/False 	:	show a mean as a line
 		showmean 	- True/False 	: 	show the mean according to meanprops (maps to showmeans)
 		showcap		- True/False 	: 	show the caps at the end of whiskers (maps to showcaps)
-		showbox 	- True/False 	: 	show the box portion of boxplot 
-		showfliers	- True/False 	:	show the outliers 
-		boxprop		- dictionary 	: 	properties for the box 
+		showbox 	- True/False 	: 	show the box portion of boxplot
+		showfliers	- True/False 	:	show the outliers
+		boxprop		- dictionary 	: 	properties for the box
 		label 		- the label 	: 	maps to labels (array)
-		flierprops	- dictionary 	: 	properties for fliers 
-		medianprops	- dictionary	: 	properties for median line 
-		meanprops 	- dictionary	: 	properties for the mean line 
-		capprops 	- dictionary	:	properties for the caps 
-		whiskerprops- dictionary 	: 	properties for the whisker lines 
+		flierprops	- dictionary 	: 	properties for fliers
+		medianprops	- dictionary	: 	properties for median line
+		meanprops 	- dictionary	: 	properties for the mean line
+		capprops 	- dictionary	:	properties for the caps
+		whiskerprops- dictionary 	: 	properties for the whisker lines
 		manage_xticks- True/False 	: 	whether or not 'label' is given to the tick
 		# TODO : test manage ticks
 		"""
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
 		kwargs['x']	= x
-		kwargs['y'] = y 
+		kwargs['y'] = y
 		k.add_plotdata(**kwargs)
 		return
 
@@ -813,13 +830,13 @@ class kaplot(object):
 		** kwargs **
 		name 		- layer name
 		increment 	- True/False , increment the auto color/marker/fill
-		color 		- line color 
+		color 		- line color
 		ec 			- edge color
-		fc 			- fill color 
+		fc 			- fill color
 		fill		- fill true/false
-		hatch		- hatching 
-		ls 			- line style 
-		lw 			- line width 
+		hatch		- hatching
+		ls 			- line style
+		lw 			- line width
 		alpha 		- alpha level
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
@@ -846,16 +863,16 @@ class kaplot(object):
 		name 					- layer name
 		width 					- width of full arrow tail
 		length_includes_head	- include head in the length, usually false
-		head_width				- width of the arrow head 
-		head_length				- length of arrow head 
+		head_width				- width of the arrow head
+		head_length				- length of arrow head
 		shape					- 'full' , 'left' , 'right'
 		overhang				- fraction of head which is swept back , default is 0
 		alpha					- alpha level
-		ec 						- edge color 
-		fc 						- face color 
-		fill 					- True/False, fill 
-		hatch 					- hatch style 
-		ls						- line style 
+		ec 						- edge color
+		fc 						- face color
+		fill 					- True/False, fill
+		hatch 					- hatch style
+		ls						- line style
 		lw						- line width
 		"""
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
@@ -864,8 +881,8 @@ class kaplot(object):
 		y 		= start[1]
 		dy 		= finish[1] - start[1]
 		kwargs 	= update_default_kwargs(self._ARROW_DEFAULTS,kwargs)
-		kwargs['x']		= x 
-		kwargs['y'] 	= y 
+		kwargs['x']		= x
+		kwargs['y'] 	= y
 		kwargs['dx']	= dx
 		kwargs['dy']	= dy
 		k.add_arrow(**kwargs)
@@ -891,13 +908,15 @@ class kaplot(object):
 			find = (cnt // (len(clist)*len(mlist))) % len(flist)
 			return (cind,mind,find)
 		## PLOTTING PORTION
+		if self.PLOT_SETTINGS['style'] is not None:
+			plt.style.use(self.PLOT_SETTINGS['style'])
 		if self.PLOT_SETTINGS['xkcd']:
 			plt.xkcd()
 		for i,name in enumerate(self._LAYER_NAMES):
 			name 	= self._LAYER_NAMES[i]
 			k 		= self._LAYER_OBJECTS[i]
 			setting = self._LAYER_SETTINGS[i]
-			print 'working on layer : %s' % name
+			print('working on layer : %s' % name)
 			# if axes is twin'd
 			if setting['twin'] is not None:
 				# grab the axes object to copy
@@ -930,6 +949,11 @@ class kaplot(object):
 			else:
 				mpobj.set_xscale('linear')
 				mpobj.set_yscale('linear')
+			## Format Helper
+			## 5/17/2017 - kamil - after struggling with the axis formatting, this seemed to fix things, it's not robust nor has it been tested
+			frmtr = ScalarFormatter(useOffset=False)
+			mpobj.get_yaxis().set_major_formatter(frmtr)
+			mpobj.get_xaxis().set_major_formatter(frmtr)
 			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
@@ -938,7 +962,7 @@ class kaplot(object):
 				mpobj.grid(**k.SETTINGS['grid_prop'])
 			# ADD PLOTDATA
 			if len(k.DATA_LIST) != 0:
-				# 
+				#
 				for i,pd in enumerate(k.DATA_LIST):
 					# update plt settings
 					if k.SETTINGS['plot_type'] == 'line':
@@ -946,7 +970,7 @@ class kaplot(object):
 						k.DATA_LIST[i] 	= npd
 					elif k.SETTINGS['plot_type'] == 'bar':
 						npd 			= update_default_kwargs(self._BAR_DEFAULTS,pd)
-						npd['left']		= pd['x'] 
+						npd['left']		= pd['x']
 						npd['height']	= pd['y']
 						k.DATA_LIST[i] 	= npd
 					elif k.SETTINGS['plot_type'] == 'hist':
@@ -982,7 +1006,7 @@ class kaplot(object):
 							if pd['increment']:
 								cnt += 1
 							if 'color' not in pd:
-								pd['color'] = col 
+								pd['color'] = col
 							if 'marker' not in pd:
 								pd['marker'] = mar
 							if 'mfc' not in pd:
@@ -1065,7 +1089,7 @@ class kaplot(object):
 							else:
 								labels.append('')
 							# build large plot args
-							for key,val in pd.iteritems():
+							for key,val in pd.items():
 								histargs[key] = val
 						mpobj.hist(x=x_list,label=labels,color=colors,**histargs)
 					elif k.SETTINGS['plot_type'] == 'boxplot':
@@ -1076,7 +1100,7 @@ class kaplot(object):
 						for i,pd in enumerate(k.DATA_LIST):
 							# add data to plot
 							x_list.append(pd['x'])
-							# pop off the values that are not required anymore. 
+							# pop off the values that are not required anymore.
 							pd.pop('x')
 							pd.pop('increment')
 							# add labels to the data sets
@@ -1095,12 +1119,12 @@ class kaplot(object):
 							else:
 								positions.append(i+1)
 							# update bpargs with user passed variabls and preform rename if required
-							for key,val in pd.iteritems():
+							for key,val in pd.items():
 								if key in ['width','showmean','showcap']:
 									key = key+'s'
 								bpargs[key] = val
 						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
-			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS 
+			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS
 			if k.SETTINGS['xlabel'] is not None:
 				mpobj.set_xlabel(k.SETTINGS['xlabel'],**k.SETTINGS['xlab_prop'])
 			if k.SETTINGS['ylabel'] is not None:
@@ -1115,14 +1139,14 @@ class kaplot(object):
 				mpobj.set_yticks(k.SETTINGS['yticks'])
 				mpobj.set_yticklabels(k.SETTINGS['ytick_labels'],**k.SETTINGS['ytick_prop'])
 			elif k.SETTINGS['ytick_prop'] is not None:
-				# change settings eben if no ticks are specified
+				# change settings even if no ticks are specified
 				mpobj.set_yticklabels(mpobj.get_yticklabels(),**k.SETTINGS['ytick_prop'])
 			if k.XTICK_FORMAT is not None:
 				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
 				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
 			if k.YTICK_FORMAT is not None:
 				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)				
+				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
 			if k.XTICK_PARAM is not None:
 				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
 			if k.YTICK_PARAM is not None:
@@ -1197,7 +1221,7 @@ class kaplot(object):
 					if 'color' not in rd:
 						rd['color'] = color
 					if 'hatch' not in rd:
-						rd['hatch']	= h 
+						rd['hatch']	= h
 					if 'fill' not in rd:
 						rd['fill']	= fill
 					# y-coords are in data , x-coords are in axes units
@@ -1207,7 +1231,7 @@ class kaplot(object):
 					mpobj.axhspan(**rd)
 			# ADD ARROW
 			if len(k.ARROW_LIST) != 0:
-				print 'adding arrows'
+				print('adding arrows')
 				for ad in k.ARROW_LIST:
 					mpobj.arrow(**ad)
 			# ADD LEGEND
@@ -1219,24 +1243,26 @@ class kaplot(object):
 					# update the legend title also
 					if k.SETTINGS['leg_props']['title'] is not None:
 						plt.setp(l.get_title(),**k.SETTINGS['leg_fprop'])
+
 			# make copy of the entire object
 			self._LAYER_PLT_OBJECT.append(mpobj)
-		return
+
+		return mpobj
 
 	def saveMe(self,fname,**kwargs):
 		"""
-		saves the figure to file `fname` 
+		saves the figure to file `fname`
 
 		** args **
 		fname 	- path/filename to save to
 
-		** kwargs ** 
+		** kwargs **
 		height 	- dimension of figure, in inches
 		width 	- dimension of figure, in inches
 		dpi 	- the dots per inch of the figure
 		"""
-		if self._SAVED is None:
-			self._SAVED = pickle.dumps(self,pickle.HIGHEST_PROTOCOL)
+		#if self._SAVED is None:
+		#	self._SAVED = pickle.dumps(self,pickle.HIGHEST_PROTOCOL)
 		sf = update_default_kwargs(self.SAVEFIG_SETTINGS,kwargs)
 		fig = plt.gcf()
 		if 'width' in sf and 'height' in sf:
@@ -1275,7 +1301,7 @@ class kaplot(object):
 
 class kaxes(object):
 	"""
-	helper class for kaplot, all functions here are internal. 
+	helper class for kaplot3, all functions here are internal.
 	used to build layer objects for the final figure.
 	"""
 	# location options
@@ -1332,7 +1358,7 @@ class kaxes(object):
 		elif location.lower() in self._LOCATION:
 			self.SETTINGS['location'] = location.lower()
 		else:
-			print 'KAXES: set_location error. location does not exist.'
+			print('KAXES: set_location error. location does not exist.')
 		return
 
 	def set_plot_type(self,ptype):
@@ -1344,7 +1370,7 @@ class kaxes(object):
 			self.SETTINGS['title'] = title
 			self.SETTINGS['title_prop'] = fdict
 		else:
-			print 'KAXES: set_title error. title is None.'
+			print('KAXES: set_title error. title is None.')
 		return
 
 	def set_grid(self,gbool,**gdict):
@@ -1413,11 +1439,11 @@ class kaxes(object):
 		return
 
 	def set_y_tick_format(self,**p):
-		self.YTICK_FORMAT = {'style':p['style'], 'scilimits':(p['sci_min'],p['sci_max'])}
+		self.YTICK_FORMAT = {'style':p['style'], 'scilimits':(p['sci_min'],p['sci_max']), 'useOffset':p['useOffset']}
 		return
 
 	def set_x_tick_format(self,**p):
-		self.XTICK_FORMAT = {'style':p['style'], 'scilimits':(p['sci_min'],p['sci_max'])}
+		self.XTICK_FORMAT = {'style':p['style'], 'scilimits':(p['sci_min'],p['sci_max']), 'useOffset':p['useOffset']}
 		return
 
 	def add_axhline(self,**ax):
@@ -1443,7 +1469,7 @@ class kaxes(object):
 
 	def add_rectangle(self,**pdict):
 		self.RECT_LIST.append(pdict)
-		return 
+		return
 
 	def add_arrow(self,**kwargs):
 		self.ARROW_LIST.append(kwargs)
@@ -1453,7 +1479,7 @@ class kaxes(object):
 def update_default_kwargs(default_dict,current_dict):
 	"""
 	dictionary helper function. takes a `default_dict` and combines it
-	with `current_dict` while filling in missing values. 
+	with `current_dict` while filling in missing values.
 
 	** args **
 	default_dict - complete dictionary
@@ -1462,7 +1488,7 @@ def update_default_kwargs(default_dict,current_dict):
 	returns a dictionary with all values.
 	"""
 	return_dict = {}
-	for key,kval in default_dict.iteritems():
+	for key,kval in default_dict.items():
 		if key in current_dict:
 			return_dict[key] = current_dict[key]
 		else:
@@ -1472,7 +1498,7 @@ def update_default_kwargs(default_dict,current_dict):
 
 def srange(start,end,incr,log=False):
 	"""
-	returns a number range, from `start` to `end` with an 
+	returns a number range, from `start` to `end` with an
 	increment value of `incr` , it can also be incremented
 	multiplicativly by specifying the `log` boolean.
 
@@ -1519,13 +1545,13 @@ def srange(start,end,incr,log=False):
 
 def convert_xy(ax,x,y):
 	"""
-	converts `x` and `y` coordinates on an axes object, `ax` to the 
+	converts `x` and `y` coordinates on an axes object, `ax` to the
 	matplotlib normalized values.
 
 	** args **
 	ax 		- matplotlib axes object
-	x 		- x value 
-	y 		- y value 
+	x 		- x value
+	y 		- y value
 
 	returns normalized coordinate tuple
 	"""
@@ -1534,7 +1560,7 @@ def convert_xy(ax,x,y):
 
 def unique_colors(ncols,color_map='gist_rainbow'):
 	"""
-	color generating function. `ncols` specifies how many unique colors 
+	color generating function. `ncols` specifies how many unique colors
 	to generate from `color_map`. for more color_map options consult :
 	<http://matplotlib.org/examples/color/colormaps_reference.html>.
 

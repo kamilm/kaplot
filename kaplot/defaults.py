@@ -3,15 +3,16 @@ Defines a couple of default settings dictionaries for importing into a kaplot ob
 They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot `__init__` function.
 Any parameters not specified by the user will come from the `default` settings dictionary.
 
-If it exists, import any user-defined settings from ~/.kaplotdefaults.rc
+If it exists, import any user-defined settings from ~/.kaplot3defaults.rc
 """
 
 from imp import load_source
-from os.path import expanduser
+import os.path as osp
 
 default = {
 	'PLOT_SETTINGS' 	:	{	'tight_layout'	:	False 		, \
 								'xkcd'			:	False		, \
+								'style'			:	None		, \
 								'x_label_sep_l'	:	' , '		, \
 								'x_label_sep_r'	:	''			, \
 								'y_label_sep_l'	:	' , '		, \
@@ -114,11 +115,13 @@ default = {
 
 	'_XTICK_FORMAT'		:	{	'style'		:	'plain'		, \
 								'sci_min'	:	0			, \
-								'sci_max'	:	0},
+								'sci_max'	:	0			, \
+								'useOffset' :	False},
 
 	'_YTICK_FORMAT'		:	{	'style'		:	'plain'		, \
 								'sci_min'	:	0			, \
-								'sci_max'	:	0},
+								'sci_max'	:	0			, \
+								'useOffset' :	False},
 
 	'_AX_LINE' 			:	{	'min'		:	'Auto'		, \
 								'max'		:	'Auto'		, \
@@ -297,8 +300,8 @@ markers = {
 }
 
 try:
-	kud = load_source('kaplotUserDefaults',expanduser('~/.kaplotdefaults.rc'))
-	for key,value in kud.__dict__.iteritems():
+	kud = load_source('kaplotUserDefaults',osp.join('.','libs','kaplot3','kaplot3defaults.rc'))
+	for key,value in kud.__dict__.items():
 		if key.startswith('__'):
 			continue
 		globals()[key] = value
