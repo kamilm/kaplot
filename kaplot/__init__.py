@@ -1143,7 +1143,7 @@ class kaplot3(object):
 								pos_array_ent = [pos]*len(x_list[ind])
 								pos_array = pos_array + pos_array_ent
 								# values
-								val_array = val_array + list(x_list[i])
+								val_array = val_array + list(x_list[ind])
 							mpobj.scatter(pos_array,val_array,**bsargs)
 
 
