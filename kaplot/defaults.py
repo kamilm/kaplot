@@ -211,6 +211,7 @@ default = {
 								'whis'			: 'Auto'		, \
 								'vert'			: 'Auto'		, \
 								'width'			: 'Auto'		, \
+								'sym'			: 'Auto'		, \
 								'meanline'		: 'Auto'		, \
 								'showmean'		: 'Auto'		, \
 								'showcap'		: 'Auto'		, \

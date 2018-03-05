@@ -42,6 +42,8 @@ import pickle
 from scipy.interpolate import UnivariateSpline
 from numpy import linspace
 from matplotlib.ticker import ScalarFormatter
+import numpy as np
+
 
 __author__		= 'Kamil'
 __version__		= '0.2'
@@ -991,7 +993,7 @@ class kaplot3(object):
 						k.DATA_LIST[i]	= npd
 					elif k.SETTINGS['plot_type'] in ['boxplot', 'boxscatter']:
 						npd 			= update_default_kwargs(self._BOXPLOT_DEFAULTS,pd)
-						npd['boxscatter'] = update_default_kwargs(self._BOXSCATTER_DEFAULTS,pd)
+						npd['boxscatter'] = update_default_kwargs(self._BOXSCATTER_DEFAULTS,{})
 						npd['x']		= pd['y']
 						k.DATA_LIST[i]	= npd
 				if k.SETTINGS['plot_type'] in ['line','bar']:
@@ -1127,25 +1129,46 @@ class kaplot3(object):
 							else:
 								positions.append(i+1)
 							# update bpargs with user passed variabls and preform rename if required
-							bsargs = pd.pop('boxscatter')
+							bsargs = pd['boxscatter']
+							pd.pop('boxscatter')
 							for key,val in pd.items():
 								if key in ['width','showmean','showcap']:
 									key = key+'s'
 								bpargs[key] = val
-
-						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
 						# add the scatter option overtop
 						if k.SETTINGS['plot_type'] == 'boxscatter':
+							def helper_boxplot(vals):
+								# removes the outliers
+								quart3,quart1 = np.percentile(vals,[75.0,25.0])
+								iqr = quart3 - quart1
+								up_lim = (1.5*iqr) + quart3
+								dn_lim = quart1 - (1.5*iqr)
+								ret_list = []
+								for v in vals:
+									if v <= up_lim and v >= dn_lim:
+										ret_list.append(v)
+								# check for single value
+								if len(ret_list) == 1:
+									ret_list = []
+								return ret_list
+
 							pos_array = []
 							val_array = []
 							for ind,pos in enumerate(positions):
-								# positions
-								pos_array_ent = [pos]*len(x_list[ind])
+								vals = helper_boxplot(x_list[ind])
+								pos_array_ent = [pos]*len(vals)
 								pos_array = pos_array + pos_array_ent
-								# values
-								val_array = val_array + list(x_list[ind])
-							mpobj.scatter(pos_array,val_array,**bsargs)
+								val_array = val_array + vals
+							# make it jitter
+							rands = np.random.random_integers(-4,4,len(val_array))
+							rands = rands/100.0
+							# update pos array
+							new_pos = []
+							for i,ent in enumerate(pos_array):
+								new_pos.append(ent+rands[i])
+							mpobj.scatter(new_pos,val_array,**bsargs)
 
+						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
 
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS
 			if k.SETTINGS['xlabel'] is not None:
