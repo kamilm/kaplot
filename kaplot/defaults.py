@@ -99,7 +99,8 @@ default = {
 								'labeltop'		:	'Auto' 	, \
 								'labelbottom'	:	'Auto' 	, \
 								'top'			:	'Auto'	, \
-								'bottom' 		:	'Auto'},
+								'bottom' 		:	'Auto'	, \
+								'maxticks'		:	'Auto'},
 
 	'_YTICK_PARAMS'		:	{	'direction'		:	'Auto'	, \
 								'length'		:	'Auto'	, \
@@ -111,7 +112,8 @@ default = {
 								'labelleft'		:	'Auto' 	, \
 								'labelright'	:	'Auto' 	, \
 								'left'			:	'Auto' 	, \
-								'right'			:	'Auto'},
+								'right'			:	'Auto'	, \
+								'maxticks'		:	'Auto'},
 
 	'_XTICK_FORMAT'		:	{	'style'		:	'plain'		, \
 								'sci_min'	:	0			, \

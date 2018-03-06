@@ -560,6 +560,8 @@ class kaplot3(object):
 		labelsize	- tick label font size
 		labelcolor 	- tick label font color
 
+		numticks	- number of ticks
+
 		* valid in x-axis * (both is experimental)
 		labeltop	- True/False
 		labelbottom	- True/False
@@ -1194,8 +1196,14 @@ class kaplot3(object):
 				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
 				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
 			if k.XTICK_PARAM is not None:
+				if 'maxticks' in k.XTICK_PARAM.keys():
+					plt.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
+					k.XTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
 			if k.YTICK_PARAM is not None:
+				if 'maxticks' in k.YTICK_PARAM.keys():
+					plt.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
+					k.YTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
 			# AXES LIMITS
 			if k.SETTINGS['x_limit'] is not None:
