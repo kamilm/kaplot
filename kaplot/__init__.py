@@ -74,6 +74,8 @@ class kaplot3(object):
 	"""
 	multi layer plotting class
 
+	mpobj = matplotlib axes object
+
 	organization ;
 	a PLOT contains any number of LAYERS,
 	each LAYER has a NAME associated with it,
@@ -90,7 +92,8 @@ class kaplot3(object):
 								'twin_ref'		:	None}
 	# do not add to label/legend if the value exists
 	SKIP_LABELS	 		= 	['_nolegend_']
-	def __init__(self,settings=None):
+	GLOBAL_MPOBJ		= None
+	def __init__(self,settings=None,mpobj=None):
 		'''Make `kaplot3` object: list of layers and associated properties. Also allows for dictionary,
 		or list of dictionaries, to be passed as `settings` to adjust plot settings.'''
 		self._SAVED				= None
@@ -103,7 +106,10 @@ class kaplot3(object):
 		self._LAYER_SETTINGS.append(deepcopy(self.LAYER_SETTINGS))
 		# Add settings
 		self.load_settings(settings)
-		plt.clf()
+		if mpobj == None:
+			plt.clf()
+		else:
+			self.GLOBAL_MPOBJ = mpobj
 		return
 
 	def load_settings(self,settings):
@@ -938,7 +944,10 @@ class kaplot3(object):
 				else:
 					mpobj = mpobj.twiny()
 			elif k.SETTINGS['location'] is None:
-				mpobj 	= plt.axes()
+				if self.GLOBAL_MPOBJ == None:
+					mpobj 	= plt.axes()
+				else:
+					mpobj 	= self.GLOBAL_MPOBJ
 			else:
 				loc_txt = k.SETTINGS['location']
 				if type(loc_txt) is type([]):
@@ -947,7 +956,10 @@ class kaplot3(object):
 					loc_cor = self._LOCATION_TIGHT[loc_txt]
 				else:
 					loc_cor = self._LOCATION[loc_txt]
-				mpobj = plt.axes(loc_cor)
+				if self.GLOBAL_MPOBJ == None:
+					mpobj = plt.axes(loc_cor)
+				else:
+					mpobj = self.GLOBAL_MPOBJ
 			# AXES TYPE AND BASE SETTING
 			if k.SETTINGS['axes_type'] in ['log-log','semilog-x','semilog-y']:
 				if k.SETTINGS['axes_type'] == 'log-log':
