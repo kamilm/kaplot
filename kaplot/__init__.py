@@ -1209,12 +1209,16 @@ class kaplot3(object):
 				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
 			if k.XTICK_PARAM is not None:
 				if 'maxticks' in k.XTICK_PARAM.keys():
-					plt.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
+					#3/29/2018 -- suspect this should be only cofined to the one axes object and not entire plot
+					#plt.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
+					mpobj.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
 					k.XTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
 			if k.YTICK_PARAM is not None:
 				if 'maxticks' in k.YTICK_PARAM.keys():
-					plt.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
+					#3/29/2018 -- suspect this should be only cofined to the one axes object and not entire plot
+					#plt.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
+					mpobj.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
 					k.YTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
 			# AXES LIMITS
