@@ -314,7 +314,7 @@ markers = {
 }
 
 try:
-	kud = load_source('kaplotUserDefaults',osp.join('.','kaplot','kaplotdefaults.rc'),osp.join('.','libs','kaplot','kaplotdefaults.rc'))
+	kud = load_source('kaplotUserDefaults',osp.join('.','kaplot','kaplotdefaults.rc'))
 	for key,value in kud.__dict__.items():
 		if key.startswith('__'):
 			continue
