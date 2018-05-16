@@ -1,5 +1,5 @@
 """
-kaplot3 is a plotting tool built around matplotlib. It combines the flexibilty and fantastic plot
+kaplot is a plotting tool built around matplotlib. It combines the flexibilty and fantastic plot
 generation potential of matplotlib with an easier to use, object oriented, interface. The interface
 is simple enough to quickly prototype plots, or fine tune for publication quality results.
 
@@ -24,17 +24,6 @@ matplotlib.use('TkAgg')
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout':True})
 
-# # backends @ http://matplotlib.org/faq/usage_faq.html
-# from libs.kaplot3_backend import get_backend
-# if get_backend():
-# 	# If kaplot3_backend wasn't imported, or no backend was set, then skip explicitly setting a backend
-# 	print(get_backend())
-# 	matplotlib.use(get_backend())
-
-# another project imports
-#from libs.kaplot3.defaults import default
-#from libs.kaplot3 import defaults as kd
-
 from kaplot.defaults import default
 from kaplot import defaults as kd
 import matplotlib.pyplot as plt
@@ -47,12 +36,12 @@ import numpy as np
 
 __author__		= 'Kamil'
 __version__		= '0.2'
-__name__		= 'kaplot3'
+__name__		= 'kaplot'
 
 @decorator
 def check_name(fn,self,*args,**kwargs):
 		"""
-		decorator function for kaplot3 class. checks if the `name` kwarg is
+		decorator function for kaplot class. checks if the `name` kwarg is
 		valid and inserts `ind` into the kwarg list. additionally, changes all
 		kwargs to be lower case.
 		** args **
@@ -70,7 +59,7 @@ def check_name(fn,self,*args,**kwargs):
 			return fn(self,*args,**new_kwargs)
 		raise AttributeError('No layer/axes named %s' % kwargs['name'])
 
-class kaplot3(object):
+class kaplot(object):
 	"""
 	multi layer plotting class
 
@@ -92,10 +81,11 @@ class kaplot3(object):
 								'twin_ref'		:	None}
 	# do not add to label/legend if the value exists
 	SKIP_LABELS	 		= 	['_nolegend_']
-	GLOBAL_MPOBJ		= None
+
 	def __init__(self,settings=None,mpobj=None):
-		'''Make `kaplot3` object: list of layers and associated properties. Also allows for dictionary,
+		'''Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,
 		or list of dictionaries, to be passed as `settings` to adjust plot settings.'''
+		self.GLOBAL_MPOBJ		= None
 		self._SAVED				= None
 		self._LAYER_NAMES		= []
 		self._LAYER_OBJECTS		= []
@@ -108,17 +98,19 @@ class kaplot3(object):
 		self.load_settings(settings)
 		if mpobj == None:
 			plt.clf()
+			plt.cla()
 		else:
+			plt.cla()
 			self.GLOBAL_MPOBJ = mpobj
 		return
 
 	def load_settings(self,settings):
 		"""
-		Reads the settings from `settings`, adds default settings from kaplot3.defaults.default,
+		Reads the settings from `settings`, adds default settings from kaplot.defaults.default,
 		and stores in object.
 		`settings` may be a list or single dictionary. If a list, each setting within the list is applied in the order
-		of the list. It may also be a single or list of strings, in which case kaplot3 will try to import from
-		kaplot3.defaults.
+		of the list. It may also be a single or list of strings, in which case kaplot will try to import from
+		kaplot.defaults.
 		"""
 		if not settings:
 			# nothing custom was passed
@@ -138,7 +130,7 @@ class kaplot3(object):
 					try:
 						setting = getattr(kd,setting)
 					except AttributeError:
-						raise AttributeError('%s not found in kaplot3.defaults or .kaplot3defaults.rc' % setting)
+						raise AttributeError('%s not found in kaplot.defaults or .kaplotdefaults.rc' % setting)
 				if key in setting:
 					if type(value) == type({}):
 						value.update(setting[key])
@@ -202,7 +194,7 @@ class kaplot3(object):
 				tmp['twin_ref']	= twin_ref.lower()
 			self._LAYER_SETTINGS.append(tmp)
 		else:
-			print('KAPLOT3: add_layer error. layer exists.')
+			print('kaplot: add_layer error. layer exists.')
 		return
 
 	@check_name
@@ -226,7 +218,7 @@ class kaplot3(object):
 				ptype = 'boxscatter'
 			k.set_plot_type(ptype)
 		else:
-			print('KAPLOT3 Error. Not a valid plot')
+			print('kaplot Error. Not a valid plot')
 		return
 
 	@check_name
@@ -326,7 +318,7 @@ class kaplot3(object):
 			k 	= self._LAYER_OBJECTS[kwargs['ind']]
 			k.set_axes_type(ptype.lower())
 		else:
-			print('KAPLOT3: set_axes_type error. ptype must be either linear,log-log,semilog-x,semilog-y.')
+			print('kaplot: set_axes_type error. ptype must be either linear,log-log,semilog-x,semilog-y.')
 		return
 
 	@check_name
@@ -347,7 +339,7 @@ class kaplot3(object):
 			k = self._LAYER_OBJECTS[kwargs['ind']]
 			k.set_base(basex,basey)
 		except:
-			print('KAPLOT3: set_base error. basex or basey must be a valid float.')
+			print('kaplot: set_base error. basex or basey must be a valid float.')
 
 	@check_name
 	def set_xlabel(self,lab='',unit=None,**kwargs):
@@ -566,7 +558,7 @@ class kaplot3(object):
 		labelsize	- tick label font size
 		labelcolor 	- tick label font color
 
-		numticks	- number of ticks
+		maxticks	- number of ticks
 
 		* valid in x-axis * (both is experimental)
 		labeltop	- True/False
@@ -859,9 +851,6 @@ class kaplot3(object):
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		x_tup 	= [top[0],bottom[0]]
 		y_tup	= [top[1],bottom[1]]
-		xmin , xmax = sorted(x_tup)
-		ymin , ymax = sorted(y_tup)
-		kwargs 	= update_default_kwargs(self._RECTANGLE_DEFAULTS,kwargs)
 		kwargs['xmin'] , kwargs['xmax'] = xmin , xmax
 		kwargs['ymin'] , kwargs['ymax'] = ymin , ymax
 		k.add_rectangle(**kwargs)
@@ -892,6 +881,9 @@ class kaplot3(object):
 		ls						- line style
 		lw						- line width
 		"""
+		xmin , xmax = sorted(x_tup)
+		ymin , ymax = sorted(y_tup)
+		kwargs 	= update_default_kwargs(self._RECTANGLE_DEFAULTS,kwargs)
 		k 		= self._LAYER_OBJECTS[kwargs['ind']]
 		x 		= start[0]
 		dx		= finish[0] - start[0]
@@ -933,7 +925,6 @@ class kaplot3(object):
 			name 	= self._LAYER_NAMES[i]
 			k 		= self._LAYER_OBJECTS[i]
 			setting = self._LAYER_SETTINGS[i]
-			print('working on layer : %s' % name)
 			# if axes is twin'd
 			if setting['twin'] is not None:
 				# grab the axes object to copy
@@ -974,9 +965,9 @@ class kaplot3(object):
 				mpobj.set_yscale('linear')
 			## Format Helper
 			## 5/17/2017 - kamil - after struggling with the axis formatting, this seemed to fix things, it's not robust nor has it been tested
-			frmtr = ScalarFormatter(useOffset=False)
-			mpobj.get_yaxis().set_major_formatter(frmtr)
-			mpobj.get_xaxis().set_major_formatter(frmtr)
+			#frmtr = ScalarFormatter(useOffset=False)
+			#mpobj.get_yaxis().set_major_formatter(frmtr)
+			#mpobj.get_xaxis().set_major_formatter(frmtr)
 			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
@@ -1194,30 +1185,26 @@ class kaplot3(object):
 				mpobj.set_xticklabels(k.SETTINGS['xtick_labels'],**k.SETTINGS['xtick_prop'])
 			elif k.SETTINGS['xtick_prop'] is not None:
 				# change settings even if no ticks are specified
-			 	mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
+				mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
 			if k.SETTINGS['yticks'] is not None:
 				mpobj.set_yticks(k.SETTINGS['yticks'])
 				mpobj.set_yticklabels(k.SETTINGS['ytick_labels'],**k.SETTINGS['ytick_prop'])
 			elif k.SETTINGS['ytick_prop'] is not None:
 				# change settings even if no ticks are specified
 				mpobj.set_yticklabels(mpobj.get_yticklabels(),**k.SETTINGS['ytick_prop'])
-			if k.XTICK_FORMAT is not None:
-				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
-			if k.YTICK_FORMAT is not None:
-				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
+#			if k.XTICK_FORMAT is not None:
+#				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+#				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
+#			if k.YTICK_FORMAT is not None:
+#				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+#				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
 			if k.XTICK_PARAM is not None:
 				if 'maxticks' in k.XTICK_PARAM.keys():
-					#3/29/2018 -- suspect this should be only cofined to the one axes object and not entire plot
-					#plt.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
 					mpobj.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
 					k.XTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
 			if k.YTICK_PARAM is not None:
 				if 'maxticks' in k.YTICK_PARAM.keys():
-					#3/29/2018 -- suspect this should be only cofined to the one axes object and not entire plot
-					#plt.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
 					mpobj.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
 					k.YTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
@@ -1340,7 +1327,7 @@ class kaplot3(object):
 			sf.pop('width')
 			sf.pop('height')
 		if self.PLOT_SETTINGS['tight_layout']:
-			plt.tight_layout(pad=1.0)
+			plt.tight_layout(pad=0.75)
 		plt.savefig(fname,**sf)
 		return
 
@@ -1371,7 +1358,7 @@ class kaplot3(object):
 
 class kaxes(object):
 	"""
-	helper class for kaplot3, all functions here are internal.
+	helper class for kaplot, all functions here are internal.
 	used to build layer objects for the final figure.
 	"""
 	# location options

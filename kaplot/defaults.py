@@ -3,7 +3,7 @@ Defines a couple of default settings dictionaries for importing into a kaplot ob
 They are user overwritable, by passing a custom dictionary (or list of of dicts) to the kaplot `__init__` function.
 Any parameters not specified by the user will come from the `default` settings dictionary.
 
-If it exists, import any user-defined settings from ~/.kaplot3defaults.rc
+If it exists, import any user-defined settings from ~/.kaplotdefaults.rc
 """
 
 from imp import load_source
@@ -245,6 +245,7 @@ default = {
 								'loc'			:	'upper right'	, \
 								'numpoints'		:	1 				, \
 								'markerscale'	:	1 		 		, \
+								'edgecolor'		:	'Auto' 			, \
 								'frameon'		:	True 			, \
 								'fancybox'		:	False 			, \
 								'shadow'		:	False 			, \
@@ -313,7 +314,7 @@ markers = {
 }
 
 try:
-	kud = load_source('kaplotUserDefaults',osp.join('.','libs','kaplot3','kaplot3defaults.rc'))
+	kud = load_source('kaplotUserDefaults',osp.join('.','kaplot','kaplotdefaults.rc'),osp.join('.','libs','kaplot','kaplotdefaults.rc'))
 	for key,value in kud.__dict__.items():
 		if key.startswith('__'):
 			continue

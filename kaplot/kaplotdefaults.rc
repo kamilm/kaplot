@@ -1,0 +1,186 @@
+kamilline = {
+	'PLOT_SETTINGS' 	:	{	'tight_layout'	:	True 		, \
+								'xkcd'			:	False		, \
+								'style'			:	'classic'	, \
+								'x_label_sep_l'	:	' , '		, \
+								'x_label_sep_r'	:	''			, \
+								'y_label_sep_l'	:	' , '		, \
+								'y_label_sep_r'	:	''			, \
+								'color_map'		:	'gist_rainbow'},
+
+	'_BOXPLOT_DEFAULTS'	:	{	'sym'			: 'r.'		, \
+								'meanprops'		: {'marker':'d'}},
+
+	'_BOXSCATTER_DEFAULTS'	:	{'label'	: 	'_nolegend_'	, \
+								'color'		:	'blue'			, \
+								'marker'	:	'.'				, \
+								'alpha'		:	'0.75'},
+
+
+	'SAVEFIG_SETTINGS' 	:	{	'dpi'			:	300		, \
+							  	'transparent'	:	False	, \
+							  	'width'			:	8	, \
+							  	'height'		:	6},
+
+	'_LOCATION_TIGHT'	:	{	'upper left'	:	[0.18,0.595,0.25,0.25] , \
+								'upper right'	:	[0.70,0.595,0.25,0.25] , \
+								'lower right'	:	[0.70,0.195,0.25,0.25] , \
+								'lower left'	:	[0.18,0.195,0.25,0.25]},
+
+	'_LOCATION'			:	{	'upper left'	:	[0.22,0.595,0.25,0.25] , \
+								'upper right'	:	[0.63,0.595,0.25,0.25] , \
+								'lower right'	:	[0.63,0.180,0.25,0.25] , \
+								'lower left'	:	[0.22,0.180,0.25,0.25]},
+
+	'_FONT_TITLE'		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'x-large'	, \
+								'color'		:	'black'},
+
+	'_FONT_XLABEL'		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'large'		, \
+								'color'		:	'black'},
+
+	'_FONT_XTICK' 		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'large'		, \
+								'color'		:	'black'},
+
+	'_FONT_YLABEL'		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'large'		, \
+								'color'		:	'black'},
+
+	'_FONT_YTICK' 		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'large'		, \
+								'color'		:	'black'},
+
+	'_AX_LINE' 			:	{	'lw'		:	2.0		, \
+								'color'		:	'black'},
+
+	'_TEXT_FONT' 		:	{ 	'family'	: 	'sans-serif' , \
+								'weight'	:	'bold'		, \
+								'size'		:	'large'},
+
+	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
+								'size'		:	'large'},
+
+	'_LEGEND_DEFAULTS'	:	{	'frameon'		:	True 			, \
+								'fancybox'		:	True 			, \
+								'fontsize'		:	'large'			, \
+								'borderpad'		:	0.25 			, \
+								'labelspacing'	: 	0.10			, \
+								'handletextpad'	: 	0.10			, \
+								'columnspacing'	: 	0.10},
+
+	'_LINE_DEFAULTS'	:	{	'lw'		:	2.5 			, \
+								'elinewidth':	1.5 			, \
+								'capsize'	:	1.5},
+
+	'_ARROW_DEFAULTS' 	:	{	'width'			:	0.07			, \
+						'length_includes_head'	:	False			, \
+								'head_width'	:	0.15			, \
+								'head_length'	:	0.15			, \
+								'shape'			:	'full'			, \
+								'overhang'		:	0},
+
+	'_HIST_DEFAULTS'	:	{	'bins'			: 10			, \
+								'align'			: 'mid'			, \
+								'fill' 			: True},
+
+	'_XTICK_FORMAT'		:	{	'useOffset':	True},
+
+	'_YTICK_FORMAT'		:	{	'useOffset':	False},
+}
+
+ppt4x4_old	=	{
+	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	4.633	, \
+							  	'height'		:	3.475	, \
+							  	'dpi'			:	300},
+}
+
+ppt4x4	=	{
+	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	5.000	, \
+							  	'height'		:	3.000	, \
+							  	'dpi'			:	300},
+}
+
+small_legend = {
+	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
+								'size'		:	'x-small'},
+
+	'_LEGEND_DEFAULTS'	:	{	'frameon'		:	True 			, \
+								'fancybox'		:	True 			, \
+								'fontsize'		:	'x-small'		, \
+								'borderpad'		:	0.25 			, \
+								'labelspacing'	: 	0.10			, \
+								'handletextpad'	: 	0.10			, \
+								'columnspacing'	: 	0.10},
+
+}
+
+ppt4x4_narrow	=	{
+	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	1.500	, \
+							  	'height'		:	2.420	, \
+							  	'dpi'			:	300		, \
+							  	'transparent'	:	True},
+}
+
+pptSS	=	{
+	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	3.400	, \
+							  	'height'		:	2.400	, \
+							  	'dpi'			:	300},
+}
+
+ppt4x4_older =	{
+	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	5.000	, \
+							  	'height'		:	3.475	, \
+							  	'dpi'			:	300},
+}
+
+
+poster2	=	{
+	'SAVEFIG_SETTINGS'	:	{	'width'			:	8.00	, \
+								'height'		:	6.00	, \
+								'dpi'			:	600		, \
+								'transparent'	:	True},
+}
+
+poster4	=	{
+	'SAVEFIG_SETTINGS'	:	{	'width'			:	4.00	, \
+								'height'		:	3.00	, \
+								'dpi'			:	600		, \
+								'transparent'	:	True},
+}
+
+legendfix =	{
+	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \
+								'size'		:	'large'},
+
+	'_LEGEND_DEFAULTS'	:	{	'frameon'		:	True 			, \
+								'fancybox'		:	True 			, \
+								'fontsize'		:	'large'			, \
+								'borderpad'		:	0.25 			, \
+								'labelspacing'	: 	0.10			, \
+								'handletextpad'	: 	0.10			, \
+								'columnspacing'	: 	0.10 			, \
+								'loc'			:	'lower right' 	, \
+								'ncol'			:	3}
+
+}
+
+xlabel_small = {
+	'_FONT_XLABEL'		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'small'		, \
+								'color'		:	'black'}
+}
+
+ylabel_small = {
+	'_FONT_YLABEL'		:	{	'family'	: 	'sans-serif', \
+								'weight'	:	'bold'		, \
+								'size'		:	'small'		, \
+								'color'		:	'black'}
+}
