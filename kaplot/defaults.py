@@ -245,7 +245,6 @@ default = {
 								'loc'			:	'upper right'	, \
 								'numpoints'		:	1 				, \
 								'markerscale'	:	1 		 		, \
-								'edgecolor'		:	'Auto' 			, \
 								'frameon'		:	True 			, \
 								'fancybox'		:	False 			, \
 								'shadow'		:	False 			, \
