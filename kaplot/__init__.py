@@ -81,10 +81,11 @@ class kaplot(object):
 								'twin_ref'		:	None}
 	# do not add to label/legend if the value exists
 	SKIP_LABELS	 		= 	['_nolegend_']
-	GLOBAL_MPOBJ		= None
+
 	def __init__(self,settings=None,mpobj=None):
 		'''Make `kaplot` object: list of layers and associated properties. Also allows for dictionary,
 		or list of dictionaries, to be passed as `settings` to adjust plot settings.'''
+		self.GLOBAL_MPOBJ		= None
 		self._SAVED				= None
 		self._LAYER_NAMES		= []
 		self._LAYER_OBJECTS		= []
@@ -97,7 +98,9 @@ class kaplot(object):
 		self.load_settings(settings)
 		if mpobj == None:
 			plt.clf()
+			plt.cla()
 		else:
+			plt.cla()
 			self.GLOBAL_MPOBJ = mpobj
 		return
 
@@ -555,7 +558,7 @@ class kaplot(object):
 		labelsize	- tick label font size
 		labelcolor 	- tick label font color
 
-		numticks	- number of ticks
+		maxticks	- number of ticks
 
 		* valid in x-axis * (both is experimental)
 		labeltop	- True/False
@@ -922,7 +925,6 @@ class kaplot(object):
 			name 	= self._LAYER_NAMES[i]
 			k 		= self._LAYER_OBJECTS[i]
 			setting = self._LAYER_SETTINGS[i]
-			print('working on layer : %s' % name)
 			# if axes is twin'd
 			if setting['twin'] is not None:
 				# grab the axes object to copy
@@ -963,9 +965,9 @@ class kaplot(object):
 				mpobj.set_yscale('linear')
 			## Format Helper
 			## 5/17/2017 - kamil - after struggling with the axis formatting, this seemed to fix things, it's not robust nor has it been tested
-			frmtr = ScalarFormatter(useOffset=False)
-			mpobj.get_yaxis().set_major_formatter(frmtr)
-			mpobj.get_xaxis().set_major_formatter(frmtr)
+			#frmtr = ScalarFormatter(useOffset=False)
+			#mpobj.get_yaxis().set_major_formatter(frmtr)
+			#mpobj.get_xaxis().set_major_formatter(frmtr)
 			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
@@ -1183,30 +1185,26 @@ class kaplot(object):
 				mpobj.set_xticklabels(k.SETTINGS['xtick_labels'],**k.SETTINGS['xtick_prop'])
 			elif k.SETTINGS['xtick_prop'] is not None:
 				# change settings even if no ticks are specified
-			 	mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
+				mpobj.set_xticklabels(mpobj.get_xticklabels(),**k.SETTINGS['xtick_prop'])
 			if k.SETTINGS['yticks'] is not None:
 				mpobj.set_yticks(k.SETTINGS['yticks'])
 				mpobj.set_yticklabels(k.SETTINGS['ytick_labels'],**k.SETTINGS['ytick_prop'])
 			elif k.SETTINGS['ytick_prop'] is not None:
 				# change settings even if no ticks are specified
 				mpobj.set_yticklabels(mpobj.get_yticklabels(),**k.SETTINGS['ytick_prop'])
-			if k.XTICK_FORMAT is not None:
-				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
-			if k.YTICK_FORMAT is not None:
-				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
+#			if k.XTICK_FORMAT is not None:
+#				mpobj.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+#				mpobj.ticklabel_format(axis='x',**k.XTICK_FORMAT)
+#			if k.YTICK_FORMAT is not None:
+#				mpobj.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+#				mpobj.ticklabel_format(axis='y',**k.YTICK_FORMAT)
 			if k.XTICK_PARAM is not None:
 				if 'maxticks' in k.XTICK_PARAM.keys():
-					#3/29/2018 -- suspect this should be only cofined to the one axes object and not entire plot
-					#plt.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
 					mpobj.locator_params(axis='x',nbins=k.XTICK_PARAM['maxticks'])
 					k.XTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='x',**k.XTICK_PARAM)
 			if k.YTICK_PARAM is not None:
 				if 'maxticks' in k.YTICK_PARAM.keys():
-					#3/29/2018 -- suspect this should be only cofined to the one axes object and not entire plot
-					#plt.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
 					mpobj.locator_params(axis='y',nbins=k.YTICK_PARAM['maxticks'])
 					k.YTICK_PARAM.pop('maxticks')
 				mpobj.tick_params(axis='y',**k.YTICK_PARAM)
@@ -1329,7 +1327,7 @@ class kaplot(object):
 			sf.pop('width')
 			sf.pop('height')
 		if self.PLOT_SETTINGS['tight_layout']:
-			plt.tight_layout(pad=1.0)
+			plt.tight_layout(pad=0.75)
 		plt.savefig(fname,**sf)
 		return
 
