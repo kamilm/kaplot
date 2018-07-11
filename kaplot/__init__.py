@@ -963,11 +963,11 @@ class kaplot(object):
 			else:
 				mpobj.set_xscale('linear')
 				mpobj.set_yscale('linear')
-			## Format Helper
-			## 5/17/2017 - kamil - after struggling with the axis formatting, this seemed to fix things, it's not robust nor has it been tested
-			#frmtr = ScalarFormatter(useOffset=False)
-			#mpobj.get_yaxis().set_major_formatter(frmtr)
-			#mpobj.get_xaxis().set_major_formatter(frmtr)
+				## Format Helper
+				## 5/17/2017 - kamil - after struggling with the axis formatting, this seemed to fix things, it's not robust nor has it been tested
+				frmtr = ScalarFormatter(useOffset=False)
+				mpobj.get_yaxis().set_major_formatter(frmtr)
+				mpobj.get_xaxis().set_major_formatter(frmtr)
 			# TITLE
 			if k.SETTINGS['title'] is not None:
 				mpobj.set_title(k.SETTINGS['title'],**k.SETTINGS['title_prop'])
