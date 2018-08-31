@@ -134,6 +134,12 @@ pptSS	=	{
 							  	'dpi'			:	300},
 }
 
+pptSS2	=	{
+	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	3.400	, \
+							  	'height'		:	2.000	, \
+							  	'dpi'			:	300},
+}
+
 ppt4x4_older =	{
 	'SAVEFIG_SETTINGS' 	:	{ 	'width'			:	5.000	, \
 							  	'height'		:	3.475	, \
