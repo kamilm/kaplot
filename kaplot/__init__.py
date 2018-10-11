@@ -417,6 +417,7 @@ class kaplot(object):
 		name 		- layer name
 		mylist		- custom list
 		mylabels	- custom labels
+		coerce_float- force float precision 
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
@@ -435,6 +436,10 @@ class kaplot(object):
 			# start, stop, incr are specified
 			tick_list 	= srange(start,stop,incr,log)
 			tick_labels	= srange(start,stop,incr,log)
+			# crazy float representation issues, KM, 10/11/2018
+			if kwargs['coerce_float']:
+				tick_list 	= [float('%.12f'% t) for t in tick_list]
+				tick_labels = [float('%.12f'% t) for t in tick_list]
 			# custom labels
 			if 'mylist' in kwargs and 'mylabels' in kwargs:
 				for i,val in enumerate(kwargs['mylist']):
@@ -466,6 +471,7 @@ class kaplot(object):
 		name 		- layer name
 		mylist		- custom list
 		mylabels 	- custom labels
+		coerce_float- force float precision 
 
 		family		- font family , 'sans-serif' 'serif' 'monospace' 'fantasy'
 		size 		- font size , #points 'xx-small' 'medium' 'xx-large'
@@ -484,6 +490,10 @@ class kaplot(object):
 			# start, stop, incr are specified
 			tick_list 	= srange(start,stop,incr,log)
 			tick_labels	= srange(start,stop,incr,log)
+			# crazy float representation issues, KM, 10/11/2018
+			if kwargs['coerce_float']:
+				tick_list 	= [float('%.12f'% t) for t in tick_list]
+				tick_labels = [float('%.12f'% t) for t in tick_list]
 			# custom labels
 			if 'mylist' in kwargs and 'mylabels' in kwargs:
 				for i,val in enumerate(kwargs['mylist']):
