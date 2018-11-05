@@ -437,7 +437,7 @@ class kaplot(object):
 			tick_list 	= srange(start,stop,incr,log)
 			tick_labels	= srange(start,stop,incr,log)
 			# crazy float representation issues, KM, 10/11/2018
-			if kwargs['coerce_float']:
+			if kwargs.get('coerce_float',False):
 				tick_list 	= [float('%.12f'% t) for t in tick_list]
 				tick_labels = [float('%.12f'% t) for t in tick_list]
 			# custom labels
@@ -491,7 +491,7 @@ class kaplot(object):
 			tick_list 	= srange(start,stop,incr,log)
 			tick_labels	= srange(start,stop,incr,log)
 			# crazy float representation issues, KM, 10/11/2018
-			if kwargs['coerce_float']:
+			if kwargs.get('coerce_float',False):
 				tick_list 	= [float('%.12f'% t) for t in tick_list]
 				tick_labels = [float('%.12f'% t) for t in tick_list]
 			# custom labels
