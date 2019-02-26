@@ -35,7 +35,7 @@ import numpy as np
 
 
 __author__		= 'Kamil'
-__version__		= '1.0.1'
+__version__		= '1.0.7'
 __name__		= 'kaplot'
 
 @decorator
