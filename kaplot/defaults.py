@@ -214,6 +214,7 @@ default = {
 								'vert'			: 'Auto'		, \
 								'width'			: 'Auto'		, \
 								'sym'			: 'Auto'		, \
+								'box_fill_color': 'Auto'		, \
 								'meanline'		: 'Auto'		, \
 								'showmean'		: 'Auto'		, \
 								'showcap'		: 'Auto'		, \
@@ -225,16 +226,17 @@ default = {
 								'meanprops'		: 'Auto'		, \
 								'capprops'		: 'Auto'		, \
 								'whiskerprops'	: 'Auto'		, \
-								'manage_xticks'	: 'Auto'},
+								'manage_xticks'	: 'Auto'		, \
+								'patch_artist'	: True},
 
-	'_BOXSCATTER_DEFAULTS'	:	{'label'	: 	'_nolegend_'	, \
-								'color'		:	'Auto'			, \
-								'marker'	:	'Auto'			, \
-								'mec' 		: 	'Auto'			, \
-								'ms'		:	'Auto'			, \
-								'markevery'	:	'Auto'			, \
-								'mfc' 		: 	'Auto'			, \
-								'alpha'		:	'Auto'},
+	'_BOXSCATTER_DEFAULTS'	:	{'label'		: 	'_nolegend_'	, \
+								'color'			:	'Auto'			, \
+								'marker'		:	'Auto'			, \
+								'mec' 			: 	'Auto'			, \
+								'ms'			:	'Auto'			, \
+								'markevery'		:	'Auto'			, \
+								'mfc' 			: 	'Auto'			, \
+								'alpha'			:	'Auto'},
 
 
 	'_LEGEND_FONTPROPS'	:	{	'family'	:	'sans-serif'	, \

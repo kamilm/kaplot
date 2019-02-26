@@ -816,6 +816,7 @@ class kaplot(object):
 		whis 		- 1.5			:	size of the whiskers, $whis$ * Quartile
 		loc 		- axes location : 	maps to positions (array)
 		width 		- width of box 	: 	maps to widths	(array)
+		box_fill_color - 	 		: 	color to fill the box using
 		meanline 	- True/False 	:	show a mean as a line
 		showmean 	- True/False 	: 	show the mean according to meanprops (maps to showmeans)
 		showcap		- True/False 	: 	show the caps at the end of whiskers (maps to showcaps)
@@ -1121,12 +1122,16 @@ class kaplot(object):
 						positions	= []
 						bpargs 		= {}
 						bsargs 		= {}
+						bx_fill_col = []
 						for i,pd in enumerate(k.DATA_LIST):
 							# add data to plot
 							x_list.append(pd['x'])
 							# pop off the values that are not required anymore.
 							pd.pop('x')
 							pd.pop('increment')
+							# update colors
+							bx_fill_col.append(pd.get('box_fill_color','Auto'))
+							pd.pop('box_fill_color',None)
 							# add labels to the data sets
 							if 'label' in pd:
 								if pd['label'] not in self.SKIP_LABELS:
@@ -1149,6 +1154,18 @@ class kaplot(object):
 								if key in ['width','showmean','showcap']:
 									key = key+'s'
 								bpargs[key] = val
+
+						# make the box plot complete with box filling
+						res_dict = mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
+						for ind,box in enumerate(res_dict['boxes']):
+							# update box fill color
+							color = bx_fill_col[ind]
+							if color != 'Auto':
+								box.set_facecolor(color)
+								box.set_zorder(0)
+							else:
+								box.set_facecolor('None')
+
 						# add the scatter option overtop
 						if k.SETTINGS['plot_type'] == 'boxscatter':
 							def helper_boxplot(vals):
@@ -1182,13 +1199,10 @@ class kaplot(object):
 								new_pos.append(ent+rands[i])
 							if bpargs.get('vert',True) == False:
 								# horizontal boxplot, swap
-								print('swap x and y')
 								x_, y_ = val_array, new_pos
 							else:
 								x_, y_ = new_pos, val_array
 							mpobj.scatter(x_, y_,**bsargs)
-
-						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
 
 			# AXES LABELS, TICKS, FORMATTING, and PARAMETERS
 			if k.SETTINGS['xlabel'] is not None:
