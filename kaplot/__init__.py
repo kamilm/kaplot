@@ -821,7 +821,7 @@ class kaplot(object):
 		showcap		- True/False 	: 	show the caps at the end of whiskers (maps to showcaps)
 		showbox 	- True/False 	: 	show the box portion of boxplot
 		showfliers	- True/False 	:	show the outliers
-		boxprop		- dictionary 	: 	properties for the box
+		boxprops	- dictionary 	: 	properties for the box
 		label 		- the label 	: 	maps to labels (array)
 		flierprops	- dictionary 	: 	properties for fliers
 		medianprops	- dictionary	: 	properties for median line
@@ -829,7 +829,6 @@ class kaplot(object):
 		capprops 	- dictionary	:	properties for the caps
 		whiskerprops- dictionary 	: 	properties for the whisker lines
 		manage_xticks- True/False 	: 	whether or not 'label' is given to the tick
-		# TODO : test manage ticks
 		"""
 		k 			= self._LAYER_OBJECTS[kwargs['ind']]
 		kwargs['x']	= x
@@ -1181,7 +1180,13 @@ class kaplot(object):
 							new_pos = []
 							for i,ent in enumerate(pos_array):
 								new_pos.append(ent+rands[i])
-							mpobj.scatter(new_pos,val_array,**bsargs)
+							if bpargs.get('vert',True) == False:
+								# horizontal boxplot, swap
+								print('swap x and y')
+								x_, y_ = val_array, new_pos
+							else:
+								x_, y_ = new_pos, val_array
+							mpobj.scatter(x_, y_,**bsargs)
 
 						mpobj.boxplot(x=x_list,labels=labels,positions=positions,**bpargs)
 
