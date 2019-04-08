@@ -54,3 +54,4 @@ docs/_build/
 .DS_Store
 notebooks/.ipynb_checkpoints/
 notebooks/
+kaplot/.ipynb_checkpoints/

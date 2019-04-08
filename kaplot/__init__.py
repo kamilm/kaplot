@@ -35,7 +35,7 @@ import numpy as np
 
 
 __author__		= 'Kamil'
-__version__		= '1.0.7'
+__version__		= '1.0.8'
 __name__		= 'kaplot'
 
 @decorator
@@ -521,10 +521,16 @@ class kaplot(object):
 		"""
 		xmin = None
 		xmax = None
-		if 'min' in kwargs:
-			xmin = kwargs['min']
-		if 'max' in kwargs:
-			xmax = kwargs['max']
+		if 'min' in kwargs or 'left' in kwargs:
+			if 'min' in kwargs:
+				xmin = kwargs['min']
+			else:
+				xmin = kwargs['left']
+		if 'max' in kwargs or 'right' in kwargs:
+			if 'max' in kwargs:
+				xmax = kwargs['max']
+			else:
+				xmax = kwargs['right']
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		k.set_xlim(xmin,xmax)
 		return
@@ -541,10 +547,16 @@ class kaplot(object):
 		"""
 		ymin = None
 		ymax = None
-		if 'min' in kwargs:
-			ymin = kwargs['min']
-		if 'max' in kwargs:
-			ymax = kwargs['max']
+		if 'min' in kwargs or 'bottom' in kwargs:
+			if 'min' in kwargs:
+				ymin = kwargs['min']
+			else:
+				ymin = kwargs['bottom']
+		if 'max' in kwargs or 'top' in kwargs:
+			if 'max' in kwargs:
+				ymax = kwargs['max']
+			else:
+				ymax = kwargs['top']
 		k 	= self._LAYER_OBJECTS[kwargs['ind']]
 		k.set_ylim(ymin,ymax)
 		return
@@ -1241,15 +1253,15 @@ class kaplot(object):
 			if k.SETTINGS['x_limit'] is not None:
 				xmin , xmax = k.SETTINGS['x_limit']
 				if xmin is not None:
-					mpobj.set_xlim(xmin=xmin)
+					mpobj.set_xlim(left=xmin)
 				if xmax is not None:
-					mpobj.set_xlim(xmax=xmax)
+					mpobj.set_xlim(right=xmax)
 			if k.SETTINGS['y_limit'] is not None:
 				ymin , ymax = k.SETTINGS['y_limit']
 				if ymin is not None:
-					mpobj.set_ylim(ymin=ymin)
+					mpobj.set_ylim(bottom=ymin)
 				if ymax is not None:
-					mpobj.set_ylim(ymax=ymax)
+					mpobj.set_ylim(top=ymax)
 			# FRAME ELEMENTS
 			if not k.FRAMES['top']:
 				mpobj.spines['top'].set_color('None')
