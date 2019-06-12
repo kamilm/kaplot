@@ -164,7 +164,7 @@ default = {
 								'sp_smooth'	:	0 				, \
 								'sp_points'	:	1000},
 
-	'_BAR_DEFAULTS' 	:	{	'left'		:	None			, \
+	'_BAR_DEFAULTS' 	:	{	'x'			:	None			, \
 								'height'	:	None			, \
 								'xerr'		:	None			, \
 								'yerr'		:	None			, \

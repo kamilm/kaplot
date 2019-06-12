@@ -1005,7 +1005,7 @@ class kaplot(object):
 						k.DATA_LIST[i] 	= npd
 					elif k.SETTINGS['plot_type'] == 'bar':
 						npd 			= update_default_kwargs(self._BAR_DEFAULTS,pd)
-						npd['left']		= pd['x']
+						npd['x']		= pd['x']
 						npd['height']	= pd['y']
 						k.DATA_LIST[i] 	= npd
 					elif k.SETTINGS['plot_type'] == 'hist':
