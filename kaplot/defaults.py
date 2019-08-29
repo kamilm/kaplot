@@ -291,7 +291,7 @@ default = {
 								'ls'			:	'Auto'			, \
 								'lw'			:	'Auto'},
 
-	'_COLOR_LIST'		:	['black' , 'red' , 'blue' , 'fuchsia' , 'orange' , 'lime' , 'aqua' , 'maroon' , '0.40' , '0.85'],
+	'_COLOR_LIST'		:	['black', 'red', 'blue', 'magenta', 'orange', 'lime', 'aqua', 'maroon', 'darkviolet', 'goldenrod', 'forestgreen', 'teal', 'navy','0.40', '0.85'],
 	'_MARKER_LIST' 		:	[None , 's' , 'o' , '^' , 'D'],
 	'_MARKER_FILL_LIST'	:	[None , 'white'],
 
