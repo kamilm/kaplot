@@ -24,8 +24,10 @@ matplotlib.use('TkAgg')
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout':True})
 
-from kaplot.defaults import default
-from kaplot import defaults as kd
+# from kaplot.defaults import default
+# from kaplot import defaults as kd
+from .defaults import default
+from . import defaults as kd
 import matplotlib.pyplot as plt
 import pickle
 from scipy.interpolate import UnivariateSpline
